@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+**/*.py[cod]
+*$py.class
+
+# Model weights
+**/*.pth
+**/*.onnx
+
+# Ipython notebook
+*.ipynb
+
+# Temporary files or benchmark resources
+animations/*
+tmp/*
