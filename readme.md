@@ -5,7 +5,7 @@
     <a href='https://github.com/KwaiVGI' target='_blank'>Dingyun Zhang</a><sup> 1,2</sup>&emsp;
     <a href='https://github.com/KwaiVGI' target='_blank'>Xiaoqiang Liu</a><sup> 1</sup>&emsp;
     <a href='https://github.com/KwaiVGI' target='_blank'>Zhizhou Zhong</a><sup> 1,3</sup>&emsp;
-    <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'>Yuan Zhang</a><sup>1</sup>&emsp;
+    <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'>Yuan Zhang</a><sup> 1</sup>&emsp;
 </div>
 
 <div align='center'>
