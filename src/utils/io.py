@@ -40,7 +40,7 @@ def contiguous(obj):
     return obj
 
 
-def _resize_to_limit(img: np.ndarray, max_dim=1920, n=2):
+def resize_to_limit(img: np.ndarray, max_dim=1920, n=2):
     """
     ajust the size of the image so that the maximum dimension does not exceed max_dim, and the width and the height of the image are multiples of n.
     :param img: the image to be processed.
@@ -87,7 +87,7 @@ def load_img_online(obj, mode="bgr", **kwargs):
         img = obj
 
     # Resize image to satisfy constraints
-    img = _resize_to_limit(img, max_dim=max_dim, n=n)
+    img = resize_to_limit(img, max_dim=max_dim, n=n)
 
     if mode.lower() == "bgr":
         return contiguous(img)

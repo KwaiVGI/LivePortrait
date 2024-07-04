@@ -20,10 +20,10 @@ from .config.crop_config import CropConfig
 from .utils.cropper import Cropper
 from .utils.camera import get_rotation_matrix
 from .utils.video import images2video, concat_frames
-from .utils.crop import _transform_img
+from .utils.crop import _transform_img, prepare_paste_back, paste_back
 from .utils.retargeting_utils import calc_lip_close_ratio
-from .utils.io import load_image_rgb, load_driving_info
-from .utils.helper import mkdir, basename, dct2cuda, is_video, is_template, resize_to_limit
+from .utils.io import load_image_rgb, load_driving_info, resize_to_limit
+from .utils.helper import mkdir, basename, dct2cuda, is_video, is_template
 from .utils.rprint import rlog as log
 from .live_portrait_wrapper import LivePortraitWrapper
 
@@ -90,10 +90,7 @@ class LivePortraitPipeline(object):
 
         ######## prepare for pasteback ########
         if inference_cfg.flag_pasteback:
-            if inference_cfg.mask_crop is None:
-                inference_cfg.mask_crop = cv2.imread(make_abs_path('./utils/resources/mask_template.png'), cv2.IMREAD_COLOR)
-            mask_ori = _transform_img(inference_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
-            mask_ori = mask_ori.astype(np.float32) / 255.
+            mask_ori = prepare_paste_back(inference_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
             I_p_paste_lst = []
         #########################################
 
@@ -172,9 +169,7 @@ class LivePortraitPipeline(object):
             I_p_lst.append(I_p_i)
 
             if inference_cfg.flag_pasteback:
-                I_p_i_to_ori = _transform_img(I_p_i, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
-                I_p_i_to_ori_blend = np.clip(mask_ori * I_p_i_to_ori + (1 - mask_ori) * img_rgb, 0, 255).astype(np.uint8)
-                out = np.hstack([I_p_i_to_ori, I_p_i_to_ori_blend])
+                I_p_i_to_ori_blend = paste_back(I_p_i, crop_info['M_c2o'], img_rgb, mask_ori)
                 I_p_paste_lst.append(I_p_i_to_ori_blend)
 
         mkdir(args.output_dir)
