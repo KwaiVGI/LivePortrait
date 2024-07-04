@@ -21,7 +21,7 @@
 <div align="center">
   <!-- <a href='LICENSE'><img src='https://img.shields.io/badge/license-MIT-yellow'></a> -->
   <a href='https://liveportrait.github.io'><img src='https://img.shields.io/badge/Project-Homepage-green'></a>
-  <a href='https://github.com/KwaiVGI/LivePortrait'><img src='https://img.shields.io/badge/Paper-arXiv-red'></a>
+  <a href='https://arxiv.org/pdf/2407.03168'><img src='https://img.shields.io/badge/Paper-arXiv-red'></a>
 </div>
 <br>
 
@@ -33,10 +33,10 @@
 
 ## 🔥 Updates
 - **`2024/07/04`**: 🔥 We released the initial version of the inference code and models.
-- **`2024/07/04`**: 😊 We released the technical report on [arXiv]().
+- **`2024/07/04`**: 😊 We released the technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
 
 ## Introduction
-This repo, named **LivePortrait**, contains the official PyTorch implementation of our paper [LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control]().
+This repo, named **LivePortrait**, contains the official PyTorch implementation of our paper [LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control](https://arxiv.org/pdf/2407.03168).
 We are actively updating and improving this repository. If you find any bugs or have suggestions, welcome to raise issues or submit pull requests (PR) 💖.
 
 ## 🔥 Getting Started
@@ -143,6 +143,6 @@ If you find LivePortrait useful for your research, welcome to 🌟 this repo and
   title   = {LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control},
   author  = {Jianzhu Guo and Dingyun Zhang and Xiaoqiang Liu and Zhizhou Zhong and Yuan Zhang and Pengfei Wan and Di Zhang},
   year    = {2024},
-  journal = {arXiv preprint:24xx.xxxx},
+  journal = {arXiv preprint:2407.03168},
 }
 ```
