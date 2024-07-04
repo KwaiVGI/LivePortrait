@@ -1,16 +1,16 @@
 <h1 align="center">LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control</h1>
 
 <div align='center'>
-    <a href='https://github.com/cleardusk' target='_blank'>Jianzhu Guo</a><sup> 1†</sup>&emsp;
-    <a href='https://github.com/KwaiVGI' target='_blank'>Dingyun Zhang</a><sup> 1,2</sup>&emsp;
-    <a href='https://github.com/KwaiVGI' target='_blank'>Xiaoqiang Liu</a><sup> 1</sup>&emsp;
-    <a href='https://github.com/KwaiVGI' target='_blank'>Zhizhou Zhong</a><sup> 1,3</sup>&emsp;
-    <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'>Yuan Zhang</a><sup> 1</sup>&emsp;
+    <a href='https://github.com/cleardusk' target='_blank'><strong>Jianzhu Guo</strong></a><sup> 1†</sup>&emsp;
+    <a href='https://github.com/KwaiVGI' target='_blank'><strong>Dingyun Zhang</strong></a><sup> 1,2</sup>&emsp;
+    <a href='https://github.com/KwaiVGI' target='_blank'><strong>Xiaoqiang Liu</strong></a><sup> 1</sup>&emsp;
+    <a href='https://github.com/KwaiVGI' target='_blank'><strong>Zhizhou Zhong</strong></a><sup> 1,3</sup>&emsp;
+    <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'><strong>Yuan Zhang</strong></a><sup> 1</sup>&emsp;
 </div>
 
 <div align='center'>
-    <a href='https://scholar.google.com/citations?user=P6MraaYAAAAJ' target='_blank'>Pengfei Wan</a><sup> 1</sup>&emsp;
-    <a href='https://openreview.net/profile?id=~Di_ZHANG3' target='_blank'>Di Zhang</a><sup> 1</sup>&emsp;
+    <a href='https://scholar.google.com/citations?user=P6MraaYAAAAJ' target='_blank'><strong>Pengfei Wan</strong></a><sup> 1</sup>&emsp;
+    <a href='https://openreview.net/profile?id=~Di_ZHANG3' target='_blank'><strong>Di Zhang</strong></a><sup> 1</sup>&emsp;
 </div>
 
 <div align='center'>
@@ -27,13 +27,15 @@
 
 <p align="center">
   <img src="./assets/docs/showcase2.gif" alt="showcase">
+  <br>
+  🔥 For more results, visit our <a href="https://liveportrait.github.io/"><strong>homepage</strong></a> 🔥
 </p>
 
 
 
 ## 🔥 Updates
 - **`2024/07/04`**: 🔥 We released the initial version of the inference code and models.
-- **`2024/07/04`**: 😊 We released the technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
+- **`2024/07/04`**: 😊 We released the [homepage](https://liveportrait.github.io) and technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
 
 ## Introduction
 This repo, named **LivePortrait**, contains the official PyTorch implementation of our paper [LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control](https://arxiv.org/pdf/2407.03168).
@@ -99,7 +101,7 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 python inference.py -h
 ```
 
-**More interesting results can be found in our [Homepage](https://liveportrait.github.io/)** 😊
+**More interesting results can be found in our [Homepage](https://liveportrait.github.io)** 😊
 
 ### 4. Gradio interface (WIP)
 
