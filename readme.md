@@ -34,7 +34,7 @@
 
 
 ## 🔥 Updates
-- **`2024/07/04`**: 🔥 We released the initial version of the inference code and models.
+- **`2024/07/04`**: 🔥 We released the initial version of the inference code and models. Continuous updates, stay tuned!
 - **`2024/07/04`**: 😊 We released the [homepage](https://liveportrait.github.io) and technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
 
 ## Introduction
