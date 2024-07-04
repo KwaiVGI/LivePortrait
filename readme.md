@@ -46,9 +46,6 @@ We are actively updating and improving this repository. If you find any bugs or 
 ```bash
 git clone https://github.com/KwaiVGI/LivePortrait
 cd LivePortrait
-# using lfs to pull the data
-git lfs install
-git lfs pull
 
 # create env using conda
 conda create -n LivePortrait python==3.9.18
