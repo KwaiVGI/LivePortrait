@@ -43,7 +43,7 @@ class GradioPipeline(LivePortraitPipeline):
         input_video_path,
         flag_relative_input,
         flag_do_crop_input,
-        flag_remap_input
+        flag_remap_input,
         ):
         """ for video driven potrait animation
         """
@@ -53,7 +53,7 @@ class GradioPipeline(LivePortraitPipeline):
                 'driving_info': input_video_path,
                 'flag_relative': flag_relative_input,
                 'flag_do_crop': flag_do_crop_input,
-                'flag_pasteback': flag_remap_input
+                'flag_pasteback': flag_remap_input,
             }
             # update config from user input
             self.args = update_args(self.args, args_user)
