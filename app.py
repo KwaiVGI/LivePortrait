@@ -36,8 +36,8 @@ example_portrait_dir = "assets/examples/source"
 example_video_dir = "assets/examples/driving"
 data_examples = [
     [osp.join(example_portrait_dir, "s1.jpg"), osp.join(example_video_dir, "d1.mp4"), True, True, True],
-    [osp.join(example_portrait_dir, "s2.jpg"), osp.join(example_video_dir, "d2.mp4"), True, True, True],
-    [osp.join(example_portrait_dir, "s3.jpg"), osp.join(example_video_dir, "d5.mp4"), True, True, True],
+    [osp.join(example_portrait_dir, "s3.jpg"), osp.join(example_video_dir, "d2.mp4"), True, True, True],
+    [osp.join(example_portrait_dir, "s5.jpg"), osp.join(example_video_dir, "d5.mp4"), True, True, True],
     [osp.join(example_portrait_dir, "s5.jpg"), osp.join(example_video_dir, "d6.mp4"), True, True, True],
     [osp.join(example_portrait_dir, "s7.jpg"), osp.join(example_video_dir, "d7.mp4"), True, True, True],
 ]
