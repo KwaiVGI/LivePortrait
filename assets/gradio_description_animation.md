@@ -1,4 +1,4 @@
-<span style="font-size: 1.2em;">🔥 To animate the reference portrait with the driving video, please follow these steps:</span>
+<span style="font-size: 1.2em;">🔥 To animate the source portrait with the driving video, please follow these steps:</span>
 <div style="font-size: 1.2em; margin-left: 20px;">
     1. Specify the options in the <strong>Animation Options</strong> section. We recommend checking the <strong>do crop</strong> option when facial areas occupy a relatively small portion of your image.
 </div>

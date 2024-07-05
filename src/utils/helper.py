@@ -6,17 +6,14 @@ utility functions and classes to handle feature extraction and model loading
 
 import os
 import os.path as osp
-import cv2
 import torch
-from rich.console import Console
 from collections import OrderedDict
 
-from src.modules.spade_generator import SPADEDecoder
-from src.modules.warping_network import WarpingNetwork
-from src.modules.motion_extractor import MotionExtractor
-from src.modules.appearance_feature_extractor import AppearanceFeatureExtractor
-from src.modules.stitching_retargeting_network import StitchingRetargetingNetwork
-from .rprint import rlog as log
+from ..modules.spade_generator import SPADEDecoder
+from ..modules.warping_network import WarpingNetwork
+from ..modules.motion_extractor import MotionExtractor
+from ..modules.appearance_feature_extractor import AppearanceFeatureExtractor
+from ..modules.stitching_retargeting_network import StitchingRetargetingNetwork
 
 
 def suffix(filename):
@@ -44,6 +41,7 @@ def is_video(file_path):
     if file_path.lower().endswith((".mp4", ".mov", ".avi", ".webm")) or osp.isdir(file_path):
         return True
     return False
+
 
 def is_template(file_path):
     if file_path.endswith(".pkl"):
@@ -149,8 +147,8 @@ def calculate_transformation(config, s_kp_info, t_0_kp_info, t_i_kp_info, R_s, R
     new_scale = s_kp_info['scale'] * (t_i_kp_info['scale'] / t_0_kp_info['scale'])
     return new_rotation, new_expression, new_translation, new_scale
 
+
 def load_description(fp):
     with open(fp, 'r', encoding='utf-8') as f:
         content = f.read()
     return content
-

@@ -28,7 +28,7 @@ class InferenceConfig(PrintableConfig):
     flag_lip_retargeting: bool = False
     flag_stitching: bool = True  # we recommend setting it to True!
 
-    flag_relative: bool = True  # whether to use relative pose
+    flag_relative: bool = True  # whether to use relative motion
     anchor_frame: int = 0  # set this value if find_best_frame is True
 
     input_shape: Tuple[int, int] = (256, 256)  # input shape
@@ -45,5 +45,5 @@ class InferenceConfig(PrintableConfig):
     ref_shape_n: int = 2
 
     device_id: int = 0
-    flag_do_crop: bool = False  # whether to crop the reference portrait to the face-cropping space
+    flag_do_crop: bool = False  # whether to crop the source portrait to the face-cropping space
     flag_do_rot: bool = True  # whether to conduct the rotation when flag_do_crop is True

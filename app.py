@@ -44,8 +44,8 @@ data_examples = [
 #################### interface logic ####################
 
 # Define components first
-eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eye-close ratio")
-lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-close ratio")
+eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
+lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
 retargeting_input_image = gr.Image(type="numpy")
 output_image = gr.Image(type="numpy")
 output_image_paste_back = gr.Image(type="numpy")
@@ -56,7 +56,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     gr.HTML(load_description(title_md))
     gr.Markdown(load_description("assets/gradio_description_upload.md"))
     with gr.Row():
-        with gr.Accordion(open=True, label="Reference Portrait"):
+        with gr.Accordion(open=True, label="Source Portrait"):
             image_input = gr.Image(type="filepath")
         with gr.Accordion(open=True, label="Driving Video"):
             video_input = gr.Video()
@@ -64,7 +64,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     with gr.Row():
         with gr.Accordion(open=True, label="Animation Options"):
             with gr.Row():
-                flag_relative_input = gr.Checkbox(value=True, label="relative pose")
+                flag_relative_input = gr.Checkbox(value=True, label="relative motion")
                 flag_do_crop_input = gr.Checkbox(value=True, label="do crop")
                 flag_remap_input = gr.Checkbox(value=True, label="paste-back")
     with gr.Row():

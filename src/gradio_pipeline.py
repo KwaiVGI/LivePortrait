@@ -35,7 +35,7 @@ class GradioPipeline(LivePortraitPipeline):
         self.mask_ori = None
         self.img_rgb = None
         self.crop_M_c2o = None
-        
+
 
     def execute_video(
         self,
@@ -62,9 +62,9 @@ class GradioPipeline(LivePortraitPipeline):
             # video driven animation
             video_path, video_path_concat = self.execute(self.args)
             gr.Info("Run successfully!", duration=2)
-            return video_path, video_path_concat, 
+            return video_path, video_path_concat,
         else:
-            raise gr.Error("The input reference portrait or driving video hasn't been prepared yet 💥!", duration=5)
+            raise gr.Error("The input source portrait or driving video hasn't been prepared yet 💥!", duration=5)
 
     def execute_image(self, input_eye_ratio: float, input_lip_ratio: float):
         """ for single image retargeting
@@ -74,12 +74,12 @@ class GradioPipeline(LivePortraitPipeline):
         elif self.f_s_user is None:
             if self.start_prepare:
                 raise gr.Error(
-                    "The reference portrait is under processing 💥! Please wait for a second.", 
+                    "The source portrait is under processing 💥! Please wait for a second.",
                     duration=5
                 )
             else:
                 raise gr.Error(
-                    "The reference portrait hasn't been prepared yet 💥! Please scroll to the top of the page to upload.", 
+                    "The source portrait hasn't been prepared yet 💥! Please scroll to the top of the page to upload.",
                     duration=5
                 )
         else:
@@ -98,7 +98,7 @@ class GradioPipeline(LivePortraitPipeline):
             out_to_ori_blend = paste_back(out, self.crop_M_c2o, self.img_rgb, self.mask_ori)
             gr.Info("Run successfully!", duration=2)
             return out, out_to_ori_blend
-        
+
 
     def prepare_retargeting(self, input_image_path, flag_do_crop = True):
         """ for single image retargeting
@@ -107,7 +107,7 @@ class GradioPipeline(LivePortraitPipeline):
             gr.Info("Upload successfully!", duration=2)
             self.start_prepare = True
             inference_cfg = self.live_portrait_wrapper.cfg
-            ######## process reference portrait ########
+            ######## process source portrait ########
             img_rgb = load_img_online(input_image_path, mode='rgb', max_dim=1280, n=16)
             log(f"Load source image from {input_image_path}.")
             crop_info = self.cropper.crop_single_image(img_rgb)
@@ -125,7 +125,7 @@ class GradioPipeline(LivePortraitPipeline):
             self.x_s_info_user = x_s_info
             self.source_lmk_user = crop_info['lmk_crop']
             self.img_rgb = img_rgb
-            self.crop_M_c2o = crop_info['M_c2o'] 
+            self.crop_M_c2o = crop_info['M_c2o']
             self.mask_ori = prepare_paste_back(inference_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
             # update slider
             eye_close_ratio = calc_eye_close_ratio(self.source_lmk_user[None])

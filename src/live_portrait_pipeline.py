@@ -40,7 +40,7 @@ class LivePortraitPipeline(object):
 
     def execute(self, args: ArgumentConfig):
         inference_cfg = self.live_portrait_wrapper.cfg # for convenience
-        ######## process reference portrait ########
+        ######## process source portrait ########
         img_rgb = load_image_rgb(args.source_image)
         img_rgb = resize_to_limit(img_rgb, inference_cfg.ref_max_shape, inference_cfg.ref_shape_n)
         log(f"Load source image from {args.source_image}")
