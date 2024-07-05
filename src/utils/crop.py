@@ -4,14 +4,17 @@
 cropping function and the related preprocess functions for cropping
 """
 
-import cv2; cv2.setNumThreads(0); cv2.ocl.setUseOpenCL(False) # NOTE: enforce single thread
 import numpy as np
-from .rprint import rprint as print
+import os.path as osp
 from math import sin, cos, acos, degrees
+import cv2; cv2.setNumThreads(0); cv2.ocl.setUseOpenCL(False) # NOTE: enforce single thread
+from .rprint import rprint as print
 
 DTYPE = np.float32
 CV2_INTERP = cv2.INTER_LINEAR
 
+def make_abs_path(fn):
+    return osp.join(osp.dirname(osp.realpath(__file__)), fn)
 
 def _transform_img(img, M, dsize, flags=CV2_INTERP, borderMode=None):
     """ conduct similarity or affine transformation to the image, do not do border operation!
@@ -391,3 +394,19 @@ def average_bbox_lst(bbox_lst):
     bbox_arr = np.array(bbox_lst)
     return np.mean(bbox_arr, axis=0).tolist()
 
+def prepare_paste_back(mask_crop, crop_M_c2o, dsize):
+    """prepare mask for later image paste back
+    """
+    if mask_crop is None:
+        mask_crop = cv2.imread(make_abs_path('./resources/mask_template.png'), cv2.IMREAD_COLOR)
+    mask_ori = _transform_img(mask_crop, crop_M_c2o, dsize)
+    mask_ori = mask_ori.astype(np.float32) / 255.
+    return mask_ori
+
+def paste_back(image_to_processed, crop_M_c2o, rgb_ori, mask_ori):
+    """paste back the image
+    """
+    dsize = (rgb_ori.shape[1], rgb_ori.shape[0])
+    result = _transform_img(image_to_processed, crop_M_c2o, dsize=dsize)
+    result = np.clip(mask_ori * result + (1 - mask_ori) * rgb_ori, 0, 255).astype(np.uint8)
+    return result

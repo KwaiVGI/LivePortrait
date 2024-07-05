@@ -154,22 +154,3 @@ def load_description(fp):
         content = f.read()
     return content
 
-
-def resize_to_limit(img, max_dim=1280, n=2):
-    h, w = img.shape[:2]
-    if max_dim > 0 and max(h, w) > max_dim:
-        if h > w:
-            new_h = max_dim
-            new_w = int(w * (max_dim / h))
-        else:
-            new_w = max_dim
-            new_h = int(h * (max_dim / w))
-        img = cv2.resize(img, (new_w, new_h))
-    n = max(n, 1)
-    new_h = img.shape[0] - (img.shape[0] % n)
-    new_w = img.shape[1] - (img.shape[1] % n)
-    if new_h == 0 or new_w == 0:
-        return img
-    if new_h != img.shape[0] or new_w != img.shape[1]:
-        img = img[:new_h, :new_w]
-    return img

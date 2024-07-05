@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import gradio as gr
 import numpy as np
 import os.path as osp
 from typing import List, Union, Tuple
@@ -72,6 +73,7 @@ class Cropper(object):
 
         if len(src_face) == 0:
             log('No face detected in the source image.')
+            raise gr.Error("No face detected in the source image 💥!", duration=5)
             raise Exception("No face detected in the source image!")
         elif len(src_face) > 1:
             log(f'More than one face detected in the image, only pick one face by rule {direction}.')

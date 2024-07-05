@@ -12,7 +12,6 @@ import yaml
 
 from src.utils.timer import Timer
 from src.utils.helper import load_model, concat_feat
-from src.utils.retargeting_utils import compute_eye_delta, compute_lip_delta
 from src.utils.camera import headpose_pred_to_degree, get_rotation_matrix
 from .utils.retargeting_utils import calc_eye_close_ratio, calc_lip_close_ratio
 from src.config.inference_config import InferenceConfig
@@ -210,33 +209,6 @@ class LivePortraitWrapper(object):
             delta = self.stitching_retargeting_module['lip'](feat_lip)
 
         return delta
-
-    def retarget_keypoints(self, frame_idx, num_keypoints, input_eye_ratios, input_lip_ratios, source_landmarks, portrait_wrapper, kp_source, driving_transformed_kp):
-        # TODO: GPT style, refactor it...
-        if self.cfg.flag_eye_retargeting:
-            # ∆_eyes,i = R_eyes(x_s; c_s,eyes, c_d,eyes,i)
-            eye_delta = compute_eye_delta(frame_idx, input_eye_ratios, source_landmarks, portrait_wrapper, kp_source)
-        else:
-            # α_eyes = 0
-            eye_delta = None
-
-        if self.cfg.flag_lip_retargeting:
-            # ∆_lip,i = R_lip(x_s; c_s,lip, c_d,lip,i)
-            lip_delta = compute_lip_delta(frame_idx, input_lip_ratios, source_landmarks, portrait_wrapper, kp_source)
-        else:
-            # α_lip = 0
-            lip_delta = None
-
-        if self.cfg.flag_relative:  # use x_s
-            new_driving_kp = kp_source + \
-                (eye_delta.reshape(-1, num_keypoints, 3) if eye_delta is not None else 0) + \
-                (lip_delta.reshape(-1, num_keypoints, 3) if lip_delta is not None else 0)
-        else:  # use x_d,i
-            new_driving_kp = driving_transformed_kp + \
-                (eye_delta.reshape(-1, num_keypoints, 3) if eye_delta is not None else 0) + \
-                (lip_delta.reshape(-1, num_keypoints, 3) if lip_delta is not None else 0)
-
-        return new_driving_kp
 
     def stitch(self, kp_source: torch.Tensor, kp_driving: torch.Tensor) -> torch.Tensor:
         """
