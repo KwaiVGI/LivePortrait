@@ -29,6 +29,7 @@ class ArgumentConfig(PrintableConfig):
     flag_pasteback: bool = True  # whether to paste-back/stitch the animated face cropping from the face-cropping space to the original image space
     flag_do_crop: bool = True  # whether to crop the source portrait to the face-cropping space
     flag_do_rot: bool = True  # whether to conduct the rotation when flag_do_crop is True
+    flag_add_sound: bool = True  # whether to add sound when flag_add_sound is True
     #########################################
 
     ########## crop arguments ##########

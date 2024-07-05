@@ -19,7 +19,7 @@ from .config.inference_config import InferenceConfig
 from .config.crop_config import CropConfig
 from .utils.cropper import Cropper
 from .utils.camera import get_rotation_matrix
-from .utils.video import images2video, concat_frames
+from .utils.video import images2video, concat_frames, add_audio_to_video
 from .utils.crop import _transform_img, prepare_paste_back, paste_back
 from .utils.retargeting_utils import calc_lip_close_ratio
 from .utils.io import load_image_rgb, load_driving_info, resize_to_limit
@@ -179,6 +179,9 @@ class LivePortraitPipeline(object):
             # save (driving frames, source image, drived frames) result
             wfp_concat = osp.join(args.output_dir, f'{basename(args.source_image)}--{basename(args.driving_info)}_concat.mp4')
             images2video(frames_concatenated, wfp=wfp_concat)
+            if args.flag_add_sound:
+                wfp_concat_sound = osp.join(args.output_dir, f'{basename(args.source_image)}--{basename(args.driving_info)}_concat--sound.mp4')
+                add_audio_to_video(wfp_concat, args.driving_info, wfp_concat_sound)
 
         # save drived result
         wfp = osp.join(args.output_dir, f'{basename(args.source_image)}--{basename(args.driving_info)}.mp4')
@@ -186,5 +189,8 @@ class LivePortraitPipeline(object):
             images2video(I_p_paste_lst, wfp=wfp)
         else:
             images2video(I_p_lst, wfp=wfp)
+        if args.flag_add_sound:
+            wfp_sound = osp.join(args.output_dir, f'{basename(args.source_image)}--{basename(args.driving_info)}--sound.mp4')
+            add_audio_to_video(wfp, args.driving_info, wfp_sound)
 
         return wfp, wfp_concat

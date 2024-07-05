@@ -137,3 +137,22 @@ def get_fps(filepath):
     video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
     fps = eval(video_stream['avg_frame_rate'])
     return fps
+
+def add_audio_to_video(silent_video_path, input_audio_path, output_video_path):
+    command = [
+        'ffmpeg',
+        '-y',
+        '-i', silent_video_path,
+        '-i', input_audio_path,
+        '-map', '0:v',
+        '-map', '1:a',
+        '-c:v', 'copy',
+        '-shortest',
+        output_video_path
+    ]
+
+    try:
+        subprocess.run(command, check=True)
+        print(f"Video with audio generated successfully: {output_video_path}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred: {e}")
