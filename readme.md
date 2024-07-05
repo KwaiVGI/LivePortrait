@@ -102,7 +102,7 @@ python inference.py -h
 
 ### 4. Gradio interface
 
-We also provide a Gradio interface for a better experience. Please install `gradio` and then run `app.py`:
+We also provide a Gradio interface for a better experience, just run by:
 
 ```bash
 python app.py
