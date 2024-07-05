@@ -47,7 +47,7 @@ data_examples = [
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eye-close ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-close ratio")
 retargeting_input_image = gr.Image(type="numpy")
-output_image = gr.Image( type="numpy")
+output_image = gr.Image(type="numpy")
 output_image_paste_back = gr.Image(type="numpy")
 output_video = gr.Video()
 output_video_concat = gr.Video()
@@ -102,12 +102,12 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         process_button_retargeting = gr.Button("🚗 Retargeting", variant="primary")
         process_button_reset_retargeting = gr.ClearButton(
             [
-                eye_retargeting_slider, 
-                lip_retargeting_slider, 
+                eye_retargeting_slider,
+                lip_retargeting_slider,
                 retargeting_input_image,
-                output_image, 
+                output_image,
                 output_image_paste_back
-            ], 
+            ],
             value="🧹 Clear"
         )
     with gr.Row():
@@ -140,11 +140,11 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         show_progress=True
     )
     image_input.change(
-        fn=gradio_pipeline.prepare_retargeting, 
-        inputs=image_input, 
+        fn=gradio_pipeline.prepare_retargeting,
+        inputs=image_input,
         outputs=[eye_retargeting_slider, lip_retargeting_slider, retargeting_input_image]
     )
-    
+
 ##########################################################
 
 demo.launch(
