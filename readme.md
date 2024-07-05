@@ -105,7 +105,6 @@ python inference.py -h
 We also provide a Gradio interface for a better experience. Please install `gradio` and then run `app.py`:
 
 ```bash
-pip install gradio==4.37.1
 python app.py
 ```
 
