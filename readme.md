@@ -100,17 +100,14 @@ python inference.py -h
 
 **More interesting results can be found in our [Homepage](https://liveportrait.github.io)** 😊
 
-### 4. Gradio interface (WIP)
+### 4. Gradio interface
 
 We also provide a Gradio interface for a better experience. Please install `gradio` and then run `app.py`:
 
 ```bash
-pip install gradio==4.36.1
+pip install gradio==4.37.1
 python app.py
 ```
-
-***NOTE:*** *we are working on the Gradio interface and will be upgrading it soon.*
-
 
 ### 5. Inference speed evaluation 🚀🚀🚀
 We have also provided a script to evaluate the inference speed of each module:
