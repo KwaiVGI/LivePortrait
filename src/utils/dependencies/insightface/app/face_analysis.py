@@ -15,9 +15,11 @@ import onnxruntime
 from numpy.linalg import norm
 
 from ..model_zoo import model_zoo
-from ..utils import DEFAULT_MP_NAME, ensure_available
+from ..utils import ensure_available
 from .common import Face
 
+
+DEFAULT_MP_NAME = 'buffalo_l'
 __all__ = ['FaceAnalysis']
 
 class FaceAnalysis:
