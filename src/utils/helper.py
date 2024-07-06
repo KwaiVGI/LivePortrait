@@ -37,6 +37,11 @@ def basename(filename):
     return prefix(osp.basename(filename))
 
 
+def remove_suffix(filepath):
+    """a/b/c.jpg -> a/b/c"""
+    return osp.join(osp.dirname(filepath), basename(filepath))
+
+
 def is_video(file_path):
     if file_path.lower().endswith((".mp4", ".mov", ".avi", ".webm")) or osp.isdir(file_path):
         return True
@@ -132,20 +137,6 @@ def load_model(ckpt_path, model_config, device, model_type):
     model.load_state_dict(torch.load(ckpt_path, map_location=lambda storage, loc: storage))
     model.eval()
     return model
-
-
-# get coefficients of Eqn. 7
-def calculate_transformation(config, s_kp_info, t_0_kp_info, t_i_kp_info, R_s, R_t_0, R_t_i):
-    if config.relative:
-        new_rotation = (R_t_i @ R_t_0.permute(0, 2, 1)) @ R_s
-        new_expression = s_kp_info['exp'] + (t_i_kp_info['exp'] - t_0_kp_info['exp'])
-    else:
-        new_rotation = R_t_i
-        new_expression = t_i_kp_info['exp']
-    new_translation = s_kp_info['t'] + (t_i_kp_info['t'] - t_0_kp_info['t'])
-    new_translation[..., 2].fill_(0)  # Keep the z-axis unchanged
-    new_scale = s_kp_info['scale'] * (t_i_kp_info['scale'] / t_0_kp_info['scale'])
-    return new_rotation, new_expression, new_translation, new_scale
 
 
 def load_description(fp):

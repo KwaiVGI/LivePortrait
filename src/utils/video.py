@@ -9,10 +9,12 @@ import numpy as np
 import subprocess
 import imageio
 import cv2
+import ffmpeg
 
 from rich.progress import track
 from .helper import prefix
 from .rprint import rprint as print
+from .rprint import rlog as log
 
 
 def exec_cmd(cmd):
@@ -35,16 +37,13 @@ def images2video(images, wfp, **kwargs):
     )
 
     n = len(images)
-    for i in track(range(n), description='writing', transient=True):
+    for i in track(range(n), description='Writing', transient=True):
         if image_mode.lower() == 'bgr':
             writer.append_data(images[i][..., ::-1])
         else:
             writer.append_data(images[i])
 
     writer.close()
-
-    # print(f':smiley: Dump to {wfp}\n', style="bold green")
-    print(f'Dump to {wfp}\n')
 
 
 def video2gif(video_fp, fps=30, size=256):
@@ -80,21 +79,23 @@ def blend(img: np.ndarray, mask: np.ndarray, background_color=(255, 255, 255)):
     return img
 
 
-def concat_frames(I_p_lst, driving_rgb_lst, img_rgb):
+def concat_frames(driving_image_lst, source_image, I_p_lst):
     # TODO: add more concat style, e.g., left-down corner driving
     out_lst = []
+    h, w, _ = I_p_lst[0].shape
+
     for idx, _ in track(enumerate(I_p_lst), total=len(I_p_lst), description='Concatenating result...'):
-        source_image_drived = I_p_lst[idx]
-        image_drive = driving_rgb_lst[idx]
+        I_p = I_p_lst[idx]
+        source_image_resized = cv2.resize(source_image, (w, h))
 
-        # resize images to match source_image_drived shape
-        h, w, _ = source_image_drived.shape
-        image_drive_resized = cv2.resize(image_drive, (w, h))
-        img_rgb_resized = cv2.resize(img_rgb, (w, h))
+        if driving_image_lst is None:
+            out = np.hstack((source_image_resized, I_p))
+        else:
+            driving_image = driving_image_lst[idx]
+            driving_image_resized = cv2.resize(driving_image, (w, h))
+            out = np.hstack((driving_image_resized, source_image_resized, I_p))
 
-        # concatenate images horizontally
-        frame = np.concatenate((image_drive_resized, img_rgb_resized, source_image_drived), axis=1)
-        out_lst.append(frame)
+        out_lst.append(out)
     return out_lst
 
 
@@ -131,9 +132,76 @@ def change_video_fps(input_file, output_file, fps=20, codec='libx264', crf=5):
     exec_cmd(cmd)
 
 
-def get_fps(filepath):
-    import ffmpeg
-    probe = ffmpeg.probe(filepath)
-    video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
-    fps = eval(video_stream['avg_frame_rate'])
+def get_fps(filepath, default_fps=25):
+    try:
+        probe = ffmpeg.probe(filepath)
+        video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
+        fps = eval(video_stream['avg_frame_rate'])
+
+        if fps in (0, None):
+            fps = default_fps
+    except Exception as e:
+        print(e)
+        fps = default_fps
+
     return fps
+
+
+def has_audio_stream(video_path: str) -> bool:
+    """
+    Check if the video file contains an audio stream.
+
+    :param video_path: Path to the video file
+    :return: True if the video contains an audio stream, False otherwise
+    """
+    if osp.isdir(video_path):
+        return False
+
+    cmd = [
+        'ffprobe',
+        '-v', 'error',
+        '-select_streams', 'a',
+        '-show_entries', 'stream=codec_type',
+        '-of', 'default=noprint_wrappers=1:nokey=1',
+        video_path
+    ]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        log(f"Error occurred while probing video: {result.stderr}")
+        return False
+
+    # Check if there is any output from ffprobe command
+    return bool(result.stdout.strip())
+
+
+def add_audio_to_video(silent_video_path: str, audio_video_path: str, output_video_path: str):
+    cmd = [
+        'ffmpeg',
+        '-y',
+        '-i', silent_video_path,
+        '-i', audio_video_path,
+        '-map', '0:v',
+        '-map', '1:a',
+        '-c:v', 'copy',
+        '-shortest',
+        output_video_path
+    ]
+
+    try:
+        exec_cmd(' '.join(cmd))
+        log(f"Video with audio generated successfully: {output_video_path}")
+    except subprocess.CalledProcessError as e:
+        log(f"Error occurred: {e}")
+
+
+def bb_intersection_over_union(boxA, boxB):
+    xA = max(boxA[0], boxB[0])
+    yA = max(boxA[1], boxB[1])
+    xB = min(boxA[2], boxB[2])
+    yB = min(boxA[3], boxB[3])
+    interArea = max(0, xB - xA + 1) * max(0, yB - yA + 1)
+    boxAArea = (boxA[2] - boxA[0] + 1) * (boxA[3] - boxA[1] + 1)
+    boxBArea = (boxB[2] - boxB[0] + 1) * (boxB[3] - boxB[1] + 1)
+    iou = interArea / float(boxAArea + boxBArea - interArea)
+    return iou

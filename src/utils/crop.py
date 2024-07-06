@@ -281,11 +281,10 @@ def crop_image_by_bbox(img, bbox, lmk=None, dsize=512, angle=None, flag_rot=Fals
             dtype=DTYPE
         )
 
-    if flag_rot and angle is None:
-        print('angle is None, but flag_rotate is True', style="bold yellow")
+    # if flag_rot and angle is None:
+        # print('angle is None, but flag_rotate is True', style="bold yellow")
 
     img_crop = _transform_img(img, M_o2c, dsize=dsize, borderMode=kwargs.get('borderMode', None))
-
     lmk_crop = _transform_pts(lmk, M_o2c) if lmk is not None else None
 
     M_o2c = np.vstack([M_o2c, np.array([0, 0, 1], dtype=DTYPE)])
@@ -397,16 +396,14 @@ def average_bbox_lst(bbox_lst):
 def prepare_paste_back(mask_crop, crop_M_c2o, dsize):
     """prepare mask for later image paste back
     """
-    if mask_crop is None:
-        mask_crop = cv2.imread(make_abs_path('./resources/mask_template.png'), cv2.IMREAD_COLOR)
     mask_ori = _transform_img(mask_crop, crop_M_c2o, dsize)
     mask_ori = mask_ori.astype(np.float32) / 255.
     return mask_ori
 
-def paste_back(image_to_processed, crop_M_c2o, rgb_ori, mask_ori):
+def paste_back(img_crop, M_c2o, img_ori, mask_ori):
     """paste back the image
     """
-    dsize = (rgb_ori.shape[1], rgb_ori.shape[0])
-    result = _transform_img(image_to_processed, crop_M_c2o, dsize=dsize)
-    result = np.clip(mask_ori * result + (1 - mask_ori) * rgb_ori, 0, 255).astype(np.uint8)
+    dsize = (img_ori.shape[1], img_ori.shape[0])
+    result = _transform_img(img_crop, M_c2o, dsize=dsize)
+    result = np.clip(mask_ori * result + (1 - mask_ori) * img_ori, 0, 255).astype(np.uint8)
     return result

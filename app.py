@@ -140,7 +140,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         show_progress=True
     )
     image_input.change(
-        fn=gradio_pipeline.prepare_retargeting,
+        fn=gradio_pipeline.setup,
         inputs=image_input,
         outputs=[eye_retargeting_slider, lip_retargeting_slider, retargeting_input_image]
     )

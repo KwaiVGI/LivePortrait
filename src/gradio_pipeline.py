@@ -6,7 +6,7 @@ Pipeline for gradio
 import gradio as gr
 from .config.argument_config import ArgumentConfig
 from .live_portrait_pipeline import LivePortraitPipeline
-from .utils.io import load_img_online
+from .utils.io import load_image_rgb, resize_to_limit
 from .utils.rprint import rlog as log
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.camera import get_rotation_matrix
@@ -100,17 +100,21 @@ class GradioPipeline(LivePortraitPipeline):
             return out, out_to_ori_blend
 
 
-    def prepare_retargeting(self, input_image_path, flag_do_crop = True):
+    def setup(self, input_image_path, flag_do_crop = True):
         """ for single image retargeting
         """
         if input_image_path is not None:
             gr.Info("Upload successfully!", duration=2)
             self.start_prepare = True
-            inference_cfg = self.live_portrait_wrapper.cfg
+            inference_cfg = self.live_portrait_wrapper.inference_cfg
             ######## process source portrait ########
-            img_rgb = load_img_online(input_image_path, mode='rgb', max_dim=1280, n=16)
+            img_rgb = load_image_rgb(input_image_path)
+            img_rgb = resize_to_limit(img_rgb, inference_cfg.source_max_dim, inference_cfg.source_division)
             log(f"Load source image from {input_image_path}.")
-            crop_info = self.cropper.crop_single_image(img_rgb)
+
+            crop_info = self.cropper.crop_source_image(img_rgb)
+            if crop_info is None:
+                raise gr.Error("No face detected in the source image 💥!", duration=5)
             if flag_do_crop:
                 I_s = self.live_portrait_wrapper.prepare_source(crop_info['img_crop_256x256'])
             else:
