@@ -1,9 +1,10 @@
-from cog import BasePredictor, Input, Path
+from cog import BasePredictor, Input, Path, File
 
 from src.config.argument_config import ArgumentConfig
 from src.config.inference_config import InferenceConfig
 from src.config.crop_config import CropConfig
 from src.live_portrait_pipeline import LivePortraitPipeline
+import requests
 
 
 class Predictor(BasePredictor):
@@ -16,14 +17,18 @@ class Predictor(BasePredictor):
 
     def predict(
         self,
-        image: Path = Input(description="Portrait image"),
-        driving_info: Path = Input(
-            description="driving video or template (.pkl format)"
-        ),
+        image: Path = Input(description="Portrait image")
     ) -> Path:
         """Run a single prediction on the model"""
+
         video_path, _ = self.live_portrait_pipeline.execute(
-            ArgumentConfig(source_image=image, driving_info=driving_info, output_dir="/tmp/")
+            ArgumentConfig(
+                source_image=image,
+                driving_info="assets/examples/driving/d0.mp4",
+                output_dir="/tmp/",
+                flag_pasteback=False,
+                flag_do_crop=False,
+            )
         )
 
         return Path(video_path)

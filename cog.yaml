@@ -29,4 +29,5 @@ build:
     - "matplotlib==3.9.0"
     - "imageio-ffmpeg==0.5.1"
     - "tyro==0.8.5"
+    - "gradio==3.48.0"
 predict: "predict.py:Predictor"
