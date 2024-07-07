@@ -93,7 +93,7 @@ class Cropper(object):
 
         # update a 256x256 version for network input
         ret_dct['img_crop_256x256'] = cv2.resize(ret_dct['img_crop'], (256, 256), interpolation=cv2.INTER_AREA)
-        ret_dct['pt_crop_256x256'] = ret_dct['pt_crop'] * 256 / crop_cfg.dsize
+        ret_dct['lmk_crop_256x256'] = ret_dct['lmk_crop'] * 256 / crop_cfg.dsize
 
         return ret_dct
 

@@ -58,15 +58,19 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     with gr.Row():
         with gr.Accordion(open=True, label="Source Portrait"):
             image_input = gr.Image(type="filepath")
-        with gr.Accordion(open=True, label="Driving Video"):
-            video_input = gr.Video()
+        with gr.Column():
+            with gr.Accordion(open=True, label="Driving Video"):
+                video_input = gr.Video()
+            flag_crop_driving_video = gr.Checkbox(value=False, label="flag_crop_driving_video")
+
     gr.Markdown(load_description("assets/gradio_description_animation.md"))
     with gr.Row():
         with gr.Accordion(open=True, label="Animation Options"):
             with gr.Row():
-                flag_relative_input = gr.Checkbox(value=True, label="relative motion")
-                flag_do_crop_input = gr.Checkbox(value=True, label="do crop")
-                flag_remap_input = gr.Checkbox(value=True, label="paste-back")
+                flag_do_crop = gr.Checkbox(value=True, label="Enable cropping source portrait")
+                flag_relative_motion = gr.Checkbox(value=True, label="Use relative motion")
+                flag_pasteback = gr.Checkbox(value=True, label="Pasting back")
+                flag_stitching = gr.Checkbox(value=True, label="Stitching")
     with gr.Row():
         with gr.Column():
             process_button_animation = gr.Button("🚀 Animate", variant="primary")
@@ -88,9 +92,9 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
             inputs=[
                 image_input,
                 video_input,
-                flag_relative_input,
-                flag_do_crop_input,
-                flag_remap_input
+                flag_do_crop,
+                flag_relative_motion,
+                flag_pasteback
             ],
             examples_per_page=5
         )
@@ -132,9 +136,9 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         inputs=[
             image_input,
             video_input,
-            flag_relative_input,
-            flag_do_crop_input,
-            flag_remap_input
+            flag_relative_motion,
+            flag_do_crop,
+            flag_pasteback
         ],
         outputs=[output_video, output_video_concat],
         show_progress=True

@@ -106,13 +106,14 @@ class GradioPipeline(LivePortraitPipeline):
         if input_image_path is not None:
             gr.Info("Upload successfully!", duration=2)
             self.start_prepare = True
-            inference_cfg = self.live_portrait_wrapper.inference_cfg
+            inf_cfg = self.live_portrait_wrapper.inference_cfg
+            crop_cfg = self.cropper.crop_cfg
             ######## process source portrait ########
             img_rgb = load_image_rgb(input_image_path)
-            img_rgb = resize_to_limit(img_rgb, inference_cfg.source_max_dim, inference_cfg.source_division)
+            img_rgb = resize_to_limit(img_rgb, inf_cfg.source_max_dim, inf_cfg.source_division)
             log(f"Load source image from {input_image_path}.")
 
-            crop_info = self.cropper.crop_source_image(img_rgb)
+            crop_info = self.cropper.crop_source_image(img_rgb, crop_cfg)
             if crop_info is None:
                 raise gr.Error("No face detected in the source image 💥!", duration=5)
             if flag_do_crop:
@@ -130,7 +131,7 @@ class GradioPipeline(LivePortraitPipeline):
             self.source_lmk_user = crop_info['lmk_crop']
             self.img_rgb = img_rgb
             self.crop_M_c2o = crop_info['M_c2o']
-            self.mask_ori = prepare_paste_back(inference_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
+            self.mask_ori = prepare_paste_back(inf_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
             # update slider
             eye_close_ratio = calc_eye_close_ratio(self.source_lmk_user[None])
             eye_close_ratio = float(eye_close_ratio.squeeze(0).mean())

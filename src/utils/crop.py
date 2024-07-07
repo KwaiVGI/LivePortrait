@@ -361,17 +361,6 @@ def crop_image(img, pts: np.ndarray, **kwargs):
         flag_do_rot=kwargs.get('flag_do_rot', True),
     )
 
-    if img is None:
-        M_INV_H = np.vstack([M_INV, np.array([0, 0, 1], dtype=DTYPE)])
-        M = np.linalg.inv(M_INV_H)
-        ret_dct = {
-            'M': M[:2, ...],  # from the original image to the cropped image
-            'M_o2c': M[:2, ...],  # from the cropped image to the original image
-            'img_crop': None,
-            'pt_crop': None,
-        }
-        return ret_dct
-
     img_crop = _transform_img(img, M_INV, dsize)  # origin to crop
     pt_crop = _transform_pts(pts, M_INV)
 
