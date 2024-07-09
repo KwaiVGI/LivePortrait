@@ -20,7 +20,8 @@ class ArgumentConfig(PrintableConfig):
     ########## inference arguments ##########
     flag_use_half_precision: bool = True  # whether to use half precision (FP16). If black boxes appear, it might be due to GPU incompatibility; set to False.
     flag_crop_driving_video: bool = False  # whether to crop the driving video, if the given driving info is a video
-    device_id: int = 0 # GPU device
+    device_id: int = 0 # gpu device id
+    flag_force_cpu: bool = False # force cpu inference, WIP
     flag_lip_zero : bool = True # whether let the lip to close state before animation, only take effect when flag_eye_retargeting and flag_lip_retargeting is False
     flag_eye_retargeting: bool = False # not recommend to be True, WIP
     flag_lip_retargeting: bool = False # not recommend to be True, WIP

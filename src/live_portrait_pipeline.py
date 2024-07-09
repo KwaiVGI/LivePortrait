@@ -18,7 +18,7 @@ from .utils.camera import get_rotation_matrix
 from .utils.video import images2video, concat_frames, get_fps, add_audio_to_video, has_audio_stream
 from .utils.crop import _transform_img, prepare_paste_back, paste_back
 from .utils.io import load_image_rgb, load_driving_info, resize_to_limit, dump, load
-from .utils.helper import mkdir, basename, dct2cuda, is_video, is_template, remove_suffix
+from .utils.helper import mkdir, basename, dct2device, is_video, is_template, remove_suffix
 from .utils.rprint import rlog as log
 # from .utils.viz import viz_lmk
 from .live_portrait_wrapper import LivePortraitWrapper
@@ -37,6 +37,7 @@ class LivePortraitPipeline(object):
     def execute(self, args: ArgumentConfig):
         # for convenience
         inf_cfg = self.live_portrait_wrapper.inference_cfg
+        device =  self.live_portrait_wrapper.device
         crop_cfg = self.cropper.crop_cfg
 
         ######## process source portrait ########
@@ -137,7 +138,7 @@ class LivePortraitPipeline(object):
 
         for i in track(range(n_frames), description='Animating...', total=n_frames):
             x_d_i_info = template_dct['motion'][i]
-            x_d_i_info = dct2cuda(x_d_i_info, inf_cfg.device_id)
+            x_d_i_info = dct2device(x_d_i_info, device)
             R_d_i = x_d_i_info['R_d']
 
             if i == 0:

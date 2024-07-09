@@ -34,6 +34,7 @@ class InferenceConfig(PrintableConfig):
     flag_pasteback: bool = True
     flag_do_crop: bool = True
     flag_do_rot: bool = True
+    flag_force_cpu: bool = False 
 
     # NOT EXPOERTED PARAMS
     lip_zero_threshold: float = 0.03 # threshold for flag_lip_zero

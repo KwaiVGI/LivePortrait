@@ -4,7 +4,7 @@
     <a href='https://github.com/cleardusk' target='_blank'><strong>Jianzhu Guo</strong></a><sup> 1†</sup>&emsp;
     <a href='https://github.com/KwaiVGI' target='_blank'><strong>Dingyun Zhang</strong></a><sup> 1,2</sup>&emsp;
     <a href='https://github.com/KwaiVGI' target='_blank'><strong>Xiaoqiang Liu</strong></a><sup> 1</sup>&emsp;
-    <a href='https://github.com/KwaiVGI' target='_blank'><strong>Zhizhou Zhong</strong></a><sup> 1,3</sup>&emsp;
+    <a href='https://scholar.google.com/citations?user=t88nyvsAAAAJ&hl' target='_blank'><strong>Zhizhou Zhong</strong></a><sup> 1,3</sup>&emsp;
     <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'><strong>Yuan Zhang</strong></a><sup> 1</sup>&emsp;
 </div>
 
@@ -35,8 +35,14 @@
 
 
 ## 🔥 Updates
-- **`2024/07/04`**: 🔥 We released the initial version of the inference code and models. Continuous updates, stay tuned!
-- **`2024/07/04`**: 😊 We released the [homepage](https://liveportrait.github.io) and technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
+- **`2024/07/04`**: 😊 We released the initial version of the inference code and models. Continuous updates, stay tuned!
+- **`2024/07/04`**: 🔥 We released the [homepage](https://liveportrait.github.io) and technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
+- **`2024/07/09`**: 😊 We released the [HuggingFace demo](https://huggingface.co/spaces/KwaiVGI/liveportrait). Welcome to experience!
+- **`2024/07/09`**: 🔥 We update new features: 
+  - ✅ Generate video with sound and aligned fps
+  - ✅ Support automatic cropping for driving video
+  - ✅ Support driving video template input(.pkl)
+
 
 ## Introduction
 This repo, named **LivePortrait**, contains the official PyTorch implementation of our paper [LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control](https://arxiv.org/pdf/2407.03168).
@@ -78,10 +84,10 @@ pretrained_weights
 ### 3. Inference 🚀
 
 ```bash
-python inference.py
+python inference.py 
 ```
 
-If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image, and generated result.
+If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image, and generated result. 
 
 <p align="center">
   <img src="./assets/docs/inference.gif" alt="image">
@@ -92,11 +98,26 @@ Or, you can change the input by specifying the `-s` and `-d` arguments:
 ```bash
 python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d0.mp4
 
-# or disable pasting back
+# disable pasting back to run faster
 python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d0.mp4 --no_flag_pasteback
 
 # more options to see
 python inference.py -h
+```
+
+🔥 To use your own driving video, we recommend:
+ - Crop it to a 1:1 aspect ratio (e.g., 512x512 or 256x256 pixels).
+ - Focus on the head area, similar to the example videos.
+ - Minimize shoulder movement.
+ - Make sure the first frame of driving video is a frontal face with neutral expression.
+
+You can use video editing tools for better preprocessing. We also provide you the automatic cropping method:
+```bash
+# apply automatic cropping
+python inference.py -s path/to/your/image -d path/to/your/video --flag_crop_driving_video
+
+# after cropping, you can accelerate generation with video template(.pkl)
+python inference.py -s path/to/your/image -d path/to/your/template 
 ```
 
 **More interesting results can be found in our [Homepage](https://liveportrait.github.io)** 😊
