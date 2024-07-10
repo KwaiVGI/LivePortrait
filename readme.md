@@ -63,6 +63,7 @@ pip install -r requirements.txt
 
 Download the pretrained weights from HuggingFace:
 ```bash
+# you may need to run `git lfs install` first
 git clone https://huggingface.co/KwaiVGI/liveportrait pretrained_weights
 ```
 
