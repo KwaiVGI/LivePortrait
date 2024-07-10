@@ -13,9 +13,6 @@ from src.config.crop_config import CropConfig
 from src.config.argument_config import ArgumentConfig
 from src.config.inference_config import InferenceConfig
 
-# import gdown
-# folder_url = f"https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib"
-# gdown.download_folder(url=folder_url, output="pretrained_weights", quiet=False)
 
 def partial_fields(target_class, kwargs):
     return target_class(**{k: v for k, v in kwargs.items() if hasattr(target_class, k)})
@@ -47,9 +44,10 @@ example_video_dir = "assets/examples/driving"
 data_examples = [
     [osp.join(example_portrait_dir, "s9.jpg"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False],
     [osp.join(example_portrait_dir, "s6.jpg"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False],
-    [osp.join(example_portrait_dir, "s10.jpg"), osp.join(example_video_dir, "d5.mp4"), True, True, True, False],
-    [osp.join(example_portrait_dir, "s5.jpg"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False],
-    [osp.join(example_portrait_dir, "s7.jpg"), osp.join(example_video_dir, "d7.mp4"), True, True, True, False],
+    [osp.join(example_portrait_dir, "s10.jpg"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False],
+    [osp.join(example_portrait_dir, "s5.jpg"), osp.join(example_video_dir, "d18.mp4"), True, True, True, False],
+    [osp.join(example_portrait_dir, "s7.jpg"), osp.join(example_video_dir, "d19.mp4"), True, True, True, False],
+    [osp.join(example_portrait_dir, "s2.jpg"), osp.join(example_video_dir, "d13.mp4"), True, True, True, True],
 ]
 #################### interface logic ####################
 
@@ -84,23 +82,23 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
             video_input = gr.Video()
             gr.Examples(
                 examples=[
-                    [osp.join(example_video_dir, "d14.mp4")],
                     [osp.join(example_video_dir, "d0.mp4")],
-                    [osp.join(example_video_dir, "d5.mp4")],
+                    [osp.join(example_video_dir, "d18.mp4")],
+                    [osp.join(example_video_dir, "d19.mp4")],
+                    [osp.join(example_video_dir, "d14.mp4")],
                     [osp.join(example_video_dir, "d6.mp4")],
-                    [osp.join(example_video_dir, "d7.mp4")],
                 ],
                 inputs=[video_input],
                 cache_examples=False,
             )
     with gr.Row():
-        with gr.Accordion(open=True, label="Animation Instructions and Options"):
+        with gr.Accordion(open=False, label="Animation Instructions and Options"):
             gr.Markdown(load_description("assets/gradio_description_animation.md"))
             with gr.Row():
                 flag_relative_input = gr.Checkbox(value=True, label="relative motion")
                 flag_do_crop_input = gr.Checkbox(value=True, label="do crop (source)")
                 flag_remap_input = gr.Checkbox(value=True, label="paste-back")
-                flag_crop_driving_video_input = gr.Checkbox(value=False, label="do crop (video)")
+                flag_crop_driving_video_input = gr.Checkbox(value=False, label="do crop (driving video)")
     with gr.Row():
         with gr.Column():
             process_button_animation = gr.Button("🚀 Animate", variant="primary")
@@ -129,7 +127,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                 flag_crop_driving_video_input
             ],
             outputs=[output_image, output_image_paste_back],
-            examples_per_page=5,
+            examples_per_page=len(data_examples),
             cache_examples=False,
         )
     gr.Markdown(load_description("assets/gradio_description_retargeting.md"), visible=True)

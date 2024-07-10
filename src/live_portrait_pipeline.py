@@ -4,6 +4,9 @@
 Pipeline of LivePortrait
 """
 
+import torch
+torch.backends.cudnn.benchmark = True # disable CUDNN_BACKEND_EXECUTION_PLAN_DESCRIPTOR warning
+
 import cv2; cv2.setNumThreads(0); cv2.ocl.setUseOpenCL(False)
 import numpy as np
 import os
@@ -76,15 +79,20 @@ class LivePortraitPipeline(object):
         ######## process driving info ########
         flag_load_from_template = is_template(args.driving_info)
         driving_rgb_crop_256x256_lst = None
+        wfp_template = None
 
         if flag_load_from_template:
             # NOTE: load from template, it is fast, but the cropping video is None
-            log(f"Load from template: {args.driving_info}, NOT the video, so the cropping video and audio are both None.")
+            log(f"Load from template: {args.driving_info}, NOT the video, so the cropping video and audio are both NULL.", style='bold green')
             template_dct = load(args.driving_info)
             n_frames = template_dct['n_frames']
 
             # set output_fps
             output_fps = template_dct.get('output_fps', inf_cfg.output_fps)
+            log(f'The FPS of template: {output_fps}')
+
+            if args.flag_crop_driving_video:
+                log("Warning: flag_crop_driving_video is True, but the driving info is a template, so it is ignored.")
 
         elif osp.exists(args.driving_info) and is_video(args.driving_info):
             # load from video file, AND make motion template
@@ -101,13 +109,11 @@ class LivePortraitPipeline(object):
             ######## make motion template ########
             log("Start making motion template...")
             if inf_cfg.flag_crop_driving_video:
-                # crop video
                 ret = self.cropper.crop_driving_video(driving_rgb_lst)
                 log(f'Driving video is cropped, {len(ret["frame_crop_lst"])} frames are processed.')
                 driving_rgb_crop_lst, driving_lmk_crop_lst = ret['frame_crop_lst'], ret['lmk_crop_lst']
                 driving_rgb_crop_256x256_lst = [cv2.resize(_, (256, 256)) for _ in driving_rgb_crop_lst]
             else:
-                # not crop video
                 driving_lmk_crop_lst = self.cropper.calc_lmks_from_cropped_video(driving_rgb_lst)
                 driving_rgb_crop_256x256_lst = [cv2.resize(_, (256, 256)) for _ in driving_rgb_lst]  # force to resize to 256x256
 
@@ -116,9 +122,9 @@ class LivePortraitPipeline(object):
             I_d_lst = self.live_portrait_wrapper.prepare_driving_videos(driving_rgb_crop_256x256_lst)
             template_dct = self.make_motion_template(I_d_lst, c_d_eyes_lst, c_d_lip_lst, output_fps=output_fps)
 
-            template_path = remove_suffix(args.driving_info) + '.pkl'
-            dump(template_path, template_dct)
-            log(f"Save motion template to {template_path}")
+            wfp_template = remove_suffix(args.driving_info) + '.pkl'
+            dump(wfp_template, template_dct)
+            log(f"Dump motion template to {wfp_template}")
 
             n_frames = I_d_lst.shape[0]
         else:
@@ -130,13 +136,13 @@ class LivePortraitPipeline(object):
         if inf_cfg.flag_pasteback and inf_cfg.flag_do_crop and inf_cfg.flag_stitching:
             mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
             I_p_pstbk_lst = []
-            log("Prepared for pasteback")
+            log("Prepared pasteback mask done.")
         #########################################
 
         I_p_lst = []
         R_d_0, x_d_0_info = None, None
 
-        for i in track(range(n_frames), description='Animating...', total=n_frames):
+        for i in track(range(n_frames), description='🚀Animating...', total=n_frames):
             x_d_i_info = template_dct['motion'][i]
             x_d_i_info = dct2device(x_d_i_info, device)
             R_d_i = x_d_i_info['R_d']
@@ -237,8 +243,11 @@ class LivePortraitPipeline(object):
             os.replace(wfp_with_audio, wfp)
             log(f"Replace {wfp} with {wfp_with_audio}")
 
-        log(f'Final result: {wfp}')
-        log(f'Final result with concact: {wfp_concat}')
+        # final log
+        if wfp_template not in (None, ''):
+            log(f'Animated template: {wfp_template}, you can specify `-d` argument with this template path next time to avoid cropping video, motion making and protecting privacy.', style='bold green')
+        log(f'Animated video: {wfp}')
+        log(f'Animated video with concact: {wfp_concat}')
 
         return wfp, wfp_concat
 
@@ -252,7 +261,7 @@ class LivePortraitPipeline(object):
             'c_d_lip_lst': [],
         }
 
-        for i in track(range(n_frames), description='Making templates...', total=n_frames):
+        for i in track(range(n_frames), description='Making motion templates...', total=n_frames):
             # collect s_d, R_d, δ_d and t_d for inference
             I_d_i = I_d_lst[i]
             x_d_i_info = self.live_portrait_wrapper.get_kp_info(I_d_i)

@@ -35,13 +35,11 @@
 
 
 ## 🔥 Updates
+- **`2024/07/10`**: 💪 We support audio+video concacting, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
+- **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
 - **`2024/07/04`**: 😊 We released the initial version of the inference code and models. Continuous updates, stay tuned!
 - **`2024/07/04`**: 🔥 We released the [homepage](https://liveportrait.github.io) and technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
-- **`2024/07/09`**: 😊 We released the [HuggingFace demo](https://huggingface.co/spaces/KwaiVGI/liveportrait). Welcome to experience!
-- **`2024/07/09`**: 🔥 We update new features: 
-  - ✅ Generate video with sound and aligned fps
-  - ✅ Support automatic cropping for driving video
-  - ✅ Support driving video template input(.pkl)
+
 
 
 ## Introduction
@@ -62,7 +60,13 @@ pip install -r requirements.txt
 ```
 
 ### 2. Download pretrained weights
-Download our pretrained LivePortrait weights and face detection models of InsightFace from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). We have packed all weights in one directory 😊. Unzip and place them in `./pretrained_weights` ensuring the directory structure is as follows:
+
+Download the pretrained weights from HuggingFace:
+```bash
+git clone https://huggingface.co/KwaiVGI/liveportrait pretrained_weights
+```
+
+Or, download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). We have packed all weights in one directory 😊. Unzip and place them in `./pretrained_weights` ensuring the directory structure is as follows:
 ```text
 pretrained_weights
 ├── insightface
@@ -83,11 +87,12 @@ pretrained_weights
 
 ### 3. Inference 🚀
 
+
 ```bash
-python inference.py 
+python inference.py
 ```
 
-If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image, and generated result. 
+If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image, and generated result.
 
 <p align="center">
   <img src="./assets/docs/inference.gif" alt="image">
@@ -105,30 +110,37 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 python inference.py -h
 ```
 
-🔥 To use your own driving video, we recommend:
- - Crop it to a 1:1 aspect ratio (e.g., 512x512 or 256x256 pixels).
+📕 To use your own driving video, we **recommend**:
+ - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or enable auto-cropping by `--flag_crop_driving_video`.
  - Focus on the head area, similar to the example videos.
  - Minimize shoulder movement.
- - Make sure the first frame of driving video is a frontal face with neutral expression.
+ - Make sure the first frame of driving video is a frontal face with **neutral expression**.
 
-You can use video editing tools for better preprocessing. We also provide you the automatic cropping method:
+Below is a auto-cropping case by `by --flag_crop_driving_video`:
 ```bash
-# apply automatic cropping
-python inference.py -s path/to/your/image -d path/to/your/video --flag_crop_driving_video
-
-# after cropping, you can accelerate generation with video template(.pkl)
-python inference.py -s path/to/your/image -d path/to/your/template 
+python inference.py -s assets/examples/source/s9.jpg assets/examples/driving/d13.mp4 --flag_crop_driving_video
 ```
 
-**More interesting results can be found in our [Homepage](https://liveportrait.github.io)** 😊
+If you find the results of auto-cropping is not well, you can modify the `--scale_crop_video`, `--vy_ratio_crop_video` options to adjust the scale and offset, or do it manually.
 
-### 4. Gradio interface
+You can also use the `.pkl` file auto-generated to speed up the inference, and **protect privacy**, such as:
+```bash
+python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d5.pkl
+```
+
+**Just try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
+
+**Discover more interesting results on our [Homepage](https://liveportrait.github.io)** 😊
+
+### 4. Gradio interface 🤗
 
 We also provide a Gradio interface for a better experience, just run by:
 
 ```bash
 python app.py
 ```
+
+You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
 
 ### 5. Inference speed evaluation 🚀🚀🚀
 We have also provided a script to evaluate the inference speed of each module:
@@ -147,7 +159,7 @@ Below are the results of inferring one frame on an RTX 4090 GPU using the native
 | Warping Module                    |     45.53     |       174      |     5.21      |
 | Stitching and Retargeting Modules|     0.23      |       2.3      |     0.31      |
 
-*Note: the listed values of Stitching and Retargeting Modules represent the combined parameter counts and the total sequential inference time of three MLP networks.*
+*Note: The values for the Stitching and Retargeting Modules represent the combined parameter counts and total inference time of three sequential MLP networks.*
 
 
 ## Acknowledgements
@@ -156,10 +168,10 @@ We would like to thank the contributors of [FOMM](https://github.com/AliaksandrS
 ## Citation 💖
 If you find LivePortrait useful for your research, welcome to 🌟 this repo and cite our work using the following BibTeX:
 ```bibtex
-@article{guo2024live,
+@article{guo2024liveportrait,
   title   = {LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control},
-  author  = {Jianzhu Guo and Dingyun Zhang and Xiaoqiang Liu and Zhizhou Zhong and Yuan Zhang and Pengfei Wan and Di Zhang},
-  year    = {2024},
-  journal = {arXiv preprint:2407.03168},
+  author  = {Guo, Jianzhu and Zhang, Dingyun and Liu, Xiaoqiang and Zhong, Zhizhou and Zhang, Yuan and Wan, Pengfei and Zhang, Di},
+  journal = {arXiv preprint arXiv:2407.03168},
+  year    = {2024}
 }
 ```

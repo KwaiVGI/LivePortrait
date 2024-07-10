@@ -22,6 +22,7 @@ class CropConfig(PrintableConfig):
     max_face_num: int = 0 # max face number, 0 mean no limit
 
     ########## driving video auto cropping option ##########
-    scale_crop_video: float = 2.0 # scale factor for cropping video
-    vy_ratio_crop_video: float = -0.1  # vy ratio +up, -down for cropping video
+    scale_crop_video: float = 2.2 #2.0 # scale factor for cropping video
+    vx_ratio_crop_video: float = 0. # adjust y offset
+    vy_ratio_crop_video: float = -0.1  # adjust x offset
     direction: str = 'large-small'  # direction of cropping

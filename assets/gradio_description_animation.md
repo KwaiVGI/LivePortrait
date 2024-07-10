@@ -8,10 +8,9 @@
 <div style="font-size: 1.2em; margin-left: 20px;">
 3. If you want to upload your own driving video, <strong>the best practice</strong>:
 
- - Crop it to a 1:1 aspect ratio (e.g., 512x512 or 256x256 pixels).
+ - Crop it to a 1:1 aspect ratio (e.g., 512x512 or 256x256 pixels), or enable auto-driving by checking `do crop (driving video)`.
  - Focus on the head area, similar to the example videos.
  - Minimize shoulder movement.
- - Make sure the first frame of driving video is a frontal face with neutral expression.
+ - Make sure the first frame of driving video is a frontal face with **neutral expression**.
 
-Auto cropping on video will be conducted if enabling the <strong>do crop (video)</strong> option. 🤗  
 </div>

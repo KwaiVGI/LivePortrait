@@ -21,7 +21,7 @@ class ArgumentConfig(PrintableConfig):
     flag_use_half_precision: bool = True  # whether to use half precision (FP16). If black boxes appear, it might be due to GPU incompatibility; set to False.
     flag_crop_driving_video: bool = False  # whether to crop the driving video, if the given driving info is a video
     device_id: int = 0 # gpu device id
-    flag_force_cpu: bool = False # force cpu inference, WIP
+    flag_force_cpu: bool = False # force cpu inference, WIP!
     flag_lip_zero : bool = True # whether let the lip to close state before animation, only take effect when flag_eye_retargeting and flag_lip_retargeting is False
     flag_eye_retargeting: bool = False # not recommend to be True, WIP
     flag_lip_retargeting: bool = False # not recommend to be True, WIP
@@ -32,9 +32,13 @@ class ArgumentConfig(PrintableConfig):
     flag_do_rot: bool = True  # whether to conduct the rotation when flag_do_crop is True
 
     ########## crop arguments ##########
-    scale: float = 2.5 # the ratio of face area is smaller if scale is larger
+    scale: float = 2.3 # the ratio of face area is smaller if scale is larger
     vx_ratio: float = 0  # the ratio to move the face to left or right in cropping space
     vy_ratio: float = -0.125  # the ratio to move the face to up or down in cropping space
+
+    scale_crop_video: float = 2.2 # scale factor for cropping video
+    vx_ratio_crop_video: float = 0. # adjust y offset
+    vy_ratio_crop_video: float = -0.1  # adjust x offset
 
     ########## gradio arguments ##########
     server_port: Annotated[int, tyro.conf.arg(aliases=["-p"])]  = 8890 # port for gradio server

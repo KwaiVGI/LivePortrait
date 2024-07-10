@@ -130,7 +130,7 @@ class Cropper(object):
                 trajectory.end = idx
 
             trajectory.lmk_lst.append(lmk)
-            ret_bbox = parse_bbox_from_landmark(lmk, scale=self.crop_cfg.scale_crop_video, vy_ratio=self.crop_cfg.vy_ratio_crop_video)['bbox']
+            ret_bbox = parse_bbox_from_landmark(lmk, scale=self.crop_cfg.scale_crop_video, vx_ratio_crop_video=self.crop_cfg.vx_ratio_crop_video, vy_ratio=self.crop_cfg.vy_ratio_crop_video)['bbox']
             bbox = [ret_bbox[0, 0], ret_bbox[0, 1], ret_bbox[2, 0], ret_bbox[2, 1]]  # 4,
             trajectory.bbox_lst.append(bbox)  # bbox
             trajectory.frame_rgb_lst.append(frame_rgb)
@@ -143,7 +143,7 @@ class Cropper(object):
                 global_bbox,
                 lmk=lmk,
                 dsize=kwargs.get('dsize', 512),
-                flag_rot=True,
+                flag_rot=False,
                 borderValue=(0, 0, 0),
             )
             trajectory.frame_rgb_crop_lst.append(ret_dct['img_crop'])
