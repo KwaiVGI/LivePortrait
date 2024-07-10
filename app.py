@@ -17,6 +17,7 @@ from src.config.inference_config import InferenceConfig
 def partial_fields(target_class, kwargs):
     return target_class(**{k: v for k, v in kwargs.items() if hasattr(target_class, k)})
 
+
 # set tyro theme
 tyro.extras.set_accent_color("bright_cyan")
 args = tyro.cli(ArgumentConfig)
@@ -31,11 +32,14 @@ gradio_pipeline = GradioPipeline(
     args=args
 )
 
+
 def gpu_wrapped_execute_video(*args, **kwargs):
     return gradio_pipeline.execute_video(*args, **kwargs)
 
+
 def gpu_wrapped_execute_image(*args, **kwargs):
     return gradio_pipeline.execute_image(*args, **kwargs)
+
 
 # assets
 title_md = "assets/gradio_title.md"
@@ -189,11 +193,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         outputs=[output_video, output_video_concat],
         show_progress=True
     )
-    # image_input.change(
-    #     fn=gradio_pipeline.prepare_retargeting,
-    #     inputs=image_input,
-    #     outputs=[eye_retargeting_slider, lip_retargeting_slider, retargeting_input_image]
-    # )
+
 
 demo.launch(
     server_port=args.server_port,

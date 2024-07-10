@@ -12,6 +12,7 @@ from .utils.rprint import rlog as log
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.camera import get_rotation_matrix
 
+
 def update_args(args, user_args):
     """update the args according to user inputs
     """
@@ -19,6 +20,7 @@ def update_args(args, user_args):
         if hasattr(args, k):
             setattr(args, k, v)
     return args
+
 
 class GradioPipeline(LivePortraitPipeline):
 
@@ -35,7 +37,7 @@ class GradioPipeline(LivePortraitPipeline):
         flag_do_crop_input,
         flag_remap_input,
         flag_crop_driving_video_input
-        ):
+    ):
         """ for video driven potrait animation
         """
         if input_image_path is not None and input_video_path is not None:
@@ -45,7 +47,7 @@ class GradioPipeline(LivePortraitPipeline):
                 'flag_relative': flag_relative_input,
                 'flag_do_crop': flag_do_crop_input,
                 'flag_pasteback': flag_remap_input,
-                'flag_crop_driving_video':flag_crop_driving_video_input
+                'flag_crop_driving_video': flag_crop_driving_video_input
             }
             # update config from user input
             self.args = update_args(self.args, args_user)
@@ -58,12 +60,12 @@ class GradioPipeline(LivePortraitPipeline):
         else:
             raise gr.Error("The input source portrait or driving video hasn't been prepared yet 💥!", duration=5)
 
-    def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_image, flag_do_crop = True):
+    def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_image, flag_do_crop=True):
         """ for single image retargeting
         """
         # disposable feature
         f_s_user, x_s_user, source_lmk_user, crop_M_c2o, mask_ori, img_rgb = \
-        self.prepare_retargeting(input_image, flag_do_crop)
+            self.prepare_retargeting(input_image, flag_do_crop)
 
         if input_eye_ratio is None or input_lip_ratio is None:
             raise gr.Error("Invalid ratio input 💥!", duration=5)
@@ -87,8 +89,7 @@ class GradioPipeline(LivePortraitPipeline):
             gr.Info("Run successfully!", duration=2)
             return out, out_to_ori_blend
 
-
-    def prepare_retargeting(self, input_image, flag_do_crop = True):
+    def prepare_retargeting(self, input_image, flag_do_crop=True):
         """ for single image retargeting
         """
         if input_image is not None:
