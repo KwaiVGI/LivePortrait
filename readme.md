@@ -143,7 +143,7 @@ python app.py
 
 You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
 
-**Just try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
+**Or, try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
 
 ### 5. Inference speed evaluation 🚀🚀🚀
 We have also provided a script to evaluate the inference speed of each module:
@@ -170,9 +170,9 @@ Discover the invaluable resources contributed by our community to enhance your L
 
 - [ComfyUI-LivePortraitKJ](https://github.com/kijai/ComfyUI-LivePortraitKJ) by [@kijai](https://github.com/kijai)
 - [comfyui-liveportrait](https://github.com/shadowcz007/comfyui-liveportrait) by [@shadowcz007](https://github.com/shadowcz007)
-- [LivePortrait hands-on tutorial](https://www.youtube.com/watch?v=uyjSTAOY7yI) by [AI Search](https://www.youtube.com/@theAIsearch)
-- [ComfyUI tutorial](https://www.youtube.com/watch?v=8-IcDDmiUMM) by [Sebastian Kamph](https://www.youtube.com/@sebastiankamph)
-- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [Benji](https://www.youtube.com/@TheFutureThinker)
+- [LivePortrait hands-on tutorial](https://www.youtube.com/watch?v=uyjSTAOY7yI) by [@AI Search](https://www.youtube.com/@theAIsearch)
+- [ComfyUI tutorial](https://www.youtube.com/watch?v=8-IcDDmiUMM) by [@Sebastian Kamph](https://www.youtube.com/@sebastiankamph)
+- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [@Benji](https://www.youtube.com/@TheFutureThinker)
 
 And many more amazing contributions from our community!
 
