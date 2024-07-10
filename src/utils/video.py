@@ -9,12 +9,19 @@ import numpy as np
 import subprocess
 import imageio
 import cv2
-import ffmpeg
+
+from .rprint import rlog as log
+
+try:
+    import ffmpeg
+except ImportError as e:
+    log(f'Try to install ffmpeg by: pip install ffmpeg-python==0.2.0', style='bold red')
+    raise(e)
 
 from rich.progress import track
 from .helper import prefix
 from .rprint import rprint as print
-from .rprint import rlog as log
+
 
 
 def exec_cmd(cmd):

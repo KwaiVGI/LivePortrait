@@ -35,7 +35,7 @@
 
 
 ## 🔥 Updates
-- **`2024/07/10`**: 💪 We support audio+video concacting, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
+- **`2024/07/10`**: 💪 We support audio and video concacting, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
 - **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
 - **`2024/07/04`**: 😊 We released the initial version of the inference code and models. Continuous updates, stay tuned!
 - **`2024/07/04`**: 🔥 We released the [homepage](https://liveportrait.github.io) and technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
@@ -160,10 +160,21 @@ Below are the results of inferring one frame on an RTX 4090 GPU using the native
 | Motion Extractor                  |     28.12     |       108      |     0.84      |
 | Spade Generator                   |     55.37     |       212      |     7.59      |
 | Warping Module                    |     45.53     |       174      |     5.21      |
-| Stitching and Retargeting Modules|     0.23      |       2.3      |     0.31      |
+| Stitching and Retargeting Modules |     0.23      |       2.3      |     0.31      |
 
 *Note: The values for the Stitching and Retargeting Modules represent the combined parameter counts and total inference time of three sequential MLP networks.*
 
+## Community Resources 🤗
+
+Discover the invaluable resources contributed by our community to enhance your LivePortrait experience:
+
+- [ComfyUI-LivePortraitKJ](https://github.com/kijai/ComfyUI-LivePortraitKJ) by [@kijai](https://github.com/kijai)
+- [comfyui-liveportrait](https://github.com/shadowcz007/comfyui-liveportrait) by [@shadowcz007](https://github.com/shadowcz007)
+- [LivePortrait hands-on tutorial](https://www.youtube.com/watch?v=uyjSTAOY7yI) by [AI Search](https://www.youtube.com/@theAIsearch)
+- [ComfyUI tutorial](https://www.youtube.com/watch?v=8-IcDDmiUMM) by [Sebastian Kamph](https://www.youtube.com/@sebastiankamph)
+- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [Benji](https://www.youtube.com/@TheFutureThinker)
+
+And many more amazing contributions from our community!
 
 ## Acknowledgements
 We would like to thank the contributors of [FOMM](https://github.com/AliaksandrSiarohin/first-order-model), [Open Facevid2vid](https://github.com/zhanglonghao1992/One-Shot_Free-View_Neural_Talking_Head_Synthesis), [SPADE](https://github.com/NVlabs/SPADE), [InsightFace](https://github.com/deepinsight/insightface) repositories, for their open research and contributions.
