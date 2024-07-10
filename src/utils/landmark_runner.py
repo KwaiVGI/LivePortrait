@@ -25,6 +25,7 @@ def to_ndarray(obj):
 
 class LandmarkRunner(object):
     """landmark runner"""
+
     def __init__(self, **kwargs):
         ckpt_path = kwargs.get('ckpt_path')
         onnx_provider = kwargs.get('onnx_provider', 'cuda')  # 默认用cuda
@@ -55,6 +56,7 @@ class LandmarkRunner(object):
             crop_dct = crop_image(img_rgb, lmk, dsize=self.dsize, scale=1.5, vy_ratio=-0.1)
             img_crop_rgb = crop_dct['img_crop']
         else:
+            # NOTE: force resize to 224x224, NOT RECOMMEND!
             img_crop_rgb = cv2.resize(img_rgb, (self.dsize, self.dsize))
             scale = max(img_rgb.shape[:2]) / self.dsize
             crop_dct = {
@@ -70,15 +72,13 @@ class LandmarkRunner(object):
         out_lst = self._run(inp)
         out_pts = out_lst[2]
 
-        pts = to_ndarray(out_pts[0]).reshape(-1, 2) * self.dsize  # scale to 0-224
-        pts = _transform_pts(pts, M=crop_dct['M_c2o'])
+        # 2d landmarks 203 points
+        lmk = to_ndarray(out_pts[0]).reshape(-1, 2) * self.dsize  # scale to 0-224
+        lmk = _transform_pts(lmk, M=crop_dct['M_c2o'])
 
-        return {
-            'pts': pts,  # 2d landmarks 203 points
-        }
+        return lmk
 
     def warmup(self):
-        # 构造dummy image进行warmup
         self.timer.tic()
 
         dummy_image = np.zeros((1, 3, self.dsize, self.dsize), dtype=np.float32)

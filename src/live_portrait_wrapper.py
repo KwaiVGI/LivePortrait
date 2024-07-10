@@ -20,45 +20,51 @@ from .utils.rprint import rlog as log
 
 class LivePortraitWrapper(object):
 
-    def __init__(self, cfg: InferenceConfig):
+    def __init__(self, inference_cfg: InferenceConfig):
 
-        model_config = yaml.load(open(cfg.models_config, 'r'), Loader=yaml.SafeLoader)
+        self.inference_cfg = inference_cfg
+        self.device_id = inference_cfg.device_id
+        if inference_cfg.flag_force_cpu:
+            self.device = 'cpu'
+        else:
+            self.device = 'cuda:' + str(self.device_id)
 
+        model_config = yaml.load(open(inference_cfg.models_config, 'r'), Loader=yaml.SafeLoader)
         # init F
-        self.appearance_feature_extractor = load_model(cfg.checkpoint_F, model_config, cfg.device_id, 'appearance_feature_extractor')
+        self.appearance_feature_extractor = load_model(inference_cfg.checkpoint_F, model_config, self.device, 'appearance_feature_extractor')
         log(f'Load appearance_feature_extractor done.')
         # init M
-        self.motion_extractor = load_model(cfg.checkpoint_M, model_config, cfg.device_id, 'motion_extractor')
+        self.motion_extractor = load_model(inference_cfg.checkpoint_M, model_config, self.device, 'motion_extractor')
         log(f'Load motion_extractor done.')
         # init W
-        self.warping_module = load_model(cfg.checkpoint_W, model_config, cfg.device_id, 'warping_module')
+        self.warping_module = load_model(inference_cfg.checkpoint_W, model_config, self.device, 'warping_module')
         log(f'Load warping_module done.')
         # init G
-        self.spade_generator = load_model(cfg.checkpoint_G, model_config, cfg.device_id, 'spade_generator')
+        self.spade_generator = load_model(inference_cfg.checkpoint_G, model_config, self.device, 'spade_generator')
         log(f'Load spade_generator done.')
         # init S and R
-        if cfg.checkpoint_S is not None and osp.exists(cfg.checkpoint_S):
-            self.stitching_retargeting_module = load_model(cfg.checkpoint_S, model_config, cfg.device_id, 'stitching_retargeting_module')
+        if inference_cfg.checkpoint_S is not None and osp.exists(inference_cfg.checkpoint_S):
+            self.stitching_retargeting_module = load_model(inference_cfg.checkpoint_S, model_config, self.device, 'stitching_retargeting_module')
             log(f'Load stitching_retargeting_module done.')
         else:
             self.stitching_retargeting_module = None
 
-        self.cfg = cfg
-        self.device_id = cfg.device_id
+        
+        
         self.timer = Timer()
 
     def update_config(self, user_args):
         for k, v in user_args.items():
-            if hasattr(self.cfg, k):
-                setattr(self.cfg, k, v)
+            if hasattr(self.inference_cfg, k):
+                setattr(self.inference_cfg, k, v)
 
     def prepare_source(self, img: np.ndarray) -> torch.Tensor:
         """ construct the input as standard
         img: HxWx3, uint8, 256x256
         """
         h, w = img.shape[:2]
-        if h != self.cfg.input_shape[0] or w != self.cfg.input_shape[1]:
-            x = cv2.resize(img, (self.cfg.input_shape[0], self.cfg.input_shape[1]))
+        if h != self.inference_cfg.input_shape[0] or w != self.inference_cfg.input_shape[1]:
+            x = cv2.resize(img, (self.inference_cfg.input_shape[0], self.inference_cfg.input_shape[1]))
         else:
             x = img.copy()
 
@@ -70,7 +76,7 @@ class LivePortraitWrapper(object):
             raise ValueError(f'img ndim should be 3 or 4: {x.ndim}')
         x = np.clip(x, 0, 1)  # clip to 0~1
         x = torch.from_numpy(x).permute(0, 3, 1, 2)  # 1xHxWx3 -> 1x3xHxW
-        x = x.cuda(self.device_id)
+        x = x.to(self.device)
         return x
 
     def prepare_driving_videos(self, imgs) -> torch.Tensor:
@@ -87,7 +93,7 @@ class LivePortraitWrapper(object):
         y = _imgs.astype(np.float32) / 255.
         y = np.clip(y, 0, 1)  # clip to 0~1
         y = torch.from_numpy(y).permute(0, 4, 3, 1, 2)  # TxHxWx3x1 -> Tx1x3xHxW
-        y = y.cuda(self.device_id)
+        y = y.to(self.device)
 
         return y
 
@@ -96,7 +102,7 @@ class LivePortraitWrapper(object):
         x: Bx3xHxW, normalized to 0~1
         """
         with torch.no_grad():
-            with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=self.cfg.flag_use_half_precision):
+            with torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=self.inference_cfg.flag_use_half_precision):
                 feature_3d = self.appearance_feature_extractor(x)
 
         return feature_3d.float()
@@ -108,10 +114,10 @@ class LivePortraitWrapper(object):
         return: A dict contains keys: 'pitch', 'yaw', 'roll', 't', 'exp', 'scale', 'kp'
         """
         with torch.no_grad():
-            with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=self.cfg.flag_use_half_precision):
+            with torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=self.inference_cfg.flag_use_half_precision):
                 kp_info = self.motion_extractor(x)
 
-            if self.cfg.flag_use_half_precision:
+            if self.inference_cfg.flag_use_half_precision:
                 # float the dict
                 for k, v in kp_info.items():
                     if isinstance(v, torch.Tensor):
@@ -254,14 +260,14 @@ class LivePortraitWrapper(object):
         """
         # The line 18 in Algorithm 1: D(W(f_s; x_s, x′_d,i)）
         with torch.no_grad():
-            with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=self.cfg.flag_use_half_precision):
+            with torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=self.inference_cfg.flag_use_half_precision):
                 # get decoder input
                 ret_dct = self.warping_module(feature_3d, kp_source=kp_source, kp_driving=kp_driving)
                 # decode
                 ret_dct['out'] = self.spade_generator(feature=ret_dct['out'])
 
             # float the dict
-            if self.cfg.flag_use_half_precision:
+            if self.inference_cfg.flag_use_half_precision:
                 for k, v in ret_dct.items():
                     if isinstance(v, torch.Tensor):
                         ret_dct[k] = v.float()
@@ -278,7 +284,7 @@ class LivePortraitWrapper(object):
 
         return out
 
-    def calc_retargeting_ratio(self, source_lmk, driving_lmk_lst):
+    def calc_driving_ratio(self, driving_lmk_lst):
         input_eye_ratio_lst = []
         input_lip_ratio_lst = []
         for lmk in driving_lmk_lst:
@@ -288,20 +294,18 @@ class LivePortraitWrapper(object):
             input_lip_ratio_lst.append(calc_lip_close_ratio(lmk[None]))
         return input_eye_ratio_lst, input_lip_ratio_lst
 
-    def calc_combined_eye_ratio(self, input_eye_ratio, source_lmk):
-        eye_close_ratio = calc_eye_close_ratio(source_lmk[None])
-        eye_close_ratio_tensor = torch.from_numpy(eye_close_ratio).float().cuda(self.device_id)
-        input_eye_ratio_tensor = torch.Tensor([input_eye_ratio[0][0]]).reshape(1, 1).cuda(self.device_id)
+    def calc_combined_eye_ratio(self, c_d_eyes_i, source_lmk):
+        c_s_eyes = calc_eye_close_ratio(source_lmk[None])
+        c_s_eyes_tensor = torch.from_numpy(c_s_eyes).float().to(self.device)
+        c_d_eyes_i_tensor = torch.Tensor([c_d_eyes_i[0][0]]).reshape(1, 1).to(self.device)
         # [c_s,eyes, c_d,eyes,i]
-        combined_eye_ratio_tensor = torch.cat([eye_close_ratio_tensor, input_eye_ratio_tensor], dim=1)
+        combined_eye_ratio_tensor = torch.cat([c_s_eyes_tensor, c_d_eyes_i_tensor], dim=1)
         return combined_eye_ratio_tensor
 
-    def calc_combined_lip_ratio(self, input_lip_ratio, source_lmk):
-        lip_close_ratio = calc_lip_close_ratio(source_lmk[None])
-        lip_close_ratio_tensor = torch.from_numpy(lip_close_ratio).float().cuda(self.device_id)
+    def calc_combined_lip_ratio(self, c_d_lip_i, source_lmk):
+        c_s_lip = calc_lip_close_ratio(source_lmk[None])
+        c_s_lip_tensor = torch.from_numpy(c_s_lip).float().to(self.device)
+        c_d_lip_i_tensor = torch.Tensor([c_d_lip_i[0]]).to(self.device).reshape(1, 1) # 1x1
         # [c_s,lip, c_d,lip,i]
-        input_lip_ratio_tensor = torch.Tensor([input_lip_ratio[0]]).cuda(self.device_id)
-        if input_lip_ratio_tensor.shape != [1, 1]:
-            input_lip_ratio_tensor = input_lip_ratio_tensor.reshape(1, 1)
-        combined_lip_ratio_tensor = torch.cat([lip_close_ratio_tensor, input_lip_ratio_tensor], dim=1)
+        combined_lip_ratio_tensor = torch.cat([c_s_lip_tensor, c_d_lip_i_tensor], dim=1) # 1x2
         return combined_lip_ratio_tensor

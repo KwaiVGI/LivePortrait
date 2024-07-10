@@ -9,9 +9,13 @@ __pycache__/
 **/*.pth
 **/*.onnx
 
+pretrained_weights/*.md
+pretrained_weights/docs
+
 # Ipython notebook
 *.ipynb
 
 # Temporary files or benchmark resources
 animations/*
 tmp/*
+.vscode/launch.json
