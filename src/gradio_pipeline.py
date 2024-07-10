@@ -69,7 +69,7 @@ class GradioPipeline(LivePortraitPipeline):
     def execute_image(self, input_eye_ratio: float, input_lip_ratio: float):
         """ for single image retargeting
         """
-        if input_eye_ratio is None or input_eye_ratio is None:
+        if input_eye_ratio is None or input_lip_ratio is None:
             raise gr.Error("Invalid ratio input 💥!", duration=5)
         elif self.f_s_user is None:
             if self.start_prepare:
