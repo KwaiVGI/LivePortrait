@@ -87,7 +87,7 @@ pretrained_weights
 
 ### 3. Inference 🚀
 
-
+#### Fast hands-on
 ```bash
 python inference.py
 ```
@@ -110,25 +110,26 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 python inference.py -h
 ```
 
+#### Driving video auto-cropping
+
 📕 To use your own driving video, we **recommend**:
  - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or enable auto-cropping by `--flag_crop_driving_video`.
  - Focus on the head area, similar to the example videos.
  - Minimize shoulder movement.
  - Make sure the first frame of driving video is a frontal face with **neutral expression**.
 
-Below is a auto-cropping case by `by --flag_crop_driving_video`:
+Below is a auto-cropping case by `--flag_crop_driving_video`:
 ```bash
-python inference.py -s assets/examples/source/s9.jpg assets/examples/driving/d13.mp4 --flag_crop_driving_video
+python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d13.mp4 --flag_crop_driving_video
 ```
 
 If you find the results of auto-cropping is not well, you can modify the `--scale_crop_video`, `--vy_ratio_crop_video` options to adjust the scale and offset, or do it manually.
 
+#### Template making
 You can also use the `.pkl` file auto-generated to speed up the inference, and **protect privacy**, such as:
 ```bash
 python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d5.pkl
 ```
-
-**Just try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
 
 **Discover more interesting results on our [Homepage](https://liveportrait.github.io)** 😊
 
@@ -141,6 +142,8 @@ python app.py
 ```
 
 You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
+
+**Just try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
 
 ### 5. Inference speed evaluation 🚀🚀🚀
 We have also provided a script to evaluate the inference speed of each module:
