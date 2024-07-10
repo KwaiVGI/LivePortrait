@@ -45,8 +45,8 @@ We are actively updating and improving this repository. If you find any bugs or 
 ## 🔥 Getting Started
 ### 1. Clone the code and prepare the environment
 ```bash
-git clone https://github.com/KwaiVGI/LivePortrait
-cd LivePortrait
+git clone https://github.com/Mrkomiljon/Webcam_Live_Portrait.git
+cd Webcam_Live_Portrait
 
 # create env using conda
 conda create -n LivePortrait python==3.9.18
