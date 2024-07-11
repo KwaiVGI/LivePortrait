@@ -19,7 +19,7 @@ from .helper import prefix
 
 
 def exec_cmd(cmd):
-    subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    return subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 
 def images2video(images, wfp, **kwargs):
@@ -54,10 +54,10 @@ def video2gif(video_fp, fps=30, size=256):
         palette_wfp = osp.join(d, 'palette.png')
         gif_wfp = osp.join(d, f'{fn}.gif')
         # generate the palette
-        cmd = f'ffmpeg -i {video_fp} -vf "fps={fps},scale={size}:-1:flags=lanczos,palettegen" {palette_wfp} -y'
+        cmd = f'ffmpeg -i "{video_fp}" -vf "fps={fps},scale={size}:-1:flags=lanczos,palettegen" "{palette_wfp}" -y'
         exec_cmd(cmd)
         # use the palette to generate the gif
-        cmd = f'ffmpeg -i {video_fp} -i {palette_wfp} -filter_complex "fps={fps},scale={size}:-1:flags=lanczos[x];[x][1:v]paletteuse" {gif_wfp} -y'
+        cmd = f'ffmpeg -i "{video_fp}" -i "{palette_wfp}" -filter_complex "fps={fps},scale={size}:-1:flags=lanczos[x];[x][1:v]paletteuse" "{gif_wfp}" -y'
         exec_cmd(cmd)
     else:
         print(f'video_fp: {video_fp} not exists!')
@@ -65,7 +65,7 @@ def video2gif(video_fp, fps=30, size=256):
 
 def merge_audio_video(video_fp, audio_fp, wfp):
     if osp.exists(video_fp) and osp.exists(audio_fp):
-        cmd = f'ffmpeg -i {video_fp} -i {audio_fp} -c:v copy -c:a aac {wfp} -y'
+        cmd = f'ffmpeg -i "{video_fp}" -i "{audio_fp}" -c:v copy -c:a aac "{wfp}" -y'
         exec_cmd(cmd)
         print(f'merge {video_fp} and {audio_fp} to {wfp}')
     else:
@@ -128,8 +128,8 @@ class VideoWriter:
             self.writer.close()
 
 
-def change_video_fps(input_file, output_file, fps=20, codec='libx264', crf=5):
-    cmd = f"ffmpeg -i {input_file} -c:v {codec} -crf {crf} -r {fps} {output_file} -y"
+def change_video_fps(input_file, output_file, fps=20, codec='libx264', crf=12):
+    cmd = f'ffmpeg -i "{input_file}" -c:v {codec} -crf {crf} -r {fps} "{output_file}" -y'
     exec_cmd(cmd)
 
 
@@ -162,11 +162,12 @@ def has_audio_stream(video_path: str) -> bool:
         '-select_streams', 'a',
         '-show_entries', 'stream=codec_type',
         '-of', 'default=noprint_wrappers=1:nokey=1',
-        video_path
+        f'"{video_path}"'
     ]
 
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        # result = subprocess.run(cmd, capture_output=True, text=True)
+        result = exec_cmd(' '.join(cmd))
         if result.returncode != 0:
             log(f"Error occurred while probing video: {result.stderr}")
             return False
@@ -182,13 +183,13 @@ def add_audio_to_video(silent_video_path: str, audio_video_path: str, output_vid
     cmd = [
         'ffmpeg',
         '-y',
-        '-i', silent_video_path,
-        '-i', audio_video_path,
+        '-i', f'"{silent_video_path}"',
+        '-i', f'"{audio_video_path}"',
         '-map', '0:v',
         '-map', '1:a',
         '-c:v', 'copy',
         '-shortest',
-        output_video_path
+        f'"{output_video_path}"'
     ]
 
     try:
