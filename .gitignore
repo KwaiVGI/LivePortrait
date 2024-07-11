@@ -18,4 +18,4 @@ pretrained_weights/docs
 # Temporary files or benchmark resources
 animations/*
 tmp/*
-.vscode/launch.json
+venv/*

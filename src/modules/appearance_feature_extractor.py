@@ -38,8 +38,8 @@ class AppearanceFeatureExtractor(nn.Module):
     def forward(self, source_image):
         out = self.first(source_image)  # Bx3x256x256 -> Bx64x256x256
 
-        for i in range(len(self.down_blocks)):
-            out = self.down_blocks[i](out)
+        for _, block in enumerate(self.down_blocks):
+            out = block(out)
         out = self.second(out)
         bs, c, h, w = out.shape  # ->Bx512x64x64
 

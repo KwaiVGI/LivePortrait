@@ -5,6 +5,7 @@ This file defines various neural network modules and utility functions, includin
 normalizations, and functions for spatial transformation and tensor manipulation.
 """
 
+from typing import List
 from torch import nn
 import torch.nn.functional as F
 import torch
@@ -13,7 +14,7 @@ import math
 import warnings
 
 
-def kp2gaussian(kp, spatial_size, kp_variance):
+def kp2gaussian(kp, spatial_size: List[int], kp_variance: float):
     """
     Transform a keypoint into gaussian like representation
     """
@@ -22,13 +23,13 @@ def kp2gaussian(kp, spatial_size, kp_variance):
     coordinate_grid = make_coordinate_grid(spatial_size, mean)
     number_of_leading_dimensions = len(mean.shape) - 1
     shape = (1,) * number_of_leading_dimensions + coordinate_grid.shape
-    coordinate_grid = coordinate_grid.view(*shape)
+    coordinate_grid = coordinate_grid.view(torch.Size(shape))
     repeats = mean.shape[:number_of_leading_dimensions] + (1, 1, 1, 1)
-    coordinate_grid = coordinate_grid.repeat(*repeats)
+    coordinate_grid = coordinate_grid.repeat(torch.Size(repeats))
 
     # Preprocess kp shape
     shape = mean.shape[:number_of_leading_dimensions] + (1, 1, 1, 3)
-    mean = mean.view(*shape)
+    mean = mean.view(torch.Size(shape))
 
     mean_sub = (coordinate_grid - mean)
 
@@ -37,7 +38,7 @@ def kp2gaussian(kp, spatial_size, kp_variance):
     return out
 
 
-def make_coordinate_grid(spatial_size, ref, **kwargs):
+def make_coordinate_grid(spatial_size: List[int], ref):
     d, h, w = spatial_size
     x = torch.arange(w).type(ref.dtype).to(ref.device)
     y = torch.arange(h).type(ref.dtype).to(ref.device)
@@ -112,7 +113,7 @@ class UpBlock3d(nn.Module):
         self.norm = nn.BatchNorm3d(out_features, affine=True)
 
     def forward(self, x):
-        out = F.interpolate(x, scale_factor=(1, 2, 2))
+        out = F.interpolate(x, scale_factor=(1.0, 2.0, 2.0))
         out = self.conv(out)
         out = self.norm(out)
         out = F.relu(out)
@@ -224,7 +225,7 @@ class Decoder(nn.Module):
         self.conv = nn.Conv3d(in_channels=self.out_filters, out_channels=self.out_filters, kernel_size=3, padding=1)
         self.norm = nn.BatchNorm3d(self.out_filters, affine=True)
 
-    def forward(self, x):
+    def forward(self, x: List[torch.Tensor]):
         out = x.pop()
         for up_block in self.up_blocks:
             out = up_block(out)
