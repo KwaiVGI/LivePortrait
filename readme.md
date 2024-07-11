@@ -111,6 +111,18 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 python inference.py -h
 ```
 
+#### Inference with an input video source
+
+<p align="center">
+  <img src="./assets/docs/inference-video.gif" alt="image">
+</p>
+
+You can also specify an input video as the `-s`. (The script automatically recognize whether you have selected an image or a video as the source)
+
+```bash
+python inference.py -s assets/examples/driving/d0.mp4 -d assets/examples/driving/d3.mp4
+```
+
 #### Driving video auto-cropping
 
 📕 To use your own driving video, we **recommend**:
