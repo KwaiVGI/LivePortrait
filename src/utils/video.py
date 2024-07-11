@@ -1,7 +1,9 @@
 # coding: utf-8
 
 """
-functions for processing video
+Functions for processing video
+
+ATTENTION: you need to install ffmpeg and ffprobe in your env!
 """
 
 import os.path as osp
@@ -9,19 +11,11 @@ import numpy as np
 import subprocess
 import imageio
 import cv2
+from rich.progress import track
 
 from .rprint import rlog as log
-
-# try:
-#     import ffmpeg
-# except ImportError as e:
-#     log(f'Try to install ffmpeg by: pip install ffmpeg-python==0.2.0', style='bold red')
-#     raise(e)
-
-from rich.progress import track
-from .helper import prefix
 from .rprint import rprint as print
-
+from .helper import prefix
 
 
 def exec_cmd(cmd):
@@ -146,7 +140,7 @@ def get_fps(filepath, default_fps=25):
         if fps in (0, None):
             fps = default_fps
     except Exception as e:
-        print(e)
+        log(e)
         fps = default_fps
 
     return fps
@@ -171,13 +165,17 @@ def has_audio_stream(video_path: str) -> bool:
         video_path
     ]
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        log(f"Error occurred while probing video: {result.stderr}")
-        return False
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            log(f"Error occurred while probing video: {result.stderr}")
+            return False
 
-    # Check if there is any output from ffprobe command
-    return bool(result.stdout.strip())
+        # Check if there is any output from ffprobe command
+        return bool(result.stdout.strip())
+    except Exception as e:
+        log(f"Error occurred while probing video: {video_path}, you may need to install ffprobe! Now set audio to false!", style="bold red")
+        return False
 
 
 def add_audio_to_video(silent_video_path: str, audio_video_path: str, output_video_path: str):
