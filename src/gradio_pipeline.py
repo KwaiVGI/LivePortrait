@@ -11,6 +11,7 @@ from .utils.io import load_img_online
 from .utils.rprint import rlog as log
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.camera import get_rotation_matrix
+from .utils.helper import is_video
 
 
 def update_args(args, user_args):
@@ -31,7 +32,7 @@ class GradioPipeline(LivePortraitPipeline):
 
     def execute_video(
         self,
-        input_image_path,
+        input_source_path,
         input_video_path,
         flag_relative_input,
         flag_do_crop_input,
@@ -40,9 +41,9 @@ class GradioPipeline(LivePortraitPipeline):
     ):
         """ for video driven potrait animation
         """
-        if input_image_path is not None and input_video_path is not None:
+        if input_source_path is not None and input_video_path is not None:
             args_user = {
-                'source_image': input_image_path,
+                'source_image': input_source_path,
                 'driving_info': input_video_path,
                 'flag_relative': flag_relative_input,
                 'flag_do_crop': flag_do_crop_input,
@@ -53,6 +54,13 @@ class GradioPipeline(LivePortraitPipeline):
             self.args = update_args(self.args, args_user)
             self.live_portrait_wrapper.update_config(self.args.__dict__)
             self.cropper.update_config(self.args.__dict__)
+
+            # Check if source is a video
+            if is_video(self.args.source_image):
+                log(f"Source is a video: {self.args.source_image}")
+            else:
+                log(f"Source is an image: {self.args.source_image}")
+
             # video driven animation
             video_path, video_path_concat = self.execute(self.args)
             gr.Info("Run successfully!", duration=2)

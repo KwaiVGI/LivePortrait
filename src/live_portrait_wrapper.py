@@ -49,8 +49,8 @@ class LivePortraitWrapper(object):
         else:
             self.stitching_retargeting_module = None
 
-        
-        
+
+
         self.timer = Timer()
 
     def update_config(self, user_args):
@@ -131,6 +131,9 @@ class LivePortraitWrapper(object):
             kp_info['roll'] = headpose_pred_to_degree(kp_info['roll'])[:, None]  # Bx1
             kp_info['kp'] = kp_info['kp'].reshape(bs, -1, 3)  # BxNx3
             kp_info['exp'] = kp_info['exp'].reshape(bs, -1, 3)  # BxNx3
+
+            # Calculate and include R_s
+            kp_info['R_s'] = get_rotation_matrix(kp_info['pitch'], kp_info['yaw'], kp_info['roll'])
 
         return kp_info
 

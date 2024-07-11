@@ -2,11 +2,13 @@
 
 import os.path as osp
 import tyro
+import traceback
 from src.config.argument_config import ArgumentConfig
 from src.config.inference_config import InferenceConfig
 from src.config.crop_config import CropConfig
 from src.live_portrait_pipeline import LivePortraitPipeline
-
+from src.utils.helper import is_video
+from src.utils.rprint import rlog as log
 
 def partial_fields(target_class, kwargs):
     return target_class(**{k: v for k, v in kwargs.items() if hasattr(target_class, k)})
@@ -36,6 +38,11 @@ def main():
         crop_cfg=crop_cfg
     )
 
+    # Check if source is a video
+    if is_video(args.source_image):
+        log(f"Source is a video: {args.source_image}")
+    else:
+        log(f"Source is an image: {args.source_image}")
     # run
     live_portrait_pipeline.execute(args)
 
