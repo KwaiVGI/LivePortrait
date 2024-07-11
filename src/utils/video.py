@@ -141,9 +141,7 @@ def change_video_fps(input_file, output_file, fps=20, codec='libx264', crf=5):
 
 def get_fps(filepath, default_fps=25):
     try:
-        probe = ffmpeg.probe(filepath)
-        video_stream = next((stream for stream in probe['streams'] if stream['codec_type'] == 'video'), None)
-        fps = eval(video_stream['avg_frame_rate'])
+        fps = cv2.VideoCapture(filepath).get(cv2.CAP_PROP_FPS)
 
         if fps in (0, None):
             fps = default_fps
