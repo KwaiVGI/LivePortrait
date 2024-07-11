@@ -7,6 +7,7 @@ All configs for user
 from dataclasses import dataclass
 import tyro
 from typing_extensions import Annotated
+from typing import Optional
 from .base_config import PrintableConfig, make_abs_path
 
 
@@ -43,4 +44,4 @@ class ArgumentConfig(PrintableConfig):
     ########## gradio arguments ##########
     server_port: Annotated[int, tyro.conf.arg(aliases=["-p"])]  = 8890 # port for gradio server
     share: bool = False # whether to share the server to public
-    server_name: str = "0.0.0.0" # server name
+    server_name: Optional[str] = "127.0.0.1"  # set the local server name, "0.0.0.0" to broadcast all

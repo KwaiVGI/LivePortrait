@@ -12,11 +12,11 @@ import cv2
 
 from .rprint import rlog as log
 
-try:
-    import ffmpeg
-except ImportError as e:
-    log(f'Try to install ffmpeg by: pip install ffmpeg-python==0.2.0', style='bold red')
-    raise(e)
+# try:
+#     import ffmpeg
+# except ImportError as e:
+#     log(f'Try to install ffmpeg by: pip install ffmpeg-python==0.2.0', style='bold red')
+#     raise(e)
 
 from rich.progress import track
 from .helper import prefix
