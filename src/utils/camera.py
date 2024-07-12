@@ -31,8 +31,6 @@ def headpose_pred_to_degree(pred):
 def get_rotation_matrix(pitch_, yaw_, roll_):
     """ the input is in degree
     """
-    # calculate the rotation matrix: vps @ rot
-
     # transform to radian
     pitch = pitch_ / 180 * PI
     yaw = yaw_ / 180 * PI
