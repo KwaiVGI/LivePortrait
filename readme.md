@@ -130,8 +130,8 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 
 If you find the results of auto-cropping is not well, you can modify the `--scale_crop_video`, `--vy_ratio_crop_video` options to adjust the scale and offset, or do it manually.
 
-#### Template making
-You can also use the `.pkl` file auto-generated to speed up the inference, and **protect privacy**, such as:
+#### Motion template making
+You can also use the auto-generated motion template files ending with `.pkl` to speed up inference, and **protect privacy**, such as:
 ```bash
 python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d5.pkl
 ```
