@@ -2,11 +2,11 @@
 
 import os.path as osp
 import tyro
+import subprocess
 from src.config.argument_config import ArgumentConfig
 from src.config.inference_config import InferenceConfig
 from src.config.crop_config import CropConfig
 from src.live_portrait_pipeline import LivePortraitPipeline
-import subprocess
 
 
 def partial_fields(target_class, kwargs):
@@ -37,19 +37,17 @@ def main():
         raise ImportError(
             "FFmpeg is not installed. Please install FFmpeg before running this script. https://ffmpeg.org/download.html"
         )
+
     # fast check the args
     fast_check_args(args)
 
     # specify configs for inference
-    inference_cfg = partial_fields(
-        InferenceConfig, args.__dict__
-    )  # use attribute of args to initial InferenceConfig
-    crop_cfg = partial_fields(
-        CropConfig, args.__dict__
-    )  # use attribute of args to initial CropConfig
+    inference_cfg = partial_fields(InferenceConfig, args.__dict__)  # use attribute of args to initial InferenceConfig
+    crop_cfg = partial_fields(CropConfig, args.__dict__)  # use attribute of args to initial CropConfig
 
     live_portrait_pipeline = LivePortraitPipeline(
-        inference_cfg=inference_cfg, crop_cfg=crop_cfg
+        inference_cfg=inference_cfg,
+        crop_cfg=crop_cfg
     )
 
     # run

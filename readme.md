@@ -59,17 +59,19 @@ conda activate LivePortrait
 pip install -r requirements.txt
 ```
 
-Make sure your system has [FFmpeg](https://ffmpeg.org/)
+**Note:** make sure your system has [FFmpeg](https://ffmpeg.org/) installed!
 
 ### 2. Download pretrained weights
 
-Download the pretrained weights from HuggingFace:
+The easiest way to download the pretrained weights is from HuggingFace:
 ```bash
 # you may need to run `git lfs install` first
 git clone https://huggingface.co/KwaiVGI/liveportrait pretrained_weights
 ```
 
-Or, download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). We have packed all weights in one directory 😊. Unzip and place them in `./pretrained_weights` ensuring the directory structure is as follows:
+Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). Unzip and place them in `./pretrained_weights`.
+
+Ensuring the directory structure is as follows, or contains:
 ```text
 pretrained_weights
 ├── insightface
