@@ -14,7 +14,7 @@ from .base_config import PrintableConfig, make_abs_path
 
 @dataclass(repr=False)  # use repr from PrintableConfig
 class InferenceConfig(PrintableConfig):
-    # MODEL CONFIG, NOT EXPOERTED PARAMS
+    # MODEL CONFIG, NOT EXPORTED PARAMS
     models_config: str = make_abs_path('./models.yaml')  # portrait animation config
     checkpoint_F: str = make_abs_path('../../pretrained_weights/liveportrait/base_models/appearance_feature_extractor.pth')  # path to checkpoint of F
     checkpoint_M: str = make_abs_path('../../pretrained_weights/liveportrait/base_models/motion_extractor.pth')  # path to checkpoint pf M
@@ -22,7 +22,7 @@ class InferenceConfig(PrintableConfig):
     checkpoint_W: str = make_abs_path('../../pretrained_weights/liveportrait/base_models/warping_module.pth')  # path to checkpoint of W
     checkpoint_S: str = make_abs_path('../../pretrained_weights/liveportrait/retargeting_models/stitching_retargeting_module.pth')  # path to checkpoint to S and R_eyes, R_lip
 
-    # EXPOERTED PARAMS
+    # EXPORTED PARAMS
     flag_use_half_precision: bool = True
     flag_crop_driving_video: bool = False
     device_id: int = 0
@@ -35,8 +35,9 @@ class InferenceConfig(PrintableConfig):
     flag_do_crop: bool = True
     flag_do_rot: bool = True
     flag_force_cpu: bool = False 
+    flag_do_torch_compile: bool = False  
 
-    # NOT EXPOERTED PARAMS
+    # NOT EXPORTED PARAMS
     lip_zero_threshold: float = 0.03 # threshold for flag_lip_zero
     anchor_frame: int = 0 # TO IMPLEMENT
 
