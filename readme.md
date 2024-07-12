@@ -23,6 +23,7 @@
   <a href='https://arxiv.org/pdf/2407.03168'><img src='https://img.shields.io/badge/arXiv-LivePortrait-red'></a>
   <a href='https://liveportrait.github.io'><img src='https://img.shields.io/badge/Project-LivePortrait-green'></a>
   <a href='https://huggingface.co/spaces/KwaiVGI/liveportrait'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
+  <br><a href="./docs/README_JP.md"><img src="https://img.shields.io/badge/ドキュメント-日本語-white.svg" alt="JA doc"/></a>
 </div>
 <br>
 
@@ -181,6 +182,25 @@ Discover the invaluable resources contributed by our community to enhance your L
 - [Replicate Playground](https://replicate.com/fofr/live-portrait) and [cog-comfyui](https://github.com/fofr/cog-comfyui) by [@fofr](https://github.com/fofr)
 
 And many more amazing contributions from our community!
+
+## Docker Compose Setup
+
+You can also easily run the LivePortrait application using Docker Compose. The repository already includes a `docker-compose.yml` file. Follow these steps:
+
+1. Ensure you are in the root directory of the project.
+
+2. Start the application using Docker Compose:
+
+```bash
+docker-compose up
+```
+
+This will start the LivePortrait application inside a Docker container, accessible on port 8890.
+
+> [!NOTE]
+> This configuration is set up to use an NVIDIA GPU. If you don't have a GPU available, you may need to adjust the `deploy` section in the `docker-compose.yml` file accordingly.
+
+Once the application is running, you can access the Gradio interface by opening `http://localhost:8890` in your web browser.
 
 ## Acknowledgements
 We would like to thank the contributors of [FOMM](https://github.com/AliaksandrSiarohin/first-order-model), [Open Facevid2vid](https://github.com/zhanglonghao1992/One-Shot_Free-View_Neural_Talking_Head_Synthesis), [SPADE](https://github.com/NVlabs/SPADE), [InsightFace](https://github.com/deepinsight/insightface) repositories, for their open research and contributions.
