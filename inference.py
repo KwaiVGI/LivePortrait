@@ -12,12 +12,14 @@ import subprocess
 def partial_fields(target_class, kwargs):
     return target_class(**{k: v for k, v in kwargs.items() if hasattr(target_class, k)})
 
+
 def fast_check_ffmpeg():
     try:
-        subprocess.run(['ffmpeg', '-version'], capture_output=True, check=True)
+        subprocess.run(["ffmpeg", "-version"], capture_output=True, check=True)
         return True
     except:
         return False
+
 
 def fast_check_args(args: ArgumentConfig):
     if not osp.exists(args.source_image):
@@ -39,17 +41,20 @@ def main():
     fast_check_args(args)
 
     # specify configs for inference
-    inference_cfg = partial_fields(InferenceConfig, args.__dict__)  # use attribute of args to initial InferenceConfig
-    crop_cfg = partial_fields(CropConfig, args.__dict__)  # use attribute of args to initial CropConfig
+    inference_cfg = partial_fields(
+        InferenceConfig, args.__dict__
+    )  # use attribute of args to initial InferenceConfig
+    crop_cfg = partial_fields(
+        CropConfig, args.__dict__
+    )  # use attribute of args to initial CropConfig
 
     live_portrait_pipeline = LivePortraitPipeline(
-        inference_cfg=inference_cfg,
-        crop_cfg=crop_cfg
+        inference_cfg=inference_cfg, crop_cfg=crop_cfg
     )
 
     # run
     live_portrait_pipeline.execute(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
