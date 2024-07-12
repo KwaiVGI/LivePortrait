@@ -140,7 +140,7 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 
 ### 4. Gradio interface 🤗
 
-We also provide a Gradio interface for a better experience, just run by:
+We also provide a Gradio <a href='https://github.com/gradio-app/gradio'><img src='https://img.shields.io/github/stars/gradio-app/gradio'></a> interface for a better experience, just run by:
 
 ```bash
 python app.py
