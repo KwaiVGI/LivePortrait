@@ -23,7 +23,7 @@ class ArgumentConfig(PrintableConfig):
     flag_crop_driving_video: bool = False  # whether to crop the driving video, if the given driving info is a video
     device_id: int = 0 # gpu device id
     flag_force_cpu: bool = False # force cpu inference, WIP!
-    flag_lip_zero : bool = True # whether let the lip to close state before animation, only take effect when flag_eye_retargeting and flag_lip_retargeting is False
+    flag_lip_zero: bool = True # whether let the lip to close state before animation, only take effect when flag_eye_retargeting and flag_lip_retargeting is False
     flag_eye_retargeting: bool = False # not recommend to be True, WIP
     flag_lip_retargeting: bool = False # not recommend to be True, WIP
     flag_stitching: bool = True  # recommend to True if head movement is small, False if head movement is large
@@ -45,3 +45,4 @@ class ArgumentConfig(PrintableConfig):
     server_port: Annotated[int, tyro.conf.arg(aliases=["-p"])]  = 8890 # port for gradio server
     share: bool = False # whether to share the server to public
     server_name: Optional[str] = "127.0.0.1"  # set the local server name, "0.0.0.0" to broadcast all
+    flag_do_torch_compile: bool = False  # whether to use torch.compile to accelerate generation

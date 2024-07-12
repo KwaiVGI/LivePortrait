@@ -5,6 +5,7 @@ The entrance of the gradio
 """
 
 import tyro
+import subprocess
 import gradio as gr
 import os.path as osp
 from src.utils.helper import load_description
@@ -18,9 +19,21 @@ def partial_fields(target_class, kwargs):
     return target_class(**{k: v for k, v in kwargs.items() if hasattr(target_class, k)})
 
 
+def fast_check_ffmpeg():
+    try:
+        subprocess.run(["ffmpeg", "-version"], capture_output=True, check=True)
+        return True
+    except:
+        return False
+
 # set tyro theme
 tyro.extras.set_accent_color("bright_cyan")
 args = tyro.cli(ArgumentConfig)
+
+if not fast_check_ffmpeg():
+    raise ImportError(
+        "FFmpeg is not installed. Please install FFmpeg before running this script. https://ffmpeg.org/download.html"
+    )
 
 # specify configs for inference
 inference_cfg = partial_fields(InferenceConfig, args.__dict__)  # use attribute of args to initial InferenceConfig
