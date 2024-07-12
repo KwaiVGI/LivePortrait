@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  app:
+    build: ./docker
+    image: liveportrait:latest
+    volumes:
+      - ./:/LivePortrait
+    ports:
+      - "8890:8890"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    tty: true
+    command: python3 app.py
