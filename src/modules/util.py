@@ -5,12 +5,13 @@ This file defines various neural network modules and utility functions, includin
 normalizations, and functions for spatial transformation and tensor manipulation.
 """
 
-from typing import List
+from typing import List, Optional
 from torch import nn
 import torch.nn.functional as F
 import torch
 from torch.nn.utils.spectral_norm import spectral_norm
 # from torch.nn.utils.parametrizations import spectral_norm
+torch.backends.cudnn.enabled = True
 
 import math
 import warnings
@@ -378,8 +379,10 @@ class LayerNorm(nn.Module):
 
     def forward(self, x):
         if self.data_format == "channels_last":
-            return F.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
-        elif self.data_format == "channels_first":
+            x = F.layer_norm(x, self.normalized_shape, self.weight, self.bias, self.eps)
+            return x
+
+        else:  # elif self.data_format == "channels_first":
             u = x.mean(1, keepdim=True)
             s = (x - u).pow(2).mean(1, keepdim=True)
             x = (x - u) / torch.sqrt(s + self.eps)

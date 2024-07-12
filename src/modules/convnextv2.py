@@ -67,18 +67,39 @@ class ConvNeXtV2(nn.Module):
     ):
         super().__init__()
         self.depths = depths
-        self.downsample_layers = nn.ModuleList()  # stem and 3 intermediate downsampling conv layers
-        stem = nn.Sequential(
+        # self.downsample_layers = nn.ModuleList()  # stem and 3 intermediate downsampling conv layers
+        # stem = nn.Sequential(
+        #     nn.Conv2d(in_chans, dims[0], kernel_size=4, stride=4),
+        #     LayerNorm(dims[0], eps=1e-6, data_format="channels_first")
+        # )
+        # self.downsample_layers.append(stem)
+        # for i in range(3):
+        #     downsample_layer = nn.Sequential(
+        #         LayerNorm(dims[i], eps=1e-6, data_format="channels_first"),
+        #         nn.Conv2d(dims[i], dims[i+1], kernel_size=2, stride=2),
+        #     )
+        #     self.downsample_layers.append(downsample_layer)
+
+        self.downsample_layers = nn.ModuleList(
+            (
+                nn.Sequential(
             nn.Conv2d(in_chans, dims[0], kernel_size=4, stride=4),
             LayerNorm(dims[0], eps=1e-6, data_format="channels_first")
-        )
-        self.downsample_layers.append(stem)
-        for i in range(3):
-            downsample_layer = nn.Sequential(
-                LayerNorm(dims[i], eps=1e-6, data_format="channels_first"),
-                nn.Conv2d(dims[i], dims[i+1], kernel_size=2, stride=2),
-            )
-            self.downsample_layers.append(downsample_layer)
+            ),
+            nn.Sequential(
+                LayerNorm(dims[0], eps=1e-6, data_format="channels_first"),
+                nn.Conv2d(dims[0], dims[0+1], kernel_size=2, stride=2),
+            ),
+            nn.Sequential(
+                LayerNorm(dims[1], eps=1e-6, data_format="channels_first"),
+                nn.Conv2d(dims[1], dims[1+1], kernel_size=2, stride=2),
+            ),
+            nn.Sequential(
+                LayerNorm(dims[2], eps=1e-6, data_format="channels_first"),
+                nn.Conv2d(dims[2], dims[2+1], kernel_size=2, stride=2),
+            ),
+        ))  # stem and 3 intermediate downsampling conv layers
+
 
         self.stages = nn.ModuleList()  # 4 feature resolution stages, each consisting of multiple residual blocks
         dp_rates = [x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))]
@@ -111,9 +132,18 @@ class ConvNeXtV2(nn.Module):
             nn.init.constant_(m.bias, 0)
 
     def forward_features(self, x):
-        for i in range(4):
-            x = self.downsample_layers[i](x)
-            x = self.stages[i](x)
+        x = self.downsample_layers[0](x)
+        x = self.stages[0](x)
+
+        x = self.downsample_layers[1](x)
+        x = self.stages[1](x)
+
+        x = self.downsample_layers[2](x)
+        x = self.stages[2](x)
+
+        x = self.downsample_layers[3](x)
+        x = self.stages[3](x)
+
         return self.norm(x.mean([-2, -1]))  # global average pooling, (N, C, H, W) -> (N, C)
 
     def forward(self, x):
