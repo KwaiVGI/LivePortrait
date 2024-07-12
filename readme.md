@@ -59,6 +59,8 @@ conda activate LivePortrait
 pip install -r requirements.txt
 ```
 
+Make sure your system has [FFmpeg](https://ffmpeg.org/)
+
 ### 2. Download pretrained weights
 
 Download the pretrained weights from HuggingFace:
