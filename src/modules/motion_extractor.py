@@ -20,8 +20,10 @@ class MotionExtractor(nn.Module):
         super(MotionExtractor, self).__init__()
 
         # default is convnextv2_base
-        backbone = kwargs.get('backbone', 'convnextv2_tiny')
-        self.detector = model_dict.get(backbone)(**kwargs)
+        # backbone = kwargs.get('backbone', 'convnextv2_tiny')
+        # self.detector = model_dict.get(backbone)(**kwargs)
+        self.detector = convnextv2_tiny(num_kp=21)
+        # print("---> %s", kwargs)
 
     def load_pretrained(self, init_path: str):
         if init_path not in (None, ''):

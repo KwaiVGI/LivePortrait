@@ -134,7 +134,7 @@ def load_model(ckpt_path, model_config, device, model_type):
     else:
         raise ValueError(f"Unknown model type: {model_type}")
 
-    model.load_state_dict(torch.load(ckpt_path, map_location=lambda storage, loc: storage))
+    model.load_state_dict(torch.load(ckpt_path, map_location=lambda storage, loc: storage), strict=True)
     model.eval()
     return model
 

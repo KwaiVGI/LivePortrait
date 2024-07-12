@@ -9,7 +9,9 @@ from typing import List
 from torch import nn
 import torch.nn.functional as F
 import torch
-import torch.nn.utils.spectral_norm as spectral_norm
+from torch.nn.utils.spectral_norm import spectral_norm
+# from torch.nn.utils.parametrizations import spectral_norm
+
 import math
 import warnings
 
@@ -274,10 +276,10 @@ class SPADE(nn.Module):
         out = normalized * (1 + gamma) + beta
         return out
 
-
 class SPADEResnetBlock(nn.Module):
     def __init__(self, fin, fout, norm_G, label_nc, use_se=False, dilation=1):
         super().__init__()
+        # print(f"{fin=}, {fout=}, {norm_G=}, {label_nc=}, {use_se=}, {dilation=}")
         # Attributes
         self.learned_shortcut = (fin != fout)
         fmiddle = min(fin, fout)
@@ -299,7 +301,23 @@ class SPADEResnetBlock(nn.Module):
         if self.learned_shortcut:
             self.norm_s = SPADE(fin, label_nc)
 
+
+    # def __prepare_scriptable__(self):
+    #     m = [self.conv_0, self.conv_1, self.norm_0, self.norm_1]
+    #     for module in m:
+    #         for hook in module._forward_pre_hooks.values():
+    #             # The hook we want to remove is an instance of WeightNorm class, so
+    #             # normally we would do `if isinstance(...)` but this class is not accessible
+    #             # because of shadowing, so we check the module name directly.
+    #             # https://github.com/pytorch/pytorch/blob/be0ca00c5ce260eb5bcec3237357f7a30cc08983/torch/nn/utils/__init__.py#L3
+    #             if hook.__module__ == "torch.nn.utils.spectral_norm" and hook.__class__.__name__ == "SpectralNorm":
+    #                 print(f"Remove spectral norm from {module}")
+    #                 torch.nn.utils.remove_spectral_norm(module)
+    #                 module.eval()
+    #         return self
+
     def forward(self, x, seg1):
+        # print(x.shape, seg1.shape)
         x_s = self.shortcut(x, seg1)
         dx = self.conv_0(self.actvn(self.norm_0(x, seg1)))
         dx = self.conv_1(self.actvn(self.norm_1(dx, seg1)))
