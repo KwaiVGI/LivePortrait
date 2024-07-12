@@ -148,6 +148,13 @@ python app.py
 
 You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
 
+🚀 We also provide an acceleration method. The first time inference will trigger an optimization (about one minute). Subsequent inferences are 20-30% faster. The effect may vary with different cuda versions. 
+```bash
+# enable torch.compile for faster inference
+python app.py --flag_do_torch_compile
+```
+**Note**: This method has **NOT** been fully robustness-tested.
+
 **Or, try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
 
 ### 5. Inference speed evaluation 🚀🚀🚀
