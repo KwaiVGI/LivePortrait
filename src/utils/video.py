@@ -37,12 +37,18 @@ def images2video(images, wfp, **kwargs):
         codec=codec, quality=quality, ffmpeg_params=ffmpeg_params, pixelformat=pixelformat, macro_block_size=macro_block_size
     )
 
-    n = len(images)
+    n = len(images) if hasattr(images, '__len__') else kwargs.get('frames_count')
+    img_it = iter(images)
     for i in track(range(n), description='Writing', transient=True):
+        try:
+            img = next(img_it)
+        except StopIteration:
+            break
+
         if image_mode.lower() == 'bgr':
-            writer.append_data(images[i][..., ::-1])
+            writer.append_data(img[..., ::-1])
         else:
-            writer.append_data(images[i])
+            writer.append_data(img)
 
     writer.close()
 
@@ -82,10 +88,9 @@ def blend(img: np.ndarray, mask: np.ndarray, background_color=(255, 255, 255)):
 
 def concat_frames(driving_image_lst, source_image, I_p_lst):
     # TODO: add more concat style, e.g., left-down corner driving
-    out_lst = []
     h, w, _ = I_p_lst[0].shape
 
-    for idx, _ in track(enumerate(I_p_lst), total=len(I_p_lst), description='Concatenating result...'):
+    for idx, _ in enumerate(I_p_lst):
         I_p = I_p_lst[idx]
         source_image_resized = cv2.resize(source_image, (w, h))
 
@@ -96,8 +101,7 @@ def concat_frames(driving_image_lst, source_image, I_p_lst):
             driving_image_resized = cv2.resize(driving_image, (w, h))
             out = np.hstack((driving_image_resized, source_image_resized, I_p))
 
-        out_lst.append(out)
-    return out_lst
+        yield out
 
 
 class VideoWriter:
