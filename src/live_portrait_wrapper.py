@@ -24,6 +24,7 @@ class LivePortraitWrapper(object):
 
         self.inference_cfg = inference_cfg
         self.device_id = inference_cfg.device_id
+        self.compile = inference_cfg.flag_do_torch_compile
         if inference_cfg.flag_force_cpu:
             self.device = 'cpu'
         else:
@@ -48,8 +49,11 @@ class LivePortraitWrapper(object):
             log(f'Load stitching_retargeting_module done.')
         else:
             self.stitching_retargeting_module = None
-
-
+        # Optimize for inference
+        if self.compile:
+            torch._dynamo.config.suppress_errors = True  # Suppress errors and fall back to eager execution
+            self.warping_module = torch.compile(self.warping_module, mode='max-autotune')
+            self.spade_generator = torch.compile(self.spade_generator, mode='max-autotune')
 
         self.timer = Timer()
 
@@ -264,6 +268,9 @@ class LivePortraitWrapper(object):
         # The line 18 in Algorithm 1: D(W(f_s; x_s, x′_d,i)）
         with torch.no_grad():
             with torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=self.inference_cfg.flag_use_half_precision):
+                if self.compile:
+                    # Mark the beginning of a new CUDA Graph step
+                    torch.compiler.cudagraph_mark_step_begin()
                 # get decoder input
                 ret_dct = self.warping_module(feature_3d, kp_source=kp_source, kp_driving=kp_driving)
                 # decode
