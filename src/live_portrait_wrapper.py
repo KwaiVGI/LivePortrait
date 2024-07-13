@@ -31,28 +31,38 @@ class LivePortraitWrapper(object):
             self.device = 'cuda:' + str(self.device_id)
 
         model_config = yaml.load(open(inference_cfg.models_config, 'r'), Loader=yaml.SafeLoader)
-        # init F
-        self.appearance_feature_extractor = load_model(inference_cfg.checkpoint_F, model_config, self.device, 'appearance_feature_extractor')
-        # self.appearance_feature_extractor = torch.jit.load("build/appearance_feature_extractor.pt")
-        log(f'Load appearance_feature_extractor done.')
-        # init M
-        self.motion_extractor = load_model(inference_cfg.checkpoint_M, model_config, self.device, 'motion_extractor')
-        # self.motion_extractor = torch.jit.load("build/motion_extractor.pt")
-        log(f'Load motion_extractor done.')
-        # init W
-        self.warping_module = load_model(inference_cfg.checkpoint_W, model_config, self.device, 'warping_module')
-        # self.warping_module = torch.jit.load("build/warping_module.pt")
-        log(f'Load warping_module done.')
-        # init G
-        self.spade_generator = load_model(inference_cfg.checkpoint_G, model_config, self.device, 'spade_generator')
-        # self.spade_generator = torch.jit.load("build/spade_generator.pt")
-        log(f'Load spade_generator done.')
-        # init S and R
-        if inference_cfg.checkpoint_S is not None and osp.exists(inference_cfg.checkpoint_S):
-            self.stitching_retargeting_module = load_model(inference_cfg.checkpoint_S, model_config, self.device, 'stitching_retargeting_module')
-            log(f'Load stitching_retargeting_module done.')
+        jit = False
+        jit = True
+        if jit:
+            self.appearance_feature_extractor = torch.jit.load("build/appearance_feature_extractor.pt")
+            self.motion_extractor = torch.jit.load("build/motion_extractor.pt")
+            self.warping_module = torch.jit.load("build/warping_module.pt")
+            self.spade_generator = torch.jit.load("build/spade_generator.pt")
+
+            eyes = torch.jit.load("build/stitching_retargeting_module_eye.pt")
+            lips = torch.jit.load("build/stitching_retargeting_module_lip.pt")
+            stitching = torch.jit.load("build/stitching_retargeting_module_stitching.pt")
+            self.stitching_retargeting_module = {'eye': eyes, 'lip': lips, 'stitching': stitching}
         else:
-            self.stitching_retargeting_module = None
+            # init F
+            self.appearance_feature_extractor = load_model(inference_cfg.checkpoint_F, model_config, self.device, 'appearance_feature_extractor')
+            log(f'Load appearance_feature_extractor done.')
+            # init M
+            self.motion_extractor = load_model(inference_cfg.checkpoint_M, model_config, self.device, 'motion_extractor')
+            log(f'Load motion_extractor done.')
+            # init W
+            self.warping_module = load_model(inference_cfg.checkpoint_W, model_config, self.device, 'warping_module')
+            log(f'Load warping_module done.')
+            # init G
+            self.spade_generator = load_model(inference_cfg.checkpoint_G, model_config, self.device, 'spade_generator')
+            log(f'Load spade_generator done.')
+            # init S and R
+            if inference_cfg.checkpoint_S is not None and osp.exists(inference_cfg.checkpoint_S):
+                self.stitching_retargeting_module = load_model(inference_cfg.checkpoint_S, model_config, self.device, 'stitching_retargeting_module')
+                log(f'Load stitching_retargeting_module done.')
+            else:
+                self.stitching_retargeting_module = None
+
         # Optimize for inference
         if self.compile:
             torch._dynamo.config.suppress_errors = True  # Suppress errors and fall back to eager execution

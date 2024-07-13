@@ -76,7 +76,7 @@ def trace_appearance_feature_extractor():
     torch.jit.save(appearance_feature_extractor, "build/appearance_feature_extractor.pt")
 
 
-# trace_appearance_feature_extractor()  # done
+trace_appearance_feature_extractor()  # done
 
 
 def trace_motion_extractor():
@@ -117,7 +117,7 @@ def trace_warping_module():
     torch.jit.save(warping_module, "build/warping_module.pt")
 
 
-# trace_warping_module()  # done
+trace_warping_module()  # done
 
 
 def trace_spade_generator():
@@ -251,7 +251,7 @@ model.state_dict().keys()
 
 model._parameters[name]
 
-model = modify_state_dict_inplace(model) 
+model = modify_state_dict_inplace(model)
 model.state_dict().keys()
 
 model.load_state_dict(torch.load(ckpt_path, map_location=lambda storage, loc: storage), strict=True)
@@ -325,7 +325,7 @@ class LayerNorm(nn.Module):
         return f'normalized_shape={self.normalized_shape}, ' \
                f'eps={self.eps}, data_format={self.data_format}'
 
-               
+
 class YourModule(nn.Module):
     def __init__(self, in_chans: int, dims: List[int]):
         super().__init__()
@@ -346,7 +346,7 @@ class YourModule(nn.Module):
             x = layer(x)
         return x
 
-        
+
 
 # Now try to script the entire module
 model = YourModule(3, dims)
