@@ -80,13 +80,17 @@ def blend(img: np.ndarray, mask: np.ndarray, background_color=(255, 255, 255)):
     return img
 
 
-def concat_frames(driving_image_lst, source_image, I_p_lst):
+def concat_frames(driving_image_lst, source_image_lst, I_p_lst):
     # TODO: add more concat style, e.g., left-down corner driving
     out_lst = []
     h, w, _ = I_p_lst[0].shape
 
     for idx, _ in track(enumerate(I_p_lst), total=len(I_p_lst), description='Concatenating result...'):
         I_p = I_p_lst[idx]
+
+        # Use modulo to loop through source frames if needed
+        source_idx = idx % len(source_image_lst)
+        source_image = source_image_lst[source_idx]
         source_image_resized = cv2.resize(source_image, (w, h))
 
         if driving_image_lst is None:
