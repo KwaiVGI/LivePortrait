@@ -16,11 +16,11 @@ from src.config.inference_config import InferenceConfig
 
 def update_source_preview(file):
     if file is None:
-        return gr.Image.update(value=None, visible=False), gr.Video.update(visible=False)
+        return None, None
     if is_video(file.name):
-        return gr.Image.update(visible=False), gr.Video.update(value=file.name, visible=True)
+        return None, file.name
     else:
-        return gr.Image.update(value=file.name, visible=True), gr.Video.update(visible=False)
+        return file.name, None
 
 def partial_fields(target_class, kwargs):
     return target_class(**{k: v for k, v in kwargs.items() if hasattr(target_class, k)})
@@ -129,7 +129,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         with gr.Column():
             process_button_animation = gr.Button("🚀 Animate", variant="primary")
         with gr.Column():
-            process_button_reset = gr.ClearButton([image_input, video_input, output_video, output_video_concat], value="🧹 Clear")
+            process_button_reset = gr.ClearButton([source_input, video_input, output_video, output_video_concat], value="🧹 Clear")
     with gr.Row():
         with gr.Column():
             with gr.Accordion(open=True, label="The animated video in the original image space"):
@@ -145,7 +145,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
             examples=data_examples,
             fn=gpu_wrapped_execute_video,
             inputs=[
-                image_input,
+                source_input,
                 video_input,
                 flag_relative_input,
                 flag_do_crop_input,
@@ -204,7 +204,15 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     )
     # Update the source preview when a file is uploaded
     source_input.change(
-        update_source_preview,
+        fn=update_source_preview,
+        inputs=[source_input],
+        outputs=[source_image_preview, source_video_preview]
+    )
+
+    # Update visibility of previews
+    source_input.change(
+        fn=lambda file: [gr.update(visible=file is not None and not is_video(file.name)),
+                         gr.update(visible=file is not None and is_video(file.name))],
         inputs=[source_input],
         outputs=[source_image_preview, source_video_preview]
     )
