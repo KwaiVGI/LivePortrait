@@ -104,7 +104,7 @@ class LivePortraitPipeline(object):
                 log(f'The FPS of {args.driving_info} is: {output_fps}')
 
             log(f"Load video file (mp4 mov avi etc...): {args.driving_info}")
-            driving_rgb_lst = load_driving_info(args.driving_info)
+            driving_rgb_lst = load_driving_info(args.driving_info, lazy=args.lazy_loading)
 
             ######## make motion template ########
             log("Start making motion template...")
