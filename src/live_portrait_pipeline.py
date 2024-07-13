@@ -47,6 +47,7 @@ class LivePortraitPipeline(object):
         ######## process source portrait ########
         if is_video(args.source_image):
             source_rgb_lst = load_driving_info(args.source_image)
+            source_rgb_lst = [resize_to_limit(img, inf_cfg.source_max_dim, inf_cfg.source_division) for img in source_rgb_lst]
             source_fps = int(get_fps(args.source_image))
         else:
             img_rgb = load_image_rgb(args.source_image)
@@ -55,6 +56,7 @@ class LivePortraitPipeline(object):
             source_fps = inf_cfg.output_fps
 
         source_frames = []
+        source_img_crop_256 = []
         source_features = []
         source_kp_infos = []
 
@@ -78,6 +80,7 @@ class LivePortraitPipeline(object):
             x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
             source_frames.append(frame_rgb)
+            source_img_crop_256.append(img_crop_256x256)
             source_features.append(f_s)
             source_kp_infos.append(x_s_info)
 
@@ -150,7 +153,7 @@ class LivePortraitPipeline(object):
         ######## prepare for pasteback ########
         I_p_pstbk_lst = None
         if inf_cfg.flag_pasteback and inf_cfg.flag_do_crop and inf_cfg.flag_stitching:
-            mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, crop_info['M_c2o'], dsize=(source_frames[0].shape[1], source_frames[0].shape[0]))
+            mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, crop_info['M_c2o'], dsize=(source_rgb_lst[0].shape[1], source_rgb_lst[0].shape[0]))
             I_p_pstbk_lst = []
             log("Prepared pasteback mask done.")
         #########################################
@@ -245,7 +248,7 @@ class LivePortraitPipeline(object):
 
         ######### build final concact result #########
         # driving frame | source image | generation, or source image | generation
-        frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, source_frames, I_p_lst)
+        frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, source_img_crop_256, I_p_lst)
         wfp_concat = osp.join(args.output_dir, f'{basename(args.source_image)}--{basename(args.driving_info)}_concat.mp4')
         images2video(frames_concatenated, wfp=wfp_concat, fps=output_fps)
 
