@@ -6,6 +6,7 @@ from typing import List, Tuple, Union
 
 import cv2; cv2.setNumThreads(0); cv2.ocl.setUseOpenCL(False)
 import numpy as np
+import torch
 
 from ..config.crop_config import CropConfig
 from .crop import (
@@ -45,8 +46,14 @@ class Cropper(object):
             device = "cpu"
             face_analysis_wrapper_provicer = ["CPUExecutionProvider"]
         else:
-            device = "cuda"
-            face_analysis_wrapper_provicer = ["CUDAExecutionProvider"]
+            if torch.backends.mps.is_available():
+                # Shape inference currently fails with CoreMLExecutionProvider
+                # for the retinaface model
+                device = "mps"
+                face_analysis_wrapper_provicer = ["CPUExecutionProvider"]
+            else:
+                device = "cuda"
+                face_analysis_wrapper_provicer = ["cudaexecutionprovider"]
         self.landmark_runner = LandmarkRunner(
             ckpt_path=make_abs_path(self.crop_cfg.landmark_ckpt_path),
             onnx_provider=device,
