@@ -53,7 +53,7 @@ class Cropper(object):
                 face_analysis_wrapper_provider = ["CPUExecutionProvider"]
             else:
                 device = "cuda"
-                face_analysis_wrapper_provider = ["cudaexecutionprovider"]
+                face_analysis_wrapper_provider = ["CUDAExecutionProvider"]
         self.landmark_runner = LandmarkRunner(
             ckpt_path=make_abs_path(self.crop_cfg.landmark_ckpt_path),
             onnx_provider=device,
