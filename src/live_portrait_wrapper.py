@@ -51,9 +51,10 @@ class LivePortraitWrapper(object):
             self.stitching_retargeting_module = None
         # Optimize for inference
         if self.compile:
-            self.warping_module = torch.compile(self.warping_module, mode='max-autotune')  
-            self.spade_generator = torch.compile(self.spade_generator, mode='max-autotune')  
-        
+            torch._dynamo.config.suppress_errors = True  # Suppress errors and fall back to eager execution
+            self.warping_module = torch.compile(self.warping_module, mode='max-autotune')
+            self.spade_generator = torch.compile(self.spade_generator, mode='max-autotune')
+
         self.timer = Timer()
 
     def update_config(self, user_args):
@@ -198,7 +199,7 @@ class LivePortraitWrapper(object):
         """
         kp_source: BxNx3
         eye_close_ratio: Bx3
-        Return: Bx(3*num_kp+2)
+        Return: Bx(3*num_kp)
         """
         feat_eye = concat_feat(kp_source, eye_close_ratio)
 
@@ -211,6 +212,7 @@ class LivePortraitWrapper(object):
         """
         kp_source: BxNx3
         lip_close_ratio: Bx2
+        Return: Bx(3*num_kp)
         """
         feat_lip = concat_feat(kp_source, lip_close_ratio)
 
