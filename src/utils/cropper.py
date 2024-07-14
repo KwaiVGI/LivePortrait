@@ -44,16 +44,16 @@ class Cropper(object):
         flag_force_cpu = kwargs.get("flag_force_cpu", False)
         if flag_force_cpu:
             device = "cpu"
-            face_analysis_wrapper_provicer = ["CPUExecutionProvider"]
+            face_analysis_wrapper_provider = ["CPUExecutionProvider"]
         else:
             if torch.backends.mps.is_available():
                 # Shape inference currently fails with CoreMLExecutionProvider
                 # for the retinaface model
                 device = "mps"
-                face_analysis_wrapper_provicer = ["CPUExecutionProvider"]
+                face_analysis_wrapper_provider = ["CPUExecutionProvider"]
             else:
                 device = "cuda"
-                face_analysis_wrapper_provicer = ["cudaexecutionprovider"]
+                face_analysis_wrapper_provider = ["cudaexecutionprovider"]
         self.landmark_runner = LandmarkRunner(
             ckpt_path=make_abs_path(self.crop_cfg.landmark_ckpt_path),
             onnx_provider=device,
@@ -64,7 +64,7 @@ class Cropper(object):
         self.face_analysis_wrapper = FaceAnalysisDIY(
             name="buffalo_l",
             root=make_abs_path(self.crop_cfg.insightface_root),
-            providers=face_analysis_wrapper_provicer,
+            providers=face_analysis_wrapper_provider,
         )
         self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512))
         self.face_analysis_wrapper.warmup()
