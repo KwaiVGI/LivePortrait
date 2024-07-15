@@ -4,6 +4,7 @@
 Wrapper for LivePortrait core functions
 """
 
+import contextlib
 import os.path as osp
 import numpy as np
 import cv2
@@ -28,7 +29,10 @@ class LivePortraitWrapper(object):
         if inference_cfg.flag_force_cpu:
             self.device = 'cpu'
         else:
-            self.device = 'cuda:' + str(self.device_id)
+            if torch.backends.mps.is_available():
+                self.device = 'mps'
+            else:
+                self.device = 'cuda:' + str(self.device_id)
 
         model_config = yaml.load(open(inference_cfg.models_config, 'r'), Loader=yaml.SafeLoader)
         # init F
@@ -56,6 +60,14 @@ class LivePortraitWrapper(object):
             self.spade_generator = torch.compile(self.spade_generator, mode='max-autotune')
 
         self.timer = Timer()
+
+    def inference_ctx(self):
+        if self.device == "mps":
+            ctx = contextlib.nullcontext()
+        else:
+            ctx = torch.autocast(device_type=self.device[:4], dtype=torch.float16,
+                                 enabled=self.inference_cfg.flag_use_half_precision)
+        return ctx
 
     def update_config(self, user_args):
         for k, v in user_args.items():
@@ -105,9 +117,8 @@ class LivePortraitWrapper(object):
         """ get the appearance feature of the image by F
         x: Bx3xHxW, normalized to 0~1
         """
-        with torch.no_grad():
-            with torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=self.inference_cfg.flag_use_half_precision):
-                feature_3d = self.appearance_feature_extractor(x)
+        with torch.no_grad(), self.inference_ctx():
+            feature_3d = self.appearance_feature_extractor(x)
 
         return feature_3d.float()
 
@@ -117,9 +128,8 @@ class LivePortraitWrapper(object):
         flag_refine_info: whether to trandform the pose to degrees and the dimention of the reshape
         return: A dict contains keys: 'pitch', 'yaw', 'roll', 't', 'exp', 'scale', 'kp'
         """
-        with torch.no_grad():
-            with torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=self.inference_cfg.flag_use_half_precision):
-                kp_info = self.motion_extractor(x)
+        with torch.no_grad(), self.inference_ctx():
+            kp_info = self.motion_extractor(x)
 
             if self.inference_cfg.flag_use_half_precision:
                 # float the dict
@@ -264,15 +274,14 @@ class LivePortraitWrapper(object):
         kp_driving: BxNx3
         """
         # The line 18 in Algorithm 1: D(W(f_s; x_s, x′_d,i)）
-        with torch.no_grad():
-            with torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=self.inference_cfg.flag_use_half_precision):
-                if self.compile:
-                    # Mark the beginning of a new CUDA Graph step
-                    torch.compiler.cudagraph_mark_step_begin()
-                # get decoder input
-                ret_dct = self.warping_module(feature_3d, kp_source=kp_source, kp_driving=kp_driving)
-                # decode
-                ret_dct['out'] = self.spade_generator(feature=ret_dct['out'])
+        with torch.no_grad(), self.inference_ctx():
+            if self.compile:
+                # Mark the beginning of a new CUDA Graph step
+                torch.compiler.cudagraph_mark_step_begin()
+            # get decoder input
+            ret_dct = self.warping_module(feature_3d, kp_source=kp_source, kp_driving=kp_driving)
+            # decode
+            ret_dct['out'] = self.spade_generator(feature=ret_dct['out'])
 
             # float the dict
             if self.inference_cfg.flag_use_half_precision:
