@@ -35,6 +35,7 @@
 
 
 ## 🔥 Updates
+- **`2024/07/15`**: 🍎 We support running on Apple Silicon Mac. Many thanks to [@jeethu](https://github.com/jeethu)! More to see [here](assets/docs/changelog/2024-07-15.md).
 - **`2024/07/10`**: 💪 We support audio and video concatenating, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
 - **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
 - **`2024/07/04`**: 😊 We released the initial version of the inference code and models. Continuous updates, stay tuned!
@@ -55,11 +56,13 @@ cd LivePortrait
 # create env using conda
 conda create -n LivePortrait python==3.9.18
 conda activate LivePortrait
-# install dependencies with pip
+# install dependencies with pip (Linux and Windows)
 pip install -r requirements.txt
+# for macOS:
+pip install -r requirements_apple.txt
 ```
 
-**Note:** make sure your system has [FFmpeg](https://ffmpeg.org/) installed!
+**Note:** make sure your system has [FFmpeg](https://ffmpeg.org/download.html) installed!
 
 ### 2. Download pretrained weights
 
@@ -96,7 +99,10 @@ pretrained_weights
 
 #### Fast hands-on
 ```bash
+# Linux and Windows:
 python inference.py
+# MacOS:
+PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py
 ```
 
 If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image, and generated result.
@@ -145,7 +151,10 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 We also provide a Gradio <a href='https://github.com/gradio-app/gradio'><img src='https://img.shields.io/github/stars/gradio-app/gradio'></a> interface for a better experience, just run by:
 
 ```bash
+# Linux and Windows:
 python app.py
+# MacOS:
+PYTORCH_ENABLE_MPS_FALLBACK=1 python app.py
 ```
 
 You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
@@ -155,7 +164,7 @@ You can specify the `--server_port`, `--share`, `--server_name` arguments to sat
 # enable torch.compile for faster inference
 python app.py --flag_do_torch_compile
 ```
-**Note**: This method has not been fully tested. e.g., on Windows.
+**Note**: This method is not supported on Windows and macOS.
 
 **Or, try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
 
