@@ -16,8 +16,8 @@
 <div align='center'>
     <sup>1 </sup>Kuaishou Technology&emsp; <sup>2 </sup>University of Science and Technology of China&emsp; <sup>3 </sup>Fudan University&emsp;
 </div>
-<div align='center' style="font-size: 0.82em;">
-    <sup>†</sup> Corresponding author
+<div align='center'>
+    <small><sup>†</sup> Corresponding author</small>
 </div>
 
 <br>
