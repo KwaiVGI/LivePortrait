@@ -31,6 +31,7 @@ https://github.com/user-attachments/assets/c65006c6-bfc2-4c99-b7d0-4d8853f0c9da
 ## Introduction
 This repo, named **Webcam Live Portrait**, contains the official PyTorch implementation of author paper [LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control](https://arxiv.org/pdf/2407.03168).
 I am actively updating and improving this repository. If you find any bugs or have suggestions, welcome to raise issues or submit pull requests (PR) 💖.
+The webcam_live_portrait and Live_Portrait_Monitor github repos are hosted in two directories.
 
 ## 🔥 Getting Started
 ### 1. Clone the code and prepare the environment
