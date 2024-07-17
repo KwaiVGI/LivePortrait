@@ -12,7 +12,7 @@ https://github.com/Mrkomiljon/Webcam_Live_Portrait/assets/92161283/4e16fbc7-8c13
     
 # Live_Portrait_Monitor
 
-# You can see [github repo](https://github.com/Mrkomiljon/Live_Portrait_Monitor)in here.
+# You can see [github repo](https://github.com/Mrkomiljon/Live_Portrait_Monitor) in here.
 
 https://github.com/user-attachments/assets/80020a36-6ec9-4efa-abf7-c1adbbfc6f39
 
