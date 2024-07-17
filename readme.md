@@ -54,7 +54,7 @@ git clone https://github.com/KwaiVGI/LivePortrait
 cd LivePortrait
 
 # create env using conda
-conda create -n LivePortrait python==3.9.18
+conda create -n LivePortrait python==3.9
 conda activate LivePortrait
 
 # install dependencies with pip (for Linux and Windows)
@@ -72,7 +72,7 @@ The easiest way to download the pretrained weights is from HuggingFace:
 # first, ensure git-lfs is installed, see: https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage
 git lfs install
 # clone and move the weights
-git clone https://huggingface.co/KwaiVGI/liveportrait temp_pretrained_weights
+git clone https://huggingface.co/KwaiVGI/LivePortrait temp_pretrained_weights
 mv temp_pretrained_weights/* pretrained_weights/
 rm -rf temp_pretrained_weights
 ```
