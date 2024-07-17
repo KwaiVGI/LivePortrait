@@ -35,7 +35,7 @@
 
 
 ## 🔥 Updates
-- **`2024/07/17`**: <span style="font-size: 1.4em;"></span> We support macOS with Apple Silicon, modified from [jeethu](https://github.com/jeethu)'s PR [#143](https://github.com/KwaiVGI/LivePortrait/pull/143).
+- **`2024/07/17`**: <span style="font-size: 1.5em;"></span> We support macOS with Apple Silicon, modified from [jeethu](https://github.com/jeethu)'s PR [#143](https://github.com/KwaiVGI/LivePortrait/pull/143).
 - **`2024/07/10`**: 💪 We support audio and video concatenating, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
 - **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
 - **`2024/07/04`**: 😊 We released the initial version of the inference code and models. Continuous updates, stay tuned!
@@ -56,9 +56,10 @@ cd LivePortrait
 # create env using conda
 conda create -n LivePortrait python==3.9.18
 conda activate LivePortrait
-# install dependencies with pip (Linux and Windows)
+# install dependencies with pip (for Linux and Windows)
 pip install -r requirements.txt
-# for macOS:
+
+# for macOS with Apple Silicon
 pip install -r requirements_macOS.txt
 ```
 
