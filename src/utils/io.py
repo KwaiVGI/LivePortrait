@@ -21,13 +21,39 @@ def load_image_rgb(image_path: str):
 def load_driving_info(driving_info):
     driving_video_ori = []
 
+    from typing import Iterator
+
+    class LazyVideoFramesIterator:
+        def __init__(self, reader: 'imageio.Reader'):
+            self.data_iter = reader.iter_data()
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            return next(self.data_iter)
+
+    class LazyVideoFramesLoader:
+        def __init__(self, video_path: str) -> None:
+            self.video_path = video_path
+            self.reader = imageio.get_reader(video_path, "ffmpeg")
+
+        def __iter__(self) -> Iterator[LazyVideoFramesIterator]:
+            return LazyVideoFramesIterator(self.reader)
+
+        def __getitem__(self, key):
+            raise Exception("Indexing isn't implemented for lazy frames loading")
+
     def load_images_from_directory(directory):
         image_paths = sorted(glob(osp.join(directory, '*.png')) + glob(osp.join(directory, '*.jpg')))
         return [load_image_rgb(im_path) for im_path in image_paths]
 
     def load_images_from_video(file_path):
-        reader = imageio.get_reader(file_path, "ffmpeg")
-        return [image for _, image in enumerate(reader)]
+        if lazy:
+            return LazyVideoFramesLoader(file_path)
+        else:
+            reader = imageio.get_reader(file_path, "ffmpeg")
+            return [image for _, image in enumerate(reader)]
 
     if osp.isdir(driving_info):
         driving_video_ori = load_images_from_directory(driving_info)

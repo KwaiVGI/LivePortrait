@@ -104,7 +104,7 @@ class LivePortraitPipeline(object):
                 log(f'The FPS of {args.driving_info} is: {output_fps}')
 
             log(f"Load video file (mp4 mov avi etc...): {args.driving_info}")
-            driving_rgb_lst = load_driving_info(args.driving_info)
+            driving_rgb_lst = load_driving_info(args.driving_info, lazy=args.lazy_loading)
 
             ######## make motion template ########
             log("Start making motion template...")
@@ -220,7 +220,7 @@ class LivePortraitPipeline(object):
         # driving frame | source image | generation, or source image | generation
         frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, img_crop_256x256, I_p_lst)
         wfp_concat = osp.join(args.output_dir, f'{basename(args.source_image)}--{basename(args.driving_info)}_concat.mp4')
-        images2video(frames_concatenated, wfp=wfp_concat, fps=output_fps)
+        images2video(frames_concatenated, wfp=wfp_concat, fps=output_fps, frames_count=len(driving_rgb_crop_256x256_lst))
 
         if flag_has_audio:
             # final result with concat
