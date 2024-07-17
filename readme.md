@@ -35,7 +35,6 @@
 
 
 ## 🔥 Updates
-- **`2024/07/15`**: 🍎 We support running on Apple Silicon Mac. Many thanks to [@jeethu](https://github.com/jeethu)! More to see [here](assets/docs/changelog/2024-07-15.md).
 - **`2024/07/10`**: 💪 We support audio and video concatenating, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
 - **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
 - **`2024/07/04`**: 😊 We released the initial version of the inference code and models. Continuous updates, stay tuned!
@@ -59,7 +58,7 @@ conda activate LivePortrait
 # install dependencies with pip (Linux and Windows)
 pip install -r requirements.txt
 # for macOS:
-pip install -r requirements_apple.txt
+pip install -r requirements_macOS.txt
 ```
 
 **Note:** make sure your system has [FFmpeg](https://ffmpeg.org/download.html) installed!
@@ -70,8 +69,10 @@ The easiest way to download the pretrained weights is from HuggingFace:
 ```bash
 # first, ensure git-lfs is installed, see: https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage
 git lfs install
-# clone the weights
-git clone https://huggingface.co/KwaiVGI/liveportrait pretrained_weights
+# clone and move the weights
+git clone https://huggingface.co/KwaiVGI/liveportrait temp_pretrained_weights
+mv temp_pretrained_weights/* pretrained_weights/
+rm -rf temp_pretrained_weights
 ```
 
 Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). Unzip and place them in `./pretrained_weights`.
@@ -99,9 +100,10 @@ pretrained_weights
 
 #### Fast hands-on
 ```bash
-# Linux and Windows:
+# For Linux and Windows
 python inference.py
-# MacOS:
+
+# For macOS with Apple Silicon, Intel not supported, this maybe 20x slower than RTX 4090
 PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py
 ```
 
@@ -151,9 +153,10 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 We also provide a Gradio <a href='https://github.com/gradio-app/gradio'><img src='https://img.shields.io/github/stars/gradio-app/gradio'></a> interface for a better experience, just run by:
 
 ```bash
-# Linux and Windows:
+# For Linux and Windows:
 python app.py
-# MacOS:
+
+# For macOS with Apple Silicon, Intel not supported, this maybe 20x slower than RTX 4090
 PYTORCH_ENABLE_MPS_FALLBACK=1 python app.py
 ```
 
@@ -172,6 +175,7 @@ python app.py --flag_do_torch_compile
 We have also provided a script to evaluate the inference speed of each module:
 
 ```bash
+# For NVIDIA GPU
 python speed.py
 ```
 
@@ -193,9 +197,9 @@ Discover the invaluable resources contributed by our community to enhance your L
 
 - [ComfyUI-LivePortraitKJ](https://github.com/kijai/ComfyUI-LivePortraitKJ) by [@kijai](https://github.com/kijai)
 - [comfyui-liveportrait](https://github.com/shadowcz007/comfyui-liveportrait) by [@shadowcz007](https://github.com/shadowcz007)
+- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [@Benji](https://www.youtube.com/@TheFutureThinker)
 - [LivePortrait hands-on tutorial](https://www.youtube.com/watch?v=uyjSTAOY7yI) by [@AI Search](https://www.youtube.com/@theAIsearch)
 - [ComfyUI tutorial](https://www.youtube.com/watch?v=8-IcDDmiUMM) by [@Sebastian Kamph](https://www.youtube.com/@sebastiankamph)
-- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [@Benji](https://www.youtube.com/@TheFutureThinker)
 - [Replicate Playground](https://replicate.com/fofr/live-portrait) and [cog-comfyui](https://github.com/fofr/cog-comfyui) by [@fofr](https://github.com/fofr)
 
 And many more amazing contributions from our community!
