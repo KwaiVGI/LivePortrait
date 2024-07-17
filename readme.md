@@ -56,9 +56,9 @@ cd LivePortrait
 # create env using conda
 conda create -n LivePortrait python==3.9.18
 conda activate LivePortrait
+
 # install dependencies with pip (for Linux and Windows)
 pip install -r requirements.txt
-
 # for macOS with Apple Silicon
 pip install -r requirements_macOS.txt
 ```
