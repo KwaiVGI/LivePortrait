@@ -42,8 +42,8 @@ def main():
     fast_check_args(args)
 
     # specify configs for inference
-    inference_cfg = partial_fields(InferenceConfig, args.__dict__)  # use attribute of args to initial InferenceConfig
-    crop_cfg = partial_fields(CropConfig, args.__dict__)  # use attribute of args to initial CropConfig
+    inference_cfg = partial_fields(InferenceConfig, args.__dict__)
+    crop_cfg = partial_fields(CropConfig, args.__dict__)
 
     live_portrait_pipeline = LivePortraitPipeline(
         inference_cfg=inference_cfg,

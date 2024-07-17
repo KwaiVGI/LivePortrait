@@ -11,6 +11,7 @@ __pycache__/
 
 pretrained_weights/*.md
 pretrained_weights/docs
+pretrained_weights/liveportrait
 
 # Ipython notebook
 *.ipynb
@@ -19,3 +20,4 @@ pretrained_weights/docs
 animations/*
 tmp/*
 .vscode/launch.json
+**/*.DS_Store

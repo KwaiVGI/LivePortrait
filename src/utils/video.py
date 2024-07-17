@@ -175,8 +175,13 @@ def has_audio_stream(video_path: str) -> bool:
         # Check if there is any output from ffprobe command
         return bool(result.stdout.strip())
     except Exception as e:
-        log(f"Error occurred while probing video: {video_path}, you may need to install ffprobe! Now set audio to false!", style="bold red")
-        return False
+        log(
+            f"Error occurred while probing video: {video_path}, "
+            "you may need to install ffprobe! (https://ffmpeg.org/download.html) "
+            "Now set audio to false!",
+            style="bold red"
+        )
+    return False
 
 
 def add_audio_to_video(silent_video_path: str, audio_video_path: str, output_video_path: str):
