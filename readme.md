@@ -10,7 +10,19 @@
 
 https://github.com/Mrkomiljon/Webcam_Live_Portrait/assets/92161283/4e16fbc7-8c13-4415-b946-dd731ac00b6e
     
+# Live_Portrait_Monitor
 
+# Monitor [result](https://github.com/Mrkomiljon/Live_Portrait_Monitor) repo.
+
+https://github.com/user-attachments/assets/80020a36-6ec9-4efa-abf7-c1adbbfc6f39
+
+https://github.com/user-attachments/assets/471c65a2-567f-4822-93af-882f0d041f18
+
+https://github.com/user-attachments/assets/3bf96941-3a93-475b-9d47-8c70e0bd1e48
+
+https://github.com/user-attachments/assets/23a83942-48a6-4922-8a50-b8f7ebdaa143
+
+https://github.com/user-attachments/assets/c65006c6-bfc2-4c99-b7d0-4d8853f0c9da
 
 ## 🔥 Updates
 - **`2024/07/10`**: 🔥 I released the initial version of the inference code for webcam. Continuous updates, stay tuned!
