@@ -16,6 +16,9 @@
 <div align='center'>
     <sup>1 </sup>Kuaishou Technology&emsp; <sup>2 </sup>University of Science and Technology of China&emsp; <sup>3 </sup>Fudan University&emsp;
 </div>
+<div align='center'>
+    <small><sup>†</sup> Corresponding author</small>
+</div>
 
 <br>
 <div align="center">
@@ -23,6 +26,7 @@
   <a href='https://arxiv.org/pdf/2407.03168'><img src='https://img.shields.io/badge/arXiv-LivePortrait-red'></a>
   <a href='https://liveportrait.github.io'><img src='https://img.shields.io/badge/Project-LivePortrait-green'></a>
   <a href='https://huggingface.co/spaces/KwaiVGI/liveportrait'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
+  <a href="https://github.com/KwaiVGI/LivePortrait"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait"></a>
 </div>
 <br>
 
@@ -35,6 +39,7 @@
 
 
 ## 🔥 Updates
+- **`2024/07/17`**: 🍎 We support macOS with Apple Silicon, modified from [jeethu](https://github.com/jeethu)'s PR [#143](https://github.com/KwaiVGI/LivePortrait/pull/143).
 - **`2024/07/10`**: 💪 We support audio and video concatenating, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
 - **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
 - **`2024/07/04`**: 😊 We released the initial version of the inference code and models. Continuous updates, stay tuned!
@@ -53,13 +58,16 @@ git clone https://github.com/KwaiVGI/LivePortrait
 cd LivePortrait
 
 # create env using conda
-conda create -n LivePortrait python==3.9.18
+conda create -n LivePortrait python==3.9
 conda activate LivePortrait
-# install dependencies with pip
+
+# install dependencies with pip (for Linux and Windows)
 pip install -r requirements.txt
+# for macOS with Apple Silicon
+pip install -r requirements_macOS.txt
 ```
 
-**Note:** make sure your system has [FFmpeg](https://ffmpeg.org/) installed!
+**Note:** make sure your system has [FFmpeg](https://ffmpeg.org/download.html) installed, including both `ffmpeg` and `ffprobe`!
 
 ### 2. Download pretrained weights
 
@@ -67,8 +75,10 @@ The easiest way to download the pretrained weights is from HuggingFace:
 ```bash
 # first, ensure git-lfs is installed, see: https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage
 git lfs install
-# clone the weights
-git clone https://huggingface.co/KwaiVGI/liveportrait pretrained_weights
+# clone and move the weights
+git clone https://huggingface.co/KwaiVGI/LivePortrait temp_pretrained_weights
+mv temp_pretrained_weights/* pretrained_weights/
+rm -rf temp_pretrained_weights
 ```
 
 Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). Unzip and place them in `./pretrained_weights`.
@@ -96,7 +106,11 @@ pretrained_weights
 
 #### Fast hands-on
 ```bash
+# For Linux and Windows
 python inference.py
+
+# For macOS with Apple Silicon, Intel not supported, this maybe 20x slower than RTX 4090
+PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py
 ```
 
 If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image, and generated result.
@@ -145,7 +159,11 @@ python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/
 We also provide a Gradio <a href='https://github.com/gradio-app/gradio'><img src='https://img.shields.io/github/stars/gradio-app/gradio'></a> interface for a better experience, just run by:
 
 ```bash
+# For Linux and Windows:
 python app.py
+
+# For macOS with Apple Silicon, Intel not supported, this maybe 20x slower than RTX 4090
+PYTORCH_ENABLE_MPS_FALLBACK=1 python app.py
 ```
 
 You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
@@ -155,7 +173,7 @@ You can specify the `--server_port`, `--share`, `--server_name` arguments to sat
 # enable torch.compile for faster inference
 python app.py --flag_do_torch_compile
 ```
-**Note**: This method has not been fully tested. e.g., on Windows.
+**Note**: This method is not supported on Windows and macOS.
 
 **Or, try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
 
@@ -163,6 +181,7 @@ python app.py --flag_do_torch_compile
 We have also provided a script to evaluate the inference speed of each module:
 
 ```bash
+# For NVIDIA GPU
 python speed.py
 ```
 
@@ -184,9 +203,9 @@ Discover the invaluable resources contributed by our community to enhance your L
 
 - [ComfyUI-LivePortraitKJ](https://github.com/kijai/ComfyUI-LivePortraitKJ) by [@kijai](https://github.com/kijai)
 - [comfyui-liveportrait](https://github.com/shadowcz007/comfyui-liveportrait) by [@shadowcz007](https://github.com/shadowcz007)
+- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [@Benji](https://www.youtube.com/@TheFutureThinker)
 - [LivePortrait hands-on tutorial](https://www.youtube.com/watch?v=uyjSTAOY7yI) by [@AI Search](https://www.youtube.com/@theAIsearch)
 - [ComfyUI tutorial](https://www.youtube.com/watch?v=8-IcDDmiUMM) by [@Sebastian Kamph](https://www.youtube.com/@sebastiankamph)
-- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [@Benji](https://www.youtube.com/@TheFutureThinker)
 - [Replicate Playground](https://replicate.com/fofr/live-portrait) and [cog-comfyui](https://github.com/fofr/cog-comfyui) by [@fofr](https://github.com/fofr)
 - [LivePortrait RunPod Template](https://runpod.io/console/deploy?template=bq3dmz6nwp&ref=2xxro4sy) by [@ashleykleynhans](https://github.com/ashleykleynhans)
 - [LivePortrait Docker Image](https://github.com/ashleykleynhans/liveportrait-docker) by [@ashleykleynhans](https://github.com/ashleykleynhans)

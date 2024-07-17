@@ -1,0 +1,21 @@
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch==2.3.0
+torchvision==0.18.0
+torchaudio==2.3.0
+
+numpy==1.26.4
+pyyaml==6.0.1
+opencv-python==4.10.0.84
+scipy==1.13.1
+imageio==2.34.2
+lmdb==1.4.1
+tqdm==4.66.4
+rich==13.7.1
+ffmpeg-python==0.2.0
+onnx==1.16.1
+scikit-image==0.24.0
+albumentations==1.4.10
+matplotlib==3.9.0
+imageio-ffmpeg==0.5.1
+tyro==0.8.5
+gradio==4.37.1

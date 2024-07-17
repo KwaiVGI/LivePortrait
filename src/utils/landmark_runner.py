@@ -39,6 +39,12 @@ class LandmarkRunner(object):
                     ('CUDAExecutionProvider', {'device_id': device_id})
                 ]
             )
+        elif onnx_provider.lower() == 'mps':
+            self.session = onnxruntime.InferenceSession(
+                ckpt_path, providers=[
+                    'CoreMLExecutionProvider'
+                ]
+            )
         else:
             opts = onnxruntime.SessionOptions()
             opts.intra_op_num_threads = 4  # 默认线程数为 4

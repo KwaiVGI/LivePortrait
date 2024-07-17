@@ -216,14 +216,14 @@ class LivePortraitPipeline(object):
         wfp_concat = None
         flag_has_audio = (not flag_load_from_template) and has_audio_stream(args.driving_info)
 
-        ######### build final concact result #########
+        ######### build final concat result #########
         # driving frame | source image | generation, or source image | generation
         frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, img_crop_256x256, I_p_lst)
         wfp_concat = osp.join(args.output_dir, f'{basename(args.source_image)}--{basename(args.driving_info)}_concat.mp4')
         images2video(frames_concatenated, wfp=wfp_concat, fps=output_fps)
 
         if flag_has_audio:
-            # final result with concact
+            # final result with concat
             wfp_concat_with_audio = osp.join(args.output_dir, f'{basename(args.source_image)}--{basename(args.driving_info)}_concat_with_audio.mp4')
             add_audio_to_video(wfp_concat, args.driving_info, wfp_concat_with_audio)
             os.replace(wfp_concat_with_audio, wfp_concat)
@@ -247,7 +247,7 @@ class LivePortraitPipeline(object):
         if wfp_template not in (None, ''):
             log(f'Animated template: {wfp_template}, you can specify `-d` argument with this template path next time to avoid cropping video, motion making and protecting privacy.', style='bold green')
         log(f'Animated video: {wfp}')
-        log(f'Animated video with concact: {wfp_concat}')
+        log(f'Animated video with concat: {wfp_concat}')
 
         return wfp, wfp_concat
 
