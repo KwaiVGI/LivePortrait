@@ -26,6 +26,8 @@ class InferenceConfig(PrintableConfig):
     flag_crop_driving_video: bool = False
     device_id: int = 0
     flag_lip_zero: bool = True
+    flag_source_video_eye_retargeting: bool = False
+    flag_video_editing_head_rotation: bool = False 
     flag_eye_retargeting: bool = False
     flag_lip_retargeting: bool = False
     flag_stitching: bool = True
@@ -38,6 +40,8 @@ class InferenceConfig(PrintableConfig):
 
     # NOT EXPORTED PARAMS
     lip_zero_threshold: float = 0.03 # threshold for flag_lip_zero
+    source_video_eye_retargeting_threshold: float = 0.18 # threshold for eyes retargeting if the input is a source video
+    driving_smooth_observation_variance: float = 3e-6 # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
     anchor_frame: int = 0 # TO IMPLEMENT
 
     input_shape: Tuple[int, int] = (256, 256)  # input shape
@@ -47,5 +51,5 @@ class InferenceConfig(PrintableConfig):
 
     mask_crop: ndarray = field(default_factory=lambda: cv2.imread(make_abs_path('../utils/resources/mask_template.png'), cv2.IMREAD_COLOR))
     size_gif: int = 256 # default gif size, TO IMPLEMENT
-    source_max_dim: int = 1280 # the max dim of height and width of source image
-    source_division: int = 2 # make sure the height and width of source image can be divided by this number
+    source_max_dim: int = 1280 # the max dim of height and width of source image or video
+    source_division: int = 2 # make sure the height and width of source image or video can be divided by this number

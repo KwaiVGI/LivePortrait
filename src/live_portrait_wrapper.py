@@ -95,7 +95,7 @@ class LivePortraitWrapper(object):
         x = x.to(self.device)
         return x
 
-    def prepare_driving_videos(self, imgs) -> torch.Tensor:
+    def prepare_videos(self, imgs) -> torch.Tensor:
         """ construct the input as standard
         imgs: NxBxHxWx3, uint8
         """
@@ -216,7 +216,7 @@ class LivePortraitWrapper(object):
         with torch.no_grad():
             delta = self.stitching_retargeting_module['eye'](feat_eye)
 
-        return delta
+        return delta.reshape(-1, kp_source.shape[1], 3)
 
     def retarget_lip(self, kp_source: torch.Tensor, lip_close_ratio: torch.Tensor) -> torch.Tensor:
         """
@@ -229,7 +229,7 @@ class LivePortraitWrapper(object):
         with torch.no_grad():
             delta = self.stitching_retargeting_module['lip'](feat_lip)
 
-        return delta
+        return delta.reshape(-1, kp_source.shape[1], 3)
 
     def stitch(self, kp_source: torch.Tensor, kp_driving: torch.Tensor) -> torch.Tensor:
         """
@@ -301,10 +301,10 @@ class LivePortraitWrapper(object):
 
         return out
 
-    def calc_driving_ratio(self, driving_lmk_lst):
+    def calc_ratio(self, lmk_lst):
         input_eye_ratio_lst = []
         input_lip_ratio_lst = []
-        for lmk in driving_lmk_lst:
+        for lmk in lmk_lst:
             # for eyes retargeting
             input_eye_ratio_lst.append(calc_eye_close_ratio(lmk[None]))
             # for lip retargeting

@@ -22,8 +22,8 @@ def fast_check_ffmpeg():
 
 
 def fast_check_args(args: ArgumentConfig):
-    if not osp.exists(args.source_image):
-        raise FileNotFoundError(f"source image not found: {args.source_image}")
+    if not osp.exists(args.source_info):
+        raise FileNotFoundError(f"source info not found: {args.source_info}")
     if not osp.exists(args.driving_info):
         raise FileNotFoundError(f"driving info not found: {args.driving_info}")
 

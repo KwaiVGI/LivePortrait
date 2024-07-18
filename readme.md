@@ -113,7 +113,7 @@ python inference.py
 PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py
 ```
 
-If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image, and generated result.
+If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image or video, and generated result.
 
 <p align="center">
   <img src="./assets/docs/inference.gif" alt="image">
@@ -122,7 +122,9 @@ If the script runs successfully, you will get an output mp4 file named `animatio
 Or, you can change the input by specifying the `-s` and `-d` arguments:
 
 ```bash
-python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d0.mp4
+python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d0.mp4 # the input is an image
+
+python inference.py -s assets/examples/source/s13.mp4 -d assets/examples/driving/d0.mp4 # the input is a video
 
 # disable pasting back to run faster
 python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d0.mp4 --no_flag_pasteback
@@ -144,7 +146,7 @@ Below is a auto-cropping case by `--flag_crop_driving_video`:
 python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d13.mp4 --flag_crop_driving_video
 ```
 
-If you find the results of auto-cropping is not well, you can modify the `--scale_crop_video`, `--vy_ratio_crop_video` options to adjust the scale and offset, or do it manually.
+If you find the results of auto-cropping is not well, you can modify the `--scale_crop_driving_video`, `--vy_ratio_crop_driving_video` options to adjust the scale and offset, or do it manually.
 
 #### Motion template making
 You can also use the auto-generated motion template files ending with `.pkl` to speed up inference, and **protect privacy**, such as:
