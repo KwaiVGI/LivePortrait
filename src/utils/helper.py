@@ -110,6 +110,7 @@ def smooth(x_d_lst, shape, device, observation_variance=3e-6, process_variance=1
     x_d_lst_smooth = [torch.tensor(state_mean.reshape(shape[-2:]), dtype=torch.float32, device=device) for state_mean in smoothed_state_means]
     return x_d_lst_smooth
 
+
 def load_model(ckpt_path, model_config, device, model_type):
     model_params = model_config['model_params'][f'{model_type}_params']
 
