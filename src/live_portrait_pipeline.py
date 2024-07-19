@@ -112,6 +112,8 @@ class LivePortraitPipeline(object):
             driving_n_frames = driving_template_dct['n_frames']
             if flag_is_source_video:
                 n_frames = min(len(source_rgb_lst), driving_n_frames)  # minimum number as the number of the animated frames
+            else:
+                n_frames = driving_n_frames
 
             # set output_fps
             output_fps = driving_template_dct.get('output_fps', inf_cfg.output_fps)
@@ -133,6 +135,8 @@ class LivePortraitPipeline(object):
             if flag_is_source_video:
                 n_frames = min(len(source_rgb_lst), driving_n_frames)  # minimum number as the number of the animated frames
                 driving_rgb_lst = driving_rgb_lst[:n_frames]
+            else:
+                n_frames = driving_n_frames
             if inf_cfg.flag_crop_driving_video:
                 ret_d = self.cropper.crop_driving_video(driving_rgb_lst)
                 log(f'Driving video is cropped, {len(ret_d["frame_crop_lst"])} frames are processed.')
@@ -195,9 +199,7 @@ class LivePortraitPipeline(object):
                 key_r = 'R' if 'R' in driving_template_dct['motion'][0].keys() else 'R_d'  # compatible with previous keys
                 x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
                 x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
-        else:  # source image
-            n_frames = driving_n_frames
-            # if the input is a source image, process it only once
+        else:  # if the input is a source image, process it only once
             crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)
             if crop_info is None:
                 raise Exception("No face detected in the source image!")
