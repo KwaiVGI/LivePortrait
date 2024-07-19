@@ -3,6 +3,8 @@
 """
 Pipeline for gradio
 """
+
+import os.path as osp
 import gradio as gr
 
 from .config.argument_config import ArgumentConfig
@@ -11,6 +13,7 @@ from .utils.io import load_img_online
 from .utils.rprint import rlog as log
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.camera import get_rotation_matrix
+from .utils.helper import is_square_video
 
 
 def update_args(args, user_args):
@@ -31,23 +34,53 @@ class GradioPipeline(LivePortraitPipeline):
 
     def execute_video(
         self,
-        input_image_path,
-        input_video_path,
-        flag_relative_input,
-        flag_do_crop_input,
-        flag_remap_input,
-        flag_crop_driving_video_input
+        input_source_image_path=None,
+        input_source_video_path=None,
+        input_driving_video_path=None,
+        flag_relative_input=True,
+        flag_do_crop_input=True,
+        flag_remap_input=True,
+        flag_crop_driving_video_input=True,
+        flag_video_editing_head_rotation=False,
+        scale=2.3,
+        vx_ratio=0.0,
+        vy_ratio=-0.125,
+        scale_crop_driving_video=2.2,
+        vx_ratio_crop_driving_video=0.0,
+        vy_ratio_crop_driving_video=-0.1,
+        driving_smooth_observation_variance=3e-6,
+        tab_selection=None,
     ):
-        """ for video driven potrait animation
+        """ for video-driven potrait animation or video editing
         """
-        if input_image_path is not None and input_video_path is not None:
+        if tab_selection == 'Image':
+            input_source_path = input_source_image_path
+        elif tab_selection == 'Video':
+            input_source_path = input_source_video_path
+        else:
+            input_source_path = input_source_image_path
+
+        if input_source_path is not None and input_driving_video_path is not None:
+            if osp.exists(input_driving_video_path) and is_square_video(input_driving_video_path) is False:
+                flag_crop_driving_video_input = True
+                log("The source video is not square, the driving video will be cropped to square automatically.")
+                gr.Info("The source video is not square, the driving video will be cropped to square automatically.", duration=2)
+
             args_user = {
-                'source_image': input_image_path,
-                'driving_info': input_video_path,
-                'flag_relative': flag_relative_input,
+                'source': input_source_path,
+                'driving': input_driving_video_path,
+                'flag_relative_motion': flag_relative_input,
                 'flag_do_crop': flag_do_crop_input,
                 'flag_pasteback': flag_remap_input,
-                'flag_crop_driving_video': flag_crop_driving_video_input
+                'flag_crop_driving_video': flag_crop_driving_video_input,
+                'flag_video_editing_head_rotation': flag_video_editing_head_rotation,
+                'scale': scale,
+                'vx_ratio': vx_ratio,
+                'vy_ratio': vy_ratio,
+                'scale_crop_driving_video': scale_crop_driving_video,
+                'vx_ratio_crop_driving_video': vx_ratio_crop_driving_video,
+                'vy_ratio_crop_driving_video': vy_ratio_crop_driving_video,
+                'driving_smooth_observation_variance': driving_smooth_observation_variance,
             }
             # update config from user input
             self.args = update_args(self.args, args_user)
@@ -58,7 +91,7 @@ class GradioPipeline(LivePortraitPipeline):
             gr.Info("Run successfully!", duration=2)
             return video_path, video_path_concat,
         else:
-            raise gr.Error("The input source portrait or driving video hasn't been prepared yet 💥!", duration=5)
+            raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
 
     def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_image, flag_do_crop=True):
         """ for single image retargeting
@@ -79,9 +112,8 @@ class GradioPipeline(LivePortraitPipeline):
             # ∆_lip,i = R_lip(x_s; c_s,lip, c_d,lip,i)
             combined_lip_ratio_tensor = self.live_portrait_wrapper.calc_combined_lip_ratio([[input_lip_ratio]], source_lmk_user)
             lip_delta = self.live_portrait_wrapper.retarget_lip(x_s_user, combined_lip_ratio_tensor)
-            num_kp = x_s_user.shape[1]
             # default: use x_s
-            x_d_new = x_s_user + eyes_delta.reshape(-1, num_kp, 3) + lip_delta.reshape(-1, num_kp, 3)
+            x_d_new = x_s_user + eyes_delta + lip_delta
             # D(W(f_s; x_s, x′_d))
             out = self.live_portrait_wrapper.warp_decode(f_s_user, x_s_user, x_d_new)
             out = self.live_portrait_wrapper.parse_output(out['out'])[0]
@@ -114,4 +146,4 @@ class GradioPipeline(LivePortraitPipeline):
             return f_s_user, x_s_user, source_lmk_user, crop_M_c2o, mask_ori, img_rgb
         else:
             # when press the clear button, go here
-            raise gr.Error("The retargeting input hasn't been prepared yet 💥!", duration=5)
+            raise gr.Error("Please upload a source portrait as the retargeting input 🤗🤗🤗", duration=5)
