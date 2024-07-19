@@ -236,8 +236,6 @@ class LivePortraitPipeline(object):
 
                 source_lmk = source_lmk_crop_lst[i]
                 img_crop_256x256 = img_crop_256x256_lst[i]
-                if inf_cfg.flag_do_crop:
-                    M_c2o = source_M_c2o_lst[i]
                 I_s = I_s_lst[i]
 
                 x_s_info = source_template_dct['x_i_info_lst'][i]
@@ -264,7 +262,7 @@ class LivePortraitPipeline(object):
                     eye_delta_before_animation = self.live_portrait_wrapper.retarget_eye(x_s, combined_eye_ratio_tensor_before_animation)
 
                 if inf_cfg.flag_pasteback and inf_cfg.flag_do_crop and inf_cfg.flag_stitching:  # prepare for paste back
-                    mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, M_c2o, dsize=(source_rgb_lst[i].shape[1], source_rgb_lst[i].shape[0]))
+                    mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, source_M_c2o_lst[i], dsize=(source_rgb_lst[i].shape[1], source_rgb_lst[i].shape[0]))
 
             x_d_i_info = driving_template_dct['motion'][i]
             x_d_i_info = dct2device(x_d_i_info, device)
