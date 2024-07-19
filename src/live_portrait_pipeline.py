@@ -193,9 +193,8 @@ class LivePortraitPipeline(object):
             x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
             if inf_cfg.flag_video_editing_head_rotation:
                 key_r = 'R' if 'R' in driving_template_dct['motion'][0].keys() else 'R_d'  # compatible with previous keys
-
-                x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i][key_r] for i in range(n_frames)]
-                x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0][key_r].shape, device, inf_cfg.driving_smooth_observation_variance)
+                x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
+                x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
         else:  # source image
             n_frames = driving_n_frames
             # if the input is a source image, process it only once
