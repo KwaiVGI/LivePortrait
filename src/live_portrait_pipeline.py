@@ -236,7 +236,8 @@ class LivePortraitPipeline(object):
 
                 source_lmk = source_lmk_crop_lst[i]
                 img_crop_256x256 = img_crop_256x256_lst[i]
-                M_c2o = source_M_c2o_lst[i]
+                if inf_cfg.flag_do_crop:
+                    M_c2o = source_M_c2o_lst[i]
                 I_s = I_s_lst[i]
 
                 x_s_info = source_template_dct['x_i_info_lst'][i]
