@@ -3,6 +3,8 @@
 """
 Pipeline for gradio
 """
+
+import os.path as osp
 import gradio as gr
 
 from .config.argument_config import ArgumentConfig
@@ -55,13 +57,15 @@ class GradioPipeline(LivePortraitPipeline):
             input_source_path = input_source_image_path
         elif tab_selection == 'Video':
             input_source_path = input_source_video_path
-            if is_square_video(input_source_path) is False:
-                flag_crop_driving_video_input = True
-                gr.Info("The source video is not square, the driving video will be cropped to square automatically.", duration=2)
         else:
             input_source_path = input_source_image_path
 
         if input_source_path is not None and input_driving_video_path is not None:
+            if osp.exists(input_driving_video_path) and is_square_video(input_driving_video_path) is False:
+                flag_crop_driving_video_input = True
+                log("The source video is not square, the driving video will be cropped to square automatically.")
+                gr.Info("The source video is not square, the driving video will be cropped to square automatically.", duration=2)
+
             args_user = {
                 'source': input_source_path,
                 'driving': input_driving_video_path,
