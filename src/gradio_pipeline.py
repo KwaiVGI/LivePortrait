@@ -11,6 +11,7 @@ from .utils.io import load_img_online
 from .utils.rprint import rlog as log
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.camera import get_rotation_matrix
+from .utils.helper import is_square_video
 
 
 def update_args(args, user_args):
@@ -46,13 +47,20 @@ class GradioPipeline(LivePortraitPipeline):
         vx_ratio_crop_driving_video=0.0,
         vy_ratio_crop_driving_video=-0.1,
         driving_smooth_observation_variance=3e-6,
+        tab_selection=None,
     ):
         """ for video-driven potrait animation or video editing
         """
-        if input_source_image_path is not None:
+        if tab_selection == 'Image':
             input_source_path = input_source_image_path
-        else:
+        elif tab_selection == 'Video':
             input_source_path = input_source_video_path
+            if is_square_video(input_source_path) is False:
+                flag_crop_driving_video_input = True
+                gr.Info("The source video is not square, the driving video will be cropped to square automatically.", duration=2)
+        else:
+            input_source_path = input_source_image_path
+
         if input_source_path is not None and input_driving_video_path is not None:
             args_user = {
                 'source': input_source_path,
@@ -79,7 +87,7 @@ class GradioPipeline(LivePortraitPipeline):
             gr.Info("Run successfully!", duration=2)
             return video_path, video_path_concat,
         else:
-            raise gr.Error("The source information  or driving video hasn't been prepared yet 💥!", duration=5)
+            raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
 
     def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_image, flag_do_crop=True):
         """ for single image retargeting
@@ -134,4 +142,4 @@ class GradioPipeline(LivePortraitPipeline):
             return f_s_user, x_s_user, source_lmk_user, crop_M_c2o, mask_ori, img_rgb
         else:
             # when press the clear button, go here
-            raise gr.Error("The retargeting input hasn't been prepared yet 💥!", duration=5)
+            raise gr.Error("Please upload a source portrait as the retargeting input 🤗🤗🤗", duration=5)

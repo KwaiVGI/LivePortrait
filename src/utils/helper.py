@@ -9,6 +9,7 @@ import os.path as osp
 import torch
 from collections import OrderedDict
 import numpy as np
+import cv2
 
 from ..modules.spade_generator import SPADEDecoder
 from ..modules.warping_network import WarpingNetwork
@@ -149,3 +150,16 @@ def load_description(fp):
     with open(fp, 'r', encoding='utf-8') as f:
         content = f.read()
     return content
+
+
+def is_square_video(video_path):
+    video = cv2.VideoCapture(video_path)
+
+    width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    video.release()
+    # if width != height:
+        # gr.Info(f"Uploaded video is not square, force do crop (driving) to be True")
+
+    return width == height

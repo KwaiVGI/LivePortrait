@@ -39,6 +39,7 @@ if not fast_check_ffmpeg():
 # specify configs for inference
 inference_cfg = partial_fields(InferenceConfig, args.__dict__)  # use attribute of args to initial InferenceConfig
 crop_cfg = partial_fields(CropConfig, args.__dict__)  # use attribute of args to initial CropConfig
+# global_tab_selection = None
 
 gradio_pipeline = GradioPipeline(
     inference_cfg=inference_cfg,
@@ -96,7 +97,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     with gr.Row():
         with gr.Column():
             with gr.Tabs():
-                with gr.TabItem("🖼️ Source Image"):
+                with gr.TabItem("🖼️ Source Image") as tab_image:
                     with gr.Accordion(open=True, label="Source Image"):
                         source_image_input = gr.Image(type="filepath")
                         gr.Examples(
@@ -112,7 +113,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                             cache_examples=False,
                         )
 
-                with gr.TabItem("🎞️ Source Video"):
+                with gr.TabItem("🎞️ Source Video") as tab_video:
                     with gr.Accordion(open=True, label="Source Video"):
                         source_video_input = gr.Video()
                         gr.Examples(
@@ -127,6 +128,10 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                             inputs=[source_video_input],
                             cache_examples=False,
                         )
+
+                tab_selection = gr.Textbox(visible=False)
+                tab_image.select(lambda: "Image", None, tab_selection)
+                tab_video.select(lambda: "Video", None, tab_selection)
             with gr.Accordion(open=True, label="Cropping Options for Source Image or Video"):
                 with gr.Row():
                     flag_do_crop_input = gr.Checkbox(value=True, label="do crop (source)")
@@ -285,7 +290,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             vx_ratio_crop_driving_video,
             vy_ratio_crop_driving_video,
             driving_smooth_observation_variance,
-
+            tab_selection,
         ],
         outputs=[output_video_i2v, output_video_concat_i2v],
         show_progress=True
