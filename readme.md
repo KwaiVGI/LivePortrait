@@ -39,6 +39,7 @@
 
 
 ## 🔥 Updates
+- **`2024/07/19`**: ✨ We support 🎞️ portrait video editing (aka v2v)! More to see [here](assets/docs/changelog/2024-07-19.md).
 - **`2024/07/17`**: 🍎 We support macOS with Apple Silicon, modified from [jeethu](https://github.com/jeethu)'s PR [#143](https://github.com/KwaiVGI/LivePortrait/pull/143).
 - **`2024/07/10`**: 💪 We support audio and video concatenating, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
 - **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
@@ -47,11 +48,11 @@
 
 
 
-## Introduction
+## Introduction 📖
 This repo, named **LivePortrait**, contains the official PyTorch implementation of our paper [LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control](https://arxiv.org/pdf/2407.03168).
 We are actively updating and improving this repository. If you find any bugs or have suggestions, welcome to raise issues or submit pull requests (PR) 💖.
 
-## 🔥 Getting Started
+## Getting Started 🏁
 ### 1. Clone the code and prepare the environment
 ```bash
 git clone https://github.com/KwaiVGI/LivePortrait
@@ -61,9 +62,10 @@ cd LivePortrait
 conda create -n LivePortrait python==3.9
 conda activate LivePortrait
 
-# install dependencies with pip (for Linux and Windows)
+# install dependencies with pip
+# for Linux and Windows users
 pip install -r requirements.txt
-# for macOS with Apple Silicon
+# for macOS with Apple Silicon users
 pip install -r requirements_macOS.txt
 ```
 
@@ -122,20 +124,18 @@ If the script runs successfully, you will get an output mp4 file named `animatio
 Or, you can change the input by specifying the `-s` and `-d` arguments:
 
 ```bash
-python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d0.mp4 # the input is an image
+# source input is an image
+python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d0.mp4
 
-python inference.py -s assets/examples/source/s13.mp4 -d assets/examples/driving/d0.mp4 # the input is a video
-
-# disable pasting back to run faster
-python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d0.mp4 --no_flag_pasteback
+# source input is a video ✨
+python inference.py -s assets/examples/source/s13.mp4 -d assets/examples/driving/d0.mp4
 
 # more options to see
 python inference.py -h
 ```
 
-#### Driving video auto-cropping
-
-📕 To use your own driving video, we **recommend**:
+#### Driving video auto-cropping 📢📢📢
+To use your own driving video, we **recommend**: ⬇️
  - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or enable auto-cropping by `--flag_crop_driving_video`.
  - Focus on the head area, similar to the example videos.
  - Minimize shoulder movement.
@@ -151,20 +151,19 @@ If you find the results of auto-cropping is not well, you can modify the `--scal
 #### Motion template making
 You can also use the auto-generated motion template files ending with `.pkl` to speed up inference, and **protect privacy**, such as:
 ```bash
-python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d5.pkl
+python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d5.pkl # portrait animation
+python inference.py -s assets/examples/source/s13.mp4 -d assets/examples/driving/d5.pkl # portrait video editing
 ```
-
-**Discover more interesting results on our [Homepage](https://liveportrait.github.io)** 😊
 
 ### 4. Gradio interface 🤗
 
 We also provide a Gradio <a href='https://github.com/gradio-app/gradio'><img src='https://img.shields.io/github/stars/gradio-app/gradio'></a> interface for a better experience, just run by:
 
 ```bash
-# For Linux and Windows:
+# For Linux and Windows users (and macOS with Intel??)
 python app.py
 
-# For macOS with Apple Silicon, Intel not supported, this maybe 20x slower than RTX 4090
+# For macOS with Apple Silicon users, Intel not supported, this maybe 20x slower than RTX 4090
 PYTORCH_ENABLE_MPS_FALLBACK=1 python app.py
 ```
 
@@ -212,7 +211,7 @@ Discover the invaluable resources contributed by our community to enhance your L
 
 And many more amazing contributions from our community!
 
-## Acknowledgements
+## Acknowledgements 💐
 We would like to thank the contributors of [FOMM](https://github.com/AliaksandrSiarohin/first-order-model), [Open Facevid2vid](https://github.com/zhanglonghao1992/One-Shot_Free-View_Neural_Talking_Head_Synthesis), [SPADE](https://github.com/NVlabs/SPADE), [InsightFace](https://github.com/deepinsight/insightface) repositories, for their open research and contributions.
 
 ## Citation 💖

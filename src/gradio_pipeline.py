@@ -55,8 +55,8 @@ class GradioPipeline(LivePortraitPipeline):
             input_source_path = input_source_video_path
         if input_source_path is not None and input_driving_video_path is not None:
             args_user = {
-                'source_info': input_source_path,
-                'driving_info': input_driving_video_path,
+                'source': input_source_path,
+                'driving': input_driving_video_path,
                 'flag_relative': flag_relative_input,
                 'flag_do_crop': flag_do_crop_input,
                 'flag_pasteback': flag_remap_input,

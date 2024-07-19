@@ -25,9 +25,9 @@ class InferenceConfig(PrintableConfig):
     flag_use_half_precision: bool = True
     flag_crop_driving_video: bool = False
     device_id: int = 0
-    flag_lip_zero: bool = True
+    flag_normalize_lip: bool = True
     flag_source_video_eye_retargeting: bool = False
-    flag_video_editing_head_rotation: bool = False 
+    flag_video_editing_head_rotation: bool = False
     flag_eye_retargeting: bool = False
     flag_lip_retargeting: bool = False
     flag_stitching: bool = True
@@ -39,7 +39,7 @@ class InferenceConfig(PrintableConfig):
     flag_do_torch_compile: bool = False
 
     # NOT EXPORTED PARAMS
-    lip_zero_threshold: float = 0.03 # threshold for flag_lip_zero
+    lip_normalize_threshold: float = 0.03 # threshold for flag_normalize_lip
     source_video_eye_retargeting_threshold: float = 0.18 # threshold for eyes retargeting if the input is a source video
     driving_smooth_observation_variance: float = 3e-6 # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
     anchor_frame: int = 0 # TO IMPLEMENT

@@ -8,7 +8,6 @@ import os
 import os.path as osp
 import torch
 from collections import OrderedDict
-from pykalman import KalmanFilter
 import numpy as np
 
 from ..modules.spade_generator import SPADEDecoder
@@ -42,6 +41,11 @@ def basename(filename):
 def remove_suffix(filepath):
     """a/b/c.jpg -> a/b/c"""
     return osp.join(osp.dirname(filepath), basename(filepath))
+
+
+def is_image(file_path):
+    image_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff')
+    return file_path.lower().endswith(image_extensions)
 
 
 def is_video(file_path):
@@ -95,20 +99,6 @@ def remove_ddp_dumplicate_key(state_dict):
     for key in state_dict.keys():
         state_dict_new[key.replace('module.', '')] = state_dict[key]
     return state_dict_new
-
-
-def smooth(x_d_lst, shape, device, observation_variance=3e-6, process_variance=1e-5):
-    x_d_lst_reshape = [x.reshape(-1) for x in x_d_lst]
-    x_d_stacked = np.vstack(x_d_lst_reshape)
-    kf = KalmanFilter(
-        initial_state_mean=x_d_stacked[0],
-        n_dim_obs=x_d_stacked.shape[1],
-        transition_covariance=process_variance * np.eye(x_d_stacked.shape[1]),
-        observation_covariance=observation_variance * np.eye(x_d_stacked.shape[1])
-    )
-    smoothed_state_means, _ = kf.smooth(x_d_stacked)
-    x_d_lst_smooth = [torch.tensor(state_mean.reshape(shape[-2:]), dtype=torch.float32, device=device) for state_mean in smoothed_state_means]
-    return x_d_lst_smooth
 
 
 def load_model(ckpt_path, model_config, device, model_type):
