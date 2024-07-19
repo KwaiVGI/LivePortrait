@@ -57,7 +57,7 @@ class GradioPipeline(LivePortraitPipeline):
             args_user = {
                 'source': input_source_path,
                 'driving': input_driving_video_path,
-                'flag_relative': flag_relative_input,
+                'flag_relative_motion': flag_relative_input,
                 'flag_do_crop': flag_do_crop_input,
                 'flag_pasteback': flag_remap_input,
                 'flag_crop_driving_video': flag_crop_driving_video_input,
