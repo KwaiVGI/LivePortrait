@@ -64,7 +64,7 @@ class GradioPipeline(LivePortraitPipeline):
             if osp.exists(input_driving_video_path) and is_square_video(input_driving_video_path) is False:
                 flag_crop_driving_video_input = True
                 log("The source video is not square, the driving video will be cropped to square automatically.")
-                gr.Info("The source video is not square, the driving video will be cropped to square automatically.", duration=2)
+                gr.Info("The source video is not square, the driving video will be cropped to square automatically.")
 
             args_user = {
                 'source': input_source_path,
@@ -88,10 +88,10 @@ class GradioPipeline(LivePortraitPipeline):
             self.cropper.update_config(self.args.__dict__)
             # video driven animation
             video_path, video_path_concat = self.execute(self.args)
-            gr.Info("Run successfully!", duration=2)
+            gr.Info("Run successfully!")
             return video_path, video_path_concat,
         else:
-            raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
+            raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗")
 
     def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_image, flag_do_crop=True):
         """ for single image retargeting
@@ -101,7 +101,7 @@ class GradioPipeline(LivePortraitPipeline):
             self.prepare_retargeting(input_image, flag_do_crop)
 
         if input_eye_ratio is None or input_lip_ratio is None:
-            raise gr.Error("Invalid ratio input 💥!", duration=5)
+            raise gr.Error("Invalid ratio input 💥!")
         else:
             inference_cfg = self.live_portrait_wrapper.inference_cfg
             x_s_user = x_s_user.to(self.live_portrait_wrapper.device)
@@ -118,7 +118,7 @@ class GradioPipeline(LivePortraitPipeline):
             out = self.live_portrait_wrapper.warp_decode(f_s_user, x_s_user, x_d_new)
             out = self.live_portrait_wrapper.parse_output(out['out'])[0]
             out_to_ori_blend = paste_back(out, crop_M_c2o, img_rgb, mask_ori)
-            gr.Info("Run successfully!", duration=2)
+            gr.Info("Run successfully!")
             return out, out_to_ori_blend
 
     def prepare_retargeting(self, input_image, flag_do_crop=True):
@@ -146,4 +146,4 @@ class GradioPipeline(LivePortraitPipeline):
             return f_s_user, x_s_user, source_lmk_user, crop_M_c2o, mask_ori, img_rgb
         else:
             # when press the clear button, go here
-            raise gr.Error("Please upload a source portrait as the retargeting input 🤗🤗🤗", duration=5)
+            raise gr.Error("Please upload a source portrait as the retargeting input 🤗🤗🤗")
