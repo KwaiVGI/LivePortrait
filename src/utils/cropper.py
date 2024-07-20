@@ -117,9 +117,10 @@ class Cropper(object):
 
         return ret_dct
 
-    def crop_source_video(self, source_rgb_lst, crop_cfg: CropConfig):
+    def crop_source_video(self, source_rgb_lst, crop_cfg: CropConfig, **kwargs):
         """Tracking based landmarks/alignment and cropping"""
         trajectory = Trajectory()
+        direction = kwargs.get("direction", "large-small")
         for idx, frame_rgb in enumerate(source_rgb_lst):
             if idx == 0 or trajectory.start == -1:
                 src_face = self.face_analysis_wrapper.get(

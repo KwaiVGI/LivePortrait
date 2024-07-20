@@ -367,7 +367,8 @@ class LivePortraitPipeline(object):
         if flag_source_has_audio or flag_driving_has_audio:
             # final result with concatenation
             wfp_concat_with_audio = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_concat_with_audio.mp4')
-            audio_from_which_video = args.source if flag_source_has_audio else args.driving
+            # audio_from_which_video = args.source if flag_source_has_audio else args.driving # default source audio
+            audio_from_which_video = args.driving if flag_driving_has_audio else args.source # default driving audio
             log(f"Audio is selected from {audio_from_which_video}, concat mode")
             add_audio_to_video(wfp_concat, audio_from_which_video, wfp_concat_with_audio)
             os.replace(wfp_concat_with_audio, wfp_concat)
@@ -383,7 +384,8 @@ class LivePortraitPipeline(object):
         ######### build the final result #########
         if flag_source_has_audio or flag_driving_has_audio:
             wfp_with_audio = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_with_audio.mp4')
-            audio_from_which_video = args.source if flag_source_has_audio else args.driving
+            # audio_from_which_video = args.source if flag_source_has_audio else args.driving # default source audio
+            audio_from_which_video = args.driving if flag_driving_has_audio else args.source # default driving audio
             log(f"Audio is selected from {audio_from_which_video}")
             add_audio_to_video(wfp, audio_from_which_video, wfp_with_audio)
             os.replace(wfp_with_audio, wfp)

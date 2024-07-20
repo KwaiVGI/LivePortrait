@@ -5,7 +5,7 @@ import numpy as np
 from pykalman import KalmanFilter
 
 
-def smooth(x_d_lst, shape, device, observation_variance=3e-6, process_variance=1e-5):
+def smooth(x_d_lst, shape, device, observation_variance=1e-7, process_variance=1e-5):
     x_d_lst_reshape = [x.reshape(-1) for x in x_d_lst]
     x_d_stacked = np.vstack(x_d_lst_reshape)
     kf = KalmanFilter(

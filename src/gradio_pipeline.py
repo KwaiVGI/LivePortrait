@@ -48,7 +48,7 @@ class GradioPipeline(LivePortraitPipeline):
         scale_crop_driving_video=2.2,
         vx_ratio_crop_driving_video=0.0,
         vy_ratio_crop_driving_video=-0.1,
-        driving_smooth_observation_variance=3e-6,
+        driving_smooth_observation_variance=1e-7,
         tab_selection=None,
     ):
         """ for video-driven potrait animation or video editing
