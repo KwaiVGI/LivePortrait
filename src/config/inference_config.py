@@ -41,7 +41,7 @@ class InferenceConfig(PrintableConfig):
     # NOT EXPORTED PARAMS
     lip_normalize_threshold: float = 0.03 # threshold for flag_normalize_lip
     source_video_eye_retargeting_threshold: float = 0.18 # threshold for eyes retargeting if the input is a source video
-    driving_smooth_observation_variance: float = 3e-6 # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
+    driving_smooth_observation_variance: float = 1e-7 # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
     anchor_frame: int = 0 # TO IMPLEMENT
 
     input_shape: Tuple[int, int] = (256, 256)  # input shape
