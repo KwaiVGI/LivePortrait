@@ -1,6 +1,5 @@
 import cv2
 import time
-import pickle
 
 # 仮想カメラのデバイスID（通常は0または1）
 camera_id = 1
@@ -21,7 +20,14 @@ last_capture_time = time.time()
 frames = []  # フレームを保存するリスト
 frame_batch_size = 15  # バッチサイズ
 
+
+
 while True:
+
+    # ビデオライターの設定
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(f'output_{frame_count}.mp4', fourcc, 30.0, (int(cap.get(3)), int(cap.get(4))))
+
     ret, frame = cap.read()
     if not ret:
         print("フレームを取得できませんでした")
@@ -34,20 +40,12 @@ while True:
 
     if len(frames) >= frame_batch_size:
         frame_count += 1
-        filename = f"{frame_count}.pkl"
 
-        # フレームを指定された形式のdict型でpklファイルに保存
-        frame_dict = {
-            'n_frames': len(frames),
-            'output_fps': 30,
-            'motion': [{'scale': frame.mean(axis=(0, 1)), 'R_d': frame.mean(axis=(0, 1)), 'exp': frame.mean(axis=(0, 1)), 't': frame.mean(axis=(0, 1))} for frame in frames],
-            'c_d_eyes_lst': [frame.mean(axis=(0, 1)) for frame in frames],
-            'c_d_lip_lst': [frame.mean(axis=(0, 1)) for frame in frames]
-        }
-        with open(filename, 'wb') as f:
-            pickle.dump(frame_dict, f)
+        # フレームをビデオファイルに書き込む
+        for frame in frames:
+            out.write(frame)
 
-        print(f"キャプチャを保存しました: {filename}")
+        print(f"キャプチャを保存しました: output_{frame_count}.mp4")
         frames = []  # フレームリストをリセット
 
     # 'q'キーが押されたらループを終了
@@ -56,4 +54,5 @@ while True:
 
 # リソースを解放
 cap.release()
+out.release()
 cv2.destroyAllWindows()

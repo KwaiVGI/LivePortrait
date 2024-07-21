@@ -50,6 +50,7 @@ def main():
     )
 
     # run
+    print("--------excute-----------")
     live_portrait_pipeline.execute(args)
 
 

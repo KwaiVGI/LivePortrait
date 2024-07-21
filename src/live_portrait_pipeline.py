@@ -81,6 +81,7 @@ class LivePortraitPipeline(object):
         crop_cfg = self.cropper.crop_cfg
 
         ######## load source input ########
+        print("--------load source input-----------")
         flag_is_source_video = False
         source_fps = None
         if is_image(args.source):
