@@ -59,7 +59,7 @@ git clone https://github.com/KwaiVGI/LivePortrait
 cd LivePortrait
 
 # create env using conda
-conda create -n LivePortrait python==3.9
+conda create -n LivePortrait python=3.9
 conda activate LivePortrait
 
 # install dependencies with pip
