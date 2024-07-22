@@ -1,7 +1,5 @@
 # coding: utf-8
 
-import os
-from glob import glob
 import os.path as osp
 import imageio
 import numpy as np
@@ -18,23 +16,17 @@ def load_image_rgb(image_path: str):
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 
-def load_driving_info(driving_info):
-    driving_video_ori = []
+def load_video(video_info, n_frames=-1):
+    reader = imageio.get_reader(video_info, "ffmpeg")
 
-    def load_images_from_directory(directory):
-        image_paths = sorted(glob(osp.join(directory, '*.png')) + glob(osp.join(directory, '*.jpg')))
-        return [load_image_rgb(im_path) for im_path in image_paths]
+    ret = []
+    for idx, frame_rgb in enumerate(reader):
+        if n_frames > 0 and idx >= n_frames:
+            break
+        ret.append(frame_rgb)
 
-    def load_images_from_video(file_path):
-        reader = imageio.get_reader(file_path, "ffmpeg")
-        return [image for _, image in enumerate(reader)]
-
-    if osp.isdir(driving_info):
-        driving_video_ori = load_images_from_directory(driving_info)
-    elif osp.isfile(driving_info):
-        driving_video_ori = load_images_from_video(driving_info)
-
-    return driving_video_ori
+    reader.close()
+    return ret
 
 
 def contiguous(obj):

@@ -31,6 +31,7 @@ class Trajectory:
     end: int = -1  # end frame
     lmk_lst: Union[Tuple, List, np.ndarray] = field(default_factory=list)  # lmk list
     bbox_lst: Union[Tuple, List, np.ndarray] = field(default_factory=list)  # bbox list
+    M_c2o_lst: Union[Tuple, List, np.ndarray] = field(default_factory=list)  # M_c2o list
 
     frame_rgb_lst: Union[Tuple, List, np.ndarray] = field(default_factory=list)  # frame list
     lmk_crop_lst: Union[Tuple, List, np.ndarray] = field(default_factory=list)  # lmk list
@@ -104,6 +105,7 @@ class Cropper(object):
             scale=crop_cfg.scale,
             vx_ratio=crop_cfg.vx_ratio,
             vy_ratio=crop_cfg.vy_ratio,
+            flag_do_rot=crop_cfg.flag_do_rot,
         )
 
         lmk = self.landmark_runner.run(img_rgb, lmk)
@@ -114,6 +116,59 @@ class Cropper(object):
         ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
 
         return ret_dct
+
+    def crop_source_video(self, source_rgb_lst, crop_cfg: CropConfig, **kwargs):
+        """Tracking based landmarks/alignment and cropping"""
+        trajectory = Trajectory()
+        direction = kwargs.get("direction", "large-small")
+        for idx, frame_rgb in enumerate(source_rgb_lst):
+            if idx == 0 or trajectory.start == -1:
+                src_face = self.face_analysis_wrapper.get(
+                    contiguous(frame_rgb[..., ::-1]),
+                    flag_do_landmark_2d_106=True,
+                    direction=crop_cfg.direction,
+                    max_face_num=crop_cfg.max_face_num,
+                )
+                if len(src_face) == 0:
+                    log(f"No face detected in the frame #{idx}")
+                    continue
+                elif len(src_face) > 1:
+                    log(f"More than one face detected in the source frame_{idx}, only pick one face by rule {direction}.")
+                src_face = src_face[0]
+                lmk = src_face.landmark_2d_106
+                lmk = self.landmark_runner.run(frame_rgb, lmk)
+                trajectory.start, trajectory.end = idx, idx
+            else:
+                lmk = self.landmark_runner.run(frame_rgb, trajectory.lmk_lst[-1])
+                trajectory.end = idx
+            trajectory.lmk_lst.append(lmk)
+
+            # crop the face
+            ret_dct = crop_image(
+                frame_rgb,  # ndarray
+                lmk,  # 106x2 or Nx2
+                dsize=crop_cfg.dsize,
+                scale=crop_cfg.scale,
+                vx_ratio=crop_cfg.vx_ratio,
+                vy_ratio=crop_cfg.vy_ratio,
+                flag_do_rot=crop_cfg.flag_do_rot,
+            )
+            lmk = self.landmark_runner.run(frame_rgb, lmk)
+            ret_dct["lmk_crop"] = lmk
+
+            # update a 256x256 version for network input
+            ret_dct["img_crop_256x256"] = cv2.resize(ret_dct["img_crop"], (256, 256), interpolation=cv2.INTER_AREA)
+            ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
+
+            trajectory.frame_rgb_crop_lst.append(ret_dct["img_crop_256x256"])
+            trajectory.lmk_crop_lst.append(ret_dct["lmk_crop_256x256"])
+            trajectory.M_c2o_lst.append(ret_dct['M_c2o'])
+
+        return {
+            "frame_crop_lst": trajectory.frame_rgb_crop_lst,
+            "lmk_crop_lst": trajectory.lmk_crop_lst,
+            "M_c2o_lst": trajectory.M_c2o_lst,
+        }
 
     def crop_driving_video(self, driving_rgb_lst, **kwargs):
         """Tracking based landmarks/alignment and cropping"""
@@ -142,9 +197,9 @@ class Cropper(object):
             trajectory.lmk_lst.append(lmk)
             ret_bbox = parse_bbox_from_landmark(
                 lmk,
-                scale=self.crop_cfg.scale_crop_video,
-                vx_ratio_crop_video=self.crop_cfg.vx_ratio_crop_video,
-                vy_ratio=self.crop_cfg.vy_ratio_crop_video,
+                scale=self.crop_cfg.scale_crop_driving_video,
+                vx_ratio_crop_driving_video=self.crop_cfg.vx_ratio_crop_driving_video,
+                vy_ratio=self.crop_cfg.vy_ratio_crop_driving_video,
             )["bbox"]
             bbox = [
                 ret_bbox[0, 0],
@@ -173,6 +228,7 @@ class Cropper(object):
             "frame_crop_lst": trajectory.frame_rgb_crop_lst,
             "lmk_crop_lst": trajectory.lmk_crop_lst,
         }
+
 
     def calc_lmks_from_cropped_video(self, driving_rgb_crop_lst, **kwargs):
         """Tracking based landmarks/alignment"""

@@ -19,3 +19,4 @@ matplotlib==3.9.0
 imageio-ffmpeg==0.5.1
 tyro==0.8.5
 gradio==4.37.1
+pykalman==0.9.7
