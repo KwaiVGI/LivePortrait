@@ -53,7 +53,7 @@ class LivePortraitPipeline(object):
             # collect s, R, δ and t for inference
             I_i = I_lst[i]
             x_i_info = self.live_portrait_wrapper.get_kp_info(I_i)
-            R_i = get_rotation_matrix(x_i_info['pitch'], x_i_info['yaw']-30, x_i_info['roll'])
+            R_i = get_rotation_matrix(x_i_info['pitch'], x_i_info['yaw'], x_i_info['roll'])
 
             item_dct = {
                 'scale': x_i_info['scale'].cpu().numpy().astype(np.float32),
