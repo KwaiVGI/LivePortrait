@@ -69,25 +69,27 @@ data_examples_i2v = [
     [osp.join(example_portrait_dir, "s2.jpg"), osp.join(example_video_dir, "d13.mp4"), True, True, True, True],
 ]
 data_examples_v2v = [
-    [osp.join(example_portrait_dir, "s13.mp4"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False, False, 1e-7],
-    # [osp.join(example_portrait_dir, "s14.mp4"), osp.join(example_video_dir, "d18.mp4"), True, True, True, False, False, 1e-7],
-    # [osp.join(example_portrait_dir, "s15.mp4"), osp.join(example_video_dir, "d19.mp4"), True, True, True, False, False, 1e-7],
-    [osp.join(example_portrait_dir, "s18.mp4"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False, False, 1e-7],
-    # [osp.join(example_portrait_dir, "s19.mp4"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False, False, 1e-7],
-    [osp.join(example_portrait_dir, "s20.mp4"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False, False, 1e-7],
+    [osp.join(example_portrait_dir, "s13.mp4"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False, False, 3e-7],
+    # [osp.join(example_portrait_dir, "s14.mp4"), osp.join(example_video_dir, "d18.mp4"), True, True, True, False, False, 3e-7],
+    # [osp.join(example_portrait_dir, "s15.mp4"), osp.join(example_video_dir, "d19.mp4"), True, True, True, False, False, 3e-7],
+    [osp.join(example_portrait_dir, "s18.mp4"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False, False, 3e-7],
+    # [osp.join(example_portrait_dir, "s19.mp4"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False, False, 3e-7],
+    [osp.join(example_portrait_dir, "s20.mp4"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False, False, 3e-7],
 ]
 #################### interface logic ####################
 
 # Define components first
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
+head_pitch_slider = gr.Slider(minimum=-12.0, maximum=12.0, value=0, step=0.5, label="relative pitch")
+head_yaw_slider = gr.Slider(minimum=-12.0, maximum=12.0, value=0, step=0.5, label="relative yaw")
+head_roll_slider = gr.Slider(minimum=-12.0, maximum=12.0, value=0, step=0.5, label="relative roll")
 retargeting_input_image = gr.Image(type="filepath")
 output_image = gr.Image(type="numpy")
 output_image_paste_back = gr.Image(type="numpy")
 output_video_i2v = gr.Video(autoplay=False)
 output_video_concat_i2v = gr.Video(autoplay=False)
-# output_video_v2v = gr.Video(autoplay=False)
-# output_video_concat_v2v = gr.Video(autoplay=False)
+
 
 
 with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta Sans")])) as demo:
@@ -168,7 +170,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                 flag_relative_input = gr.Checkbox(value=True, label="relative motion")
                 flag_remap_input = gr.Checkbox(value=True, label="paste-back")
                 flag_video_editing_head_rotation = gr.Checkbox(value=False, label="relative head rotation (v2v)")
-                driving_smooth_observation_variance = gr.Number(value=1e-7, label="motion smooth strength (v2v)", minimum=1e-11, maximum=1e-2, step=1e-8)
+                driving_smooth_observation_variance = gr.Number(value=3e-7, label="motion smooth strength (v2v)", minimum=1e-11, maximum=1e-2, step=1e-8)
 
     gr.Markdown(load_description("assets/gradio/gradio_description_animate_clear.md"))
     with gr.Row():
@@ -229,12 +231,18 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     with gr.Row(visible=True):
         eye_retargeting_slider.render()
         lip_retargeting_slider.render()
+        head_pitch_slider.render()
+        head_yaw_slider.render()
+        head_roll_slider.render()
     with gr.Row(visible=True):
         process_button_retargeting = gr.Button("🚗 Retargeting", variant="primary")
         process_button_reset_retargeting = gr.ClearButton(
             [
                 eye_retargeting_slider,
                 lip_retargeting_slider,
+                head_pitch_slider,
+                head_yaw_slider,
+                head_roll_slider,
                 retargeting_input_image,
                 output_image,
                 output_image_paste_back
@@ -268,7 +276,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     process_button_retargeting.click(
         # fn=gradio_pipeline.execute_image,
         fn=gpu_wrapped_execute_image,
-        inputs=[eye_retargeting_slider, lip_retargeting_slider, retargeting_input_image, flag_do_crop_input],
+        inputs=[eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, retargeting_input_image, flag_do_crop_input],
         outputs=[output_image, output_image_paste_back],
         show_progress=True
     )

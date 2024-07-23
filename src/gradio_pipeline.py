@@ -48,7 +48,7 @@ class GradioPipeline(LivePortraitPipeline):
         scale_crop_driving_video=2.2,
         vx_ratio_crop_driving_video=0.0,
         vy_ratio_crop_driving_video=-0.1,
-        driving_smooth_observation_variance=1e-7,
+        driving_smooth_observation_variance=3e-7,
         tab_selection=None,
     ):
         """ for video-driven potrait animation or video editing
@@ -93,27 +93,40 @@ class GradioPipeline(LivePortraitPipeline):
         else:
             raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
 
-    def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_image, flag_do_crop=True):
+    def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_head_pitch_variation: float, input_head_yaw_variation: float, input_head_roll_variation: float, input_image, flag_do_crop=True):
         """ for single image retargeting
         """
+        if input_head_pitch_variation is None or input_head_yaw_variation is None or input_head_roll_variation is None:
+            raise gr.Error("Invalid relative pose input 💥!", duration=5)
         # disposable feature
-        f_s_user, x_s_user, source_lmk_user, crop_M_c2o, mask_ori, img_rgb = \
-            self.prepare_retargeting(input_image, flag_do_crop)
+        f_s_user, x_s_user, R_s_user, R_d_user, x_s_info, source_lmk_user, crop_M_c2o, mask_ori, img_rgb = \
+            self.prepare_retargeting(input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, flag_do_crop)
 
         if input_eye_ratio is None or input_lip_ratio is None:
             raise gr.Error("Invalid ratio input 💥!", duration=5)
         else:
+            device = self.live_portrait_wrapper.device
             inference_cfg = self.live_portrait_wrapper.inference_cfg
-            x_s_user = x_s_user.to(self.live_portrait_wrapper.device)
-            f_s_user = f_s_user.to(self.live_portrait_wrapper.device)
+            x_s_user = x_s_user.to(device)
+            f_s_user = f_s_user.to(device)
+            R_s_user = R_s_user.to(device)
+            R_d_user = R_d_user.to(device)
+
+            x_c_s = x_s_info['kp'].to(device)
+            delta_new = x_s_info['exp'].to(device)
+            scale_new = x_s_info['scale'].to(device)
+            t_new = x_s_info['t'].to(device)
+            R_d_new = (R_d_user @ R_s_user.permute(0, 2, 1)) @ R_s_user
+
+            x_d_new = scale_new * (x_c_s @ R_d_new + delta_new) + t_new
             # ∆_eyes,i = R_eyes(x_s; c_s,eyes, c_d,eyes,i)
             combined_eye_ratio_tensor = self.live_portrait_wrapper.calc_combined_eye_ratio([[input_eye_ratio]], source_lmk_user)
             eyes_delta = self.live_portrait_wrapper.retarget_eye(x_s_user, combined_eye_ratio_tensor)
             # ∆_lip,i = R_lip(x_s; c_s,lip, c_d,lip,i)
             combined_lip_ratio_tensor = self.live_portrait_wrapper.calc_combined_lip_ratio([[input_lip_ratio]], source_lmk_user)
             lip_delta = self.live_portrait_wrapper.retarget_lip(x_s_user, combined_lip_ratio_tensor)
-            # default: use x_s
-            x_d_new = x_s_user + eyes_delta + lip_delta
+            x_d_new = x_d_new + eyes_delta + lip_delta
+            x_d_new = self.live_portrait_wrapper.stitching(x_s_user, x_d_new)
             # D(W(f_s; x_s, x′_d))
             out = self.live_portrait_wrapper.warp_decode(f_s_user, x_s_user, x_d_new)
             out = self.live_portrait_wrapper.parse_output(out['out'])[0]
@@ -121,7 +134,7 @@ class GradioPipeline(LivePortraitPipeline):
             gr.Info("Run successfully!", duration=2)
             return out, out_to_ori_blend
 
-    def prepare_retargeting(self, input_image, flag_do_crop=True):
+    def prepare_retargeting(self, input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, flag_do_crop=True):
         """ for single image retargeting
         """
         if input_image is not None:
@@ -136,14 +149,18 @@ class GradioPipeline(LivePortraitPipeline):
             else:
                 I_s = self.live_portrait_wrapper.prepare_source(img_rgb)
             x_s_info = self.live_portrait_wrapper.get_kp_info(I_s)
-            R_s = get_rotation_matrix(x_s_info['pitch'], x_s_info['yaw'], x_s_info['roll'])
+            x_s_info_user_pitch = x_s_info['pitch'] + input_head_pitch_variation
+            x_s_info_user_yaw = x_s_info['yaw'] + input_head_yaw_variation
+            x_s_info_user_roll = x_s_info['roll'] + input_head_roll_variation
+            R_s_user = get_rotation_matrix(x_s_info['pitch'], x_s_info['yaw'], x_s_info['roll'])
+            R_d_user = get_rotation_matrix(x_s_info_user_pitch, x_s_info_user_yaw, x_s_info_user_roll)
             ############################################
             f_s_user = self.live_portrait_wrapper.extract_feature_3d(I_s)
             x_s_user = self.live_portrait_wrapper.transform_keypoint(x_s_info)
             source_lmk_user = crop_info['lmk_crop']
             crop_M_c2o = crop_info['M_c2o']
             mask_ori = prepare_paste_back(inference_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
-            return f_s_user, x_s_user, source_lmk_user, crop_M_c2o, mask_ori, img_rgb
+            return f_s_user, x_s_user, R_s_user, R_d_user, x_s_info, source_lmk_user, crop_M_c2o, mask_ori, img_rgb
         else:
             # when press the clear button, go here
             raise gr.Error("Please upload a source portrait as the retargeting input 🤗🤗🤗", duration=5)
