@@ -4,6 +4,9 @@
         <div style="display: inline-block;">
             Step 1: Upload a <strong>Source Image</strong> or <strong>Video</strong> (any aspect ratio) ⬇️
         </div>
+        <div style="display: inline-block; font-size: 0.8em;">
+            <strong>Note:</strong> Better if Source Video has <strong>the same FPS</strong> as the Driving Video.
+        </div>
     </div>
     <div style="flex: 1; text-align: center; margin-left: 20px;">
         <div style="display: inline-block;">

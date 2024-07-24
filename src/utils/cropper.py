@@ -67,7 +67,7 @@ class Cropper(object):
             root=make_abs_path(self.crop_cfg.insightface_root),
             providers=face_analysis_wrapper_provider,
         )
-        self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512))
+        self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
         self.face_analysis_wrapper.warmup()
 
     def update_config(self, user_args):
@@ -116,6 +116,24 @@ class Cropper(object):
         ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
 
         return ret_dct
+
+    def calc_lmk_from_cropped_image(self, img_rgb_, **kwargs):
+        direction = kwargs.get("direction", "large-small")
+        src_face = self.face_analysis_wrapper.get(
+            contiguous(img_rgb_[..., ::-1]),  # convert to BGR
+            flag_do_landmark_2d_106=True,
+            direction=direction,
+        )
+        if len(src_face) == 0:
+            log("No face detected in the source image.")
+            return None
+        elif len(src_face) > 1:
+            log(f"More than one face detected in the image, only pick one face by rule {direction}.")
+        src_face = src_face[0]
+        lmk = src_face.landmark_2d_106
+        lmk = self.landmark_runner.run(img_rgb_, lmk)
+
+        return lmk
 
     def crop_source_video(self, source_rgb_lst, crop_cfg: CropConfig, **kwargs):
         """Tracking based landmarks/alignment and cropping"""

@@ -4,6 +4,7 @@
 The entrance of the gradio
 """
 
+import os
 import tyro
 import subprocess
 import gradio as gr
@@ -47,6 +48,9 @@ gradio_pipeline = GradioPipeline(
     args=args
 )
 
+if args.gradio_temp_dir not in (None, ''):
+    os.environ["GRADIO_TEMP_DIR"] = args.gradio_temp_dir
+    os.makedirs(args.gradio_temp_dir, exist_ok=True)
 
 def gpu_wrapped_execute_video(*args, **kwargs):
     return gradio_pipeline.execute_video(*args, **kwargs)
@@ -69,25 +73,27 @@ data_examples_i2v = [
     [osp.join(example_portrait_dir, "s2.jpg"), osp.join(example_video_dir, "d13.mp4"), True, True, True, True],
 ]
 data_examples_v2v = [
-    [osp.join(example_portrait_dir, "s13.mp4"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False, False, 1e-7],
-    # [osp.join(example_portrait_dir, "s14.mp4"), osp.join(example_video_dir, "d18.mp4"), True, True, True, False, False, 1e-7],
-    # [osp.join(example_portrait_dir, "s15.mp4"), osp.join(example_video_dir, "d19.mp4"), True, True, True, False, False, 1e-7],
-    [osp.join(example_portrait_dir, "s18.mp4"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False, False, 1e-7],
-    # [osp.join(example_portrait_dir, "s19.mp4"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False, False, 1e-7],
-    [osp.join(example_portrait_dir, "s20.mp4"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False, False, 1e-7],
+    [osp.join(example_portrait_dir, "s13.mp4"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False, False, 3e-7],
+    # [osp.join(example_portrait_dir, "s14.mp4"), osp.join(example_video_dir, "d18.mp4"), True, True, True, False, False, 3e-7],
+    # [osp.join(example_portrait_dir, "s15.mp4"), osp.join(example_video_dir, "d19.mp4"), True, True, True, False, False, 3e-7],
+    [osp.join(example_portrait_dir, "s18.mp4"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False, False, 3e-7],
+    # [osp.join(example_portrait_dir, "s19.mp4"), osp.join(example_video_dir, "d6.mp4"), True, True, True, False, False, 3e-7],
+    [osp.join(example_portrait_dir, "s20.mp4"), osp.join(example_video_dir, "d0.mp4"), True, True, True, False, False, 3e-7],
 ]
 #################### interface logic ####################
 
 # Define components first
+retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.5, step=0.05, label="crop scale")
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
+head_pitch_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=1, label="relative pitch")
+head_yaw_slider = gr.Slider(minimum=-25, maximum=25, value=0, step=1, label="relative yaw")
+head_roll_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=1, label="relative roll")
 retargeting_input_image = gr.Image(type="filepath")
 output_image = gr.Image(type="numpy")
 output_image_paste_back = gr.Image(type="numpy")
 output_video_i2v = gr.Video(autoplay=False)
 output_video_concat_i2v = gr.Video(autoplay=False)
-# output_video_v2v = gr.Video(autoplay=False)
-# output_video_concat_v2v = gr.Video(autoplay=False)
 
 
 with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta Sans")])) as demo:
@@ -108,6 +114,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                                 [osp.join(example_portrait_dir, "s5.jpg")],
                                 [osp.join(example_portrait_dir, "s7.jpg")],
                                 [osp.join(example_portrait_dir, "s12.jpg")],
+                                [osp.join(example_portrait_dir, "s22.jpg")],
+                                [osp.join(example_portrait_dir, "s23.jpg")],
                             ],
                             inputs=[source_image_input],
                             cache_examples=False,
@@ -149,6 +157,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         [osp.join(example_video_dir, "d19.mp4")],
                         [osp.join(example_video_dir, "d14.mp4")],
                         [osp.join(example_video_dir, "d6.mp4")],
+                        [osp.join(example_video_dir, "d20.mp4")],
                     ],
                     inputs=[driving_video_input],
                     cache_examples=False,
@@ -168,14 +177,11 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                 flag_relative_input = gr.Checkbox(value=True, label="relative motion")
                 flag_remap_input = gr.Checkbox(value=True, label="paste-back")
                 flag_video_editing_head_rotation = gr.Checkbox(value=False, label="relative head rotation (v2v)")
-                driving_smooth_observation_variance = gr.Number(value=1e-7, label="motion smooth strength (v2v)", minimum=1e-11, maximum=1e-2, step=1e-8)
+                driving_smooth_observation_variance = gr.Number(value=3e-7, label="motion smooth strength (v2v)", minimum=1e-11, maximum=1e-2, step=1e-8)
 
     gr.Markdown(load_description("assets/gradio/gradio_description_animate_clear.md"))
     with gr.Row():
-        with gr.Column():
-            process_button_animation = gr.Button("🚀 Animate", variant="primary")
-        with gr.Column():
-            process_button_reset = gr.ClearButton([source_image_input, source_video_input, driving_video_input, output_video_i2v, output_video_concat_i2v], value="🧹 Clear")
+        process_button_animation = gr.Button("🚀 Animate", variant="primary")
     with gr.Row():
         with gr.Column():
             with gr.Accordion(open=True, label="The animated video in the original image space"):
@@ -183,6 +189,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         with gr.Column():
             with gr.Accordion(open=True, label="The animated video"):
                 output_video_concat_i2v.render()
+    with gr.Row():
+        process_button_reset = gr.ClearButton([source_image_input, source_video_input, driving_video_input, output_video_i2v, output_video_concat_i2v], value="🧹 Clear")
 
     with gr.Row():
         # Examples
@@ -227,20 +235,15 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     # Retargeting
     gr.Markdown(load_description("assets/gradio/gradio_description_retargeting.md"), visible=True)
     with gr.Row(visible=True):
+        retargeting_source_scale.render()
         eye_retargeting_slider.render()
         lip_retargeting_slider.render()
     with gr.Row(visible=True):
+        head_pitch_slider.render()
+        head_yaw_slider.render()
+        head_roll_slider.render()
+    with gr.Row(visible=True):
         process_button_retargeting = gr.Button("🚗 Retargeting", variant="primary")
-        process_button_reset_retargeting = gr.ClearButton(
-            [
-                eye_retargeting_slider,
-                lip_retargeting_slider,
-                retargeting_input_image,
-                output_image,
-                output_image_paste_back
-            ],
-            value="🧹 Clear"
-        )
     with gr.Row(visible=True):
         with gr.Column():
             with gr.Accordion(open=True, label="Retargeting Input"):
@@ -253,6 +256,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         [osp.join(example_portrait_dir, "s5.jpg")],
                         [osp.join(example_portrait_dir, "s7.jpg")],
                         [osp.join(example_portrait_dir, "s12.jpg")],
+                        [osp.join(example_portrait_dir, "s22.jpg")],
+                        [osp.join(example_portrait_dir, "s23.jpg")],
                     ],
                     inputs=[retargeting_input_image],
                     cache_examples=False,
@@ -263,15 +268,30 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         with gr.Column():
             with gr.Accordion(open=True, label="Paste-back Result"):
                 output_image_paste_back.render()
+    with gr.Row(visible=True):
+        process_button_reset_retargeting = gr.ClearButton(
+            [
+                eye_retargeting_slider,
+                lip_retargeting_slider,
+                head_pitch_slider,
+                head_yaw_slider,
+                head_roll_slider,
+                retargeting_input_image,
+                output_image,
+                output_image_paste_back
+            ],
+            value="🧹 Clear"
+        )
 
     # binding functions for buttons
     process_button_retargeting.click(
         # fn=gradio_pipeline.execute_image,
         fn=gpu_wrapped_execute_image,
-        inputs=[eye_retargeting_slider, lip_retargeting_slider, retargeting_input_image, flag_do_crop_input],
+        inputs=[eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, retargeting_input_image, retargeting_source_scale, flag_do_crop_input],
         outputs=[output_image, output_image_paste_back],
         show_progress=True
     )
+
     process_button_animation.click(
         fn=gpu_wrapped_execute_video,
         inputs=[
@@ -294,6 +314,12 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         ],
         outputs=[output_video_i2v, output_video_concat_i2v],
         show_progress=True
+    )
+
+    retargeting_input_image.change(
+        fn=gradio_pipeline.init_retargeting,
+        inputs=[retargeting_source_scale, retargeting_input_image],
+        outputs=[eye_retargeting_slider, lip_retargeting_slider]
     )
 
 demo.launch(

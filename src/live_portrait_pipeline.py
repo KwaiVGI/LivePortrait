@@ -200,17 +200,16 @@ class LivePortraitPipeline(object):
                 x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
                 x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
         else:  # if the input is a source image, process it only once
-            crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)
-            if crop_info is None:
-                raise Exception("No face detected in the source image!")
-            source_lmk = crop_info['lmk_crop']
-            img_crop_256x256 = crop_info['img_crop_256x256']
-
             if inf_cfg.flag_do_crop:
-                I_s = self.live_portrait_wrapper.prepare_source(img_crop_256x256)
+                crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)
+                if crop_info is None:
+                    raise Exception("No face detected in the source image!")
+                source_lmk = crop_info['lmk_crop']
+                img_crop_256x256 = crop_info['img_crop_256x256']
             else:
+                source_lmk = self.cropper.calc_lmk_from_cropped_image(source_rgb_lst[0])
                 img_crop_256x256 = cv2.resize(source_rgb_lst[0], (256, 256))  # force to resize to 256x256
-                I_s = self.live_portrait_wrapper.prepare_source(img_crop_256x256)
+            I_s = self.live_portrait_wrapper.prepare_source(img_crop_256x256)
             x_s_info = self.live_portrait_wrapper.get_kp_info(I_s)
             x_c_s = x_s_info['kp']
             R_s = get_rotation_matrix(x_s_info['pitch'], x_s_info['yaw'], x_s_info['roll'])
@@ -218,7 +217,7 @@ class LivePortraitPipeline(object):
             x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
             # let lip-open scalar to be 0 at first
-            if flag_normalize_lip:
+            if flag_normalize_lip and source_lmk is not None:
                 c_d_lip_before_animation = [0.]
                 combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
                 if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
@@ -245,14 +244,14 @@ class LivePortraitPipeline(object):
                 x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
                 # let lip-open scalar to be 0 at first if the input is a video
-                if flag_normalize_lip:
+                if flag_normalize_lip and source_lmk is not None:
                     c_d_lip_before_animation = [0.]
                     combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
                     if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
                         lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
 
                 # let eye-open scalar to be the same as the first frame if the latter is eye-open state
-                if flag_source_video_eye_retargeting:
+                if flag_source_video_eye_retargeting and source_lmk is not None:
                     if i == 0:
                         combined_eye_ratio_tensor_frame_zero = c_s_eyes_lst[0]
                         c_d_eye_before_animation_frame_zero = [[combined_eye_ratio_tensor_frame_zero[0][:2].mean()]]
@@ -312,12 +311,12 @@ class LivePortraitPipeline(object):
                     x_d_i_new += eye_delta_before_animation
             else:
                 eyes_delta, lip_delta = None, None
-                if inf_cfg.flag_eye_retargeting:
+                if inf_cfg.flag_eye_retargeting and source_lmk is not None:
                     c_d_eyes_i = c_d_eyes_lst[i]
                     combined_eye_ratio_tensor = self.live_portrait_wrapper.calc_combined_eye_ratio(c_d_eyes_i, source_lmk)
                     # ∆_eyes,i = R_eyes(x_s; c_s,eyes, c_d,eyes,i)
                     eyes_delta = self.live_portrait_wrapper.retarget_eye(x_s, combined_eye_ratio_tensor)
-                if inf_cfg.flag_lip_retargeting:
+                if inf_cfg.flag_lip_retargeting and source_lmk is not None:
                     c_d_lip_i = c_d_lip_lst[i]
                     combined_lip_ratio_tensor = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_i, source_lmk)
                     # ∆_lip,i = R_lip(x_s; c_s,lip, c_d,lip,i)
