@@ -200,17 +200,16 @@ class LivePortraitPipeline(object):
                 x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
                 x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
         else:  # if the input is a source image, process it only once
-            crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)
-            if crop_info is None:
-                raise Exception("No face detected in the source image!")
-            source_lmk = crop_info['lmk_crop']
-            img_crop_256x256 = crop_info['img_crop_256x256']
-
             if inf_cfg.flag_do_crop:
-                I_s = self.live_portrait_wrapper.prepare_source(img_crop_256x256)
+                crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)
+                if crop_info is None:
+                    raise Exception("No face detected in the source image!")
+                source_lmk = crop_info['lmk_crop']
+                img_crop_256x256 = crop_info['img_crop_256x256']
             else:
+                source_lmk = self.cropper.calc_lmk_from_cropped_image(source_rgb_lst[0])
                 img_crop_256x256 = cv2.resize(source_rgb_lst[0], (256, 256))  # force to resize to 256x256
-                I_s = self.live_portrait_wrapper.prepare_source(img_crop_256x256)
+            I_s = self.live_portrait_wrapper.prepare_source(img_crop_256x256)
             x_s_info = self.live_portrait_wrapper.get_kp_info(I_s)
             x_c_s = x_s_info['kp']
             R_s = get_rotation_matrix(x_s_info['pitch'], x_s_info['yaw'], x_s_info['roll'])
@@ -218,7 +217,7 @@ class LivePortraitPipeline(object):
             x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
             # let lip-open scalar to be 0 at first
-            if flag_normalize_lip:
+            if flag_normalize_lip and source_lmk is not None:
                 c_d_lip_before_animation = [0.]
                 combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
                 if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
