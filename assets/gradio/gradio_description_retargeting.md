@@ -9,6 +9,6 @@
     <h2>Retargeting</h2>
     <p>Upload a Source Portrait as Retargeting Input, then drag the sliders and click the <strong>🚗 Retargeting</strong> button. You can try running it multiple times.
     <br>
-    <strong>😊 Set both ratios to 0.8 to see what's going on!</strong></p>
+    <strong>😊 Set both target eyes-open and lip-open ratios to 0.8 to see what's going on!</strong></p>
   </div>
 </div>

@@ -110,7 +110,7 @@ class GradioPipeline(LivePortraitPipeline):
             raise gr.Error("Invalid ratio input 💥!", duration=5)
         else:
             device = self.live_portrait_wrapper.device
-            inference_cfg = self.live_portrait_wrapper.inference_cfg
+            # inference_cfg = self.live_portrait_wrapper.inference_cfg
             x_s_user = x_s_user.to(device)
             f_s_user = f_s_user.to(device)
             R_s_user = R_s_user.to(device)

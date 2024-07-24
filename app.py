@@ -79,18 +79,17 @@ data_examples_v2v = [
 #################### interface logic ####################
 
 # Define components first
-retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.3, step=0.05, label="crop scale")
+retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.5, step=0.05, label="crop scale")
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
-head_pitch_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.1, label="relative pitch (deg)")
-head_yaw_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.1, label="relative yaw (deg)")
-head_roll_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.1, label="relative roll (deg)")
+head_pitch_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=1, label="relative pitch")
+head_yaw_slider = gr.Slider(minimum=-25, maximum=25, value=0, step=1, label="relative yaw")
+head_roll_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=1, label="relative roll")
 retargeting_input_image = gr.Image(type="filepath")
 output_image = gr.Image(type="numpy")
 output_image_paste_back = gr.Image(type="numpy")
 output_video_i2v = gr.Video(autoplay=False)
 output_video_concat_i2v = gr.Video(autoplay=False)
-
 
 
 with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta Sans")])) as demo:
@@ -175,10 +174,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
 
     gr.Markdown(load_description("assets/gradio/gradio_description_animate_clear.md"))
     with gr.Row():
-        with gr.Column():
-            process_button_animation = gr.Button("🚀 Animate", variant="primary")
-        with gr.Column():
-            process_button_reset = gr.ClearButton([source_image_input, source_video_input, driving_video_input, output_video_i2v, output_video_concat_i2v], value="🧹 Clear")
+        process_button_animation = gr.Button("🚀 Animate", variant="primary")
     with gr.Row():
         with gr.Column():
             with gr.Accordion(open=True, label="The animated video in the original image space"):
@@ -186,6 +182,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         with gr.Column():
             with gr.Accordion(open=True, label="The animated video"):
                 output_video_concat_i2v.render()
+    with gr.Row():
+        process_button_reset = gr.ClearButton([source_image_input, source_video_input, driving_video_input, output_video_i2v, output_video_concat_i2v], value="🧹 Clear")
 
     with gr.Row():
         # Examples
@@ -233,24 +231,12 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         retargeting_source_scale.render()
         eye_retargeting_slider.render()
         lip_retargeting_slider.render()
+    with gr.Row(visible=True):
         head_pitch_slider.render()
         head_yaw_slider.render()
         head_roll_slider.render()
     with gr.Row(visible=True):
         process_button_retargeting = gr.Button("🚗 Retargeting", variant="primary")
-        process_button_reset_retargeting = gr.ClearButton(
-            [
-                eye_retargeting_slider,
-                lip_retargeting_slider,
-                head_pitch_slider,
-                head_yaw_slider,
-                head_roll_slider,
-                retargeting_input_image,
-                output_image,
-                output_image_paste_back
-            ],
-            value="🧹 Clear"
-        )
     with gr.Row(visible=True):
         with gr.Column():
             with gr.Accordion(open=True, label="Retargeting Input"):
@@ -273,6 +259,20 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         with gr.Column():
             with gr.Accordion(open=True, label="Paste-back Result"):
                 output_image_paste_back.render()
+    with gr.Row(visible=True):
+        process_button_reset_retargeting = gr.ClearButton(
+            [
+                eye_retargeting_slider,
+                lip_retargeting_slider,
+                head_pitch_slider,
+                head_yaw_slider,
+                head_roll_slider,
+                retargeting_input_image,
+                output_image,
+                output_image_paste_back
+            ],
+            value="🧹 Clear"
+        )
 
     # binding functions for buttons
     process_button_retargeting.click(
