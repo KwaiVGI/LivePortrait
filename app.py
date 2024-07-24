@@ -79,11 +79,12 @@ data_examples_v2v = [
 #################### interface logic ####################
 
 # Define components first
+retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.3, step=0.05, label="crop scale")
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
-head_pitch_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.5, label="relative pitch (degree)")
-head_yaw_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.5, label="relative yaw (degree)")
-head_roll_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.5, label="relative roll (degree)")
+head_pitch_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.1, label="relative pitch (deg)")
+head_yaw_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.1, label="relative yaw (deg)")
+head_roll_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.1, label="relative roll (deg)")
 retargeting_input_image = gr.Image(type="filepath")
 output_image = gr.Image(type="numpy")
 output_image_paste_back = gr.Image(type="numpy")
@@ -229,6 +230,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     # Retargeting
     gr.Markdown(load_description("assets/gradio/gradio_description_retargeting.md"), visible=True)
     with gr.Row(visible=True):
+        retargeting_source_scale.render()
         eye_retargeting_slider.render()
         lip_retargeting_slider.render()
         head_pitch_slider.render()
@@ -276,11 +278,11 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     process_button_retargeting.click(
         # fn=gradio_pipeline.execute_image,
         fn=gpu_wrapped_execute_image,
-        inputs=[eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, retargeting_input_image, flag_do_crop_input],
+        inputs=[eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, retargeting_input_image, retargeting_source_scale, flag_do_crop_input],
         outputs=[output_image, output_image_paste_back],
         show_progress=True
     )
-    
+
     process_button_animation.click(
         fn=gpu_wrapped_execute_video,
         inputs=[
@@ -307,7 +309,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
 
     retargeting_input_image.change(
         fn=gradio_pipeline.init_retargeting,
-        inputs=retargeting_input_image,
+        inputs=[retargeting_source_scale, retargeting_input_image],
         outputs=[eye_retargeting_slider, lip_retargeting_slider]
     )
 

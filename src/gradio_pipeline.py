@@ -97,14 +97,14 @@ class GradioPipeline(LivePortraitPipeline):
             raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
 
     @torch.no_grad()
-    def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_head_pitch_variation: float, input_head_yaw_variation: float, input_head_roll_variation: float, input_image, flag_do_crop=True):
+    def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_head_pitch_variation: float, input_head_yaw_variation: float, input_head_roll_variation: float, input_image, retargeting_source_scale: float, flag_do_crop=True):
         """ for single image retargeting
         """
         if input_head_pitch_variation is None or input_head_yaw_variation is None or input_head_roll_variation is None:
             raise gr.Error("Invalid relative pose input 💥!", duration=5)
         # disposable feature
         f_s_user, x_s_user, R_s_user, R_d_user, x_s_info, source_lmk_user, crop_M_c2o, mask_ori, img_rgb = \
-            self.prepare_retargeting(input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, flag_do_crop)
+            self.prepare_retargeting(input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, retargeting_source_scale, flag_do_crop)
 
         if input_eye_ratio is None or input_lip_ratio is None:
             raise gr.Error("Invalid ratio input 💥!", duration=5)
@@ -139,11 +139,14 @@ class GradioPipeline(LivePortraitPipeline):
             return out, out_to_ori_blend
 
     @torch.no_grad()
-    def prepare_retargeting(self, input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, flag_do_crop=True):
+    def prepare_retargeting(self, input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, retargeting_source_scale, flag_do_crop=True):
         """ for single image retargeting
         """
         if input_image is not None:
             # gr.Info("Upload successfully!", duration=2)
+            args_user = {'scale': retargeting_source_scale}
+            self.args = update_args(self.args, args_user)
+            self.cropper.update_config(self.args.__dict__)
             inference_cfg = self.live_portrait_wrapper.inference_cfg
             ######## process source portrait ########
             img_rgb = load_img_online(input_image, mode='rgb', max_dim=1280, n=16)
@@ -169,11 +172,14 @@ class GradioPipeline(LivePortraitPipeline):
         else:
             # when press the clear button, go here
             raise gr.Error("Please upload a source portrait as the retargeting input 🤗🤗🤗", duration=5)
-    
-    def init_retargeting(self, input_image = None):
+
+    def init_retargeting(self, retargeting_source_scale: float, input_image = None):
         """ initialize the retargeting slider
         """
         if input_image != None:
+            args_user = {'scale': retargeting_source_scale}
+            self.args = update_args(self.args, args_user)
+            self.cropper.update_config(self.args.__dict__)
             inference_cfg = self.live_portrait_wrapper.inference_cfg
             ######## process source portrait ########
             img_rgb = load_img_online(input_image, mode='rgb', max_dim=1280, n=16)
@@ -183,4 +189,3 @@ class GradioPipeline(LivePortraitPipeline):
             source_lip_ratio = calc_lip_close_ratio(crop_info['lmk_crop'][None])
             return round(float(source_eye_ratio.mean()), 2), round(source_lip_ratio[0][0], 2)
         return 0., 0.
-
