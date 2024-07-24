@@ -67,7 +67,7 @@ class Cropper(object):
             root=make_abs_path(self.crop_cfg.insightface_root),
             providers=face_analysis_wrapper_provider,
         )
-        self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512))
+        self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
         self.face_analysis_wrapper.warmup()
 
     def update_config(self, user_args):

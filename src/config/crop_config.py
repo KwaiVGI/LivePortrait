@@ -15,6 +15,7 @@ class CropConfig(PrintableConfig):
     landmark_ckpt_path: str = "../../pretrained_weights/liveportrait/landmark.onnx"
     device_id: int = 0  # gpu device id
     flag_force_cpu: bool = False  # force cpu inference, WIP
+    det_thresh: float = 0.1 # detection threshold
     ########## source image or video cropping option ##########
     dsize: int = 512  # crop size
     scale: float = 2.8  # scale factor

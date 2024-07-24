@@ -32,9 +32,10 @@ class ArgumentConfig(PrintableConfig):
     flag_relative_motion: bool = True  # whether to use relative motion
     flag_pasteback: bool = True  # whether to paste-back/stitch the animated face cropping from the face-cropping space to the original image space
     flag_do_crop: bool = True  # whether to crop the source portrait or video to the face-cropping space
-    driving_smooth_observation_variance: float = 1e-7  # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
+    driving_smooth_observation_variance: float = 3e-7  # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
 
     ########## source crop arguments ##########
+    det_thresh: float = 0.15 # detection threshold
     scale: float = 2.3  # the ratio of face area is smaller if scale is larger
     vx_ratio: float = 0  # the ratio to move the face to left or right in cropping space
     vy_ratio: float = -0.125  # the ratio to move the face to up or down in cropping space

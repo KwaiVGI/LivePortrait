@@ -185,6 +185,8 @@ class GradioPipeline(LivePortraitPipeline):
             img_rgb = load_img_online(input_image, mode='rgb', max_dim=1280, n=16)
             log(f"Load source image from {input_image}.")
             crop_info = self.cropper.crop_source_image(img_rgb, self.cropper.crop_cfg)
+            if crop_info is None:
+                raise gr.Error("Source portrait NO face detected", duration=2)
             source_eye_ratio = calc_eye_close_ratio(crop_info['lmk_crop'][None])
             source_lip_ratio = calc_lip_close_ratio(crop_info['lmk_crop'][None])
             return round(float(source_eye_ratio.mean()), 2), round(source_lip_ratio[0][0], 2)
