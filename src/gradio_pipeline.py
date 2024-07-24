@@ -149,7 +149,7 @@ class GradioPipeline(LivePortraitPipeline):
             self.cropper.update_config(self.args.__dict__)
             inference_cfg = self.live_portrait_wrapper.inference_cfg
             ######## process source portrait ########
-            img_rgb = load_img_online(input_image, mode='rgb', max_dim=1280, n=16)
+            img_rgb = load_img_online(input_image, mode='rgb', max_dim=1280, n=2)
             log(f"Load source image from {input_image}.")
             crop_info = self.cropper.crop_source_image(img_rgb, self.cropper.crop_cfg)
             if flag_do_crop:

@@ -4,6 +4,7 @@
 The entrance of the gradio
 """
 
+import os
 import tyro
 import subprocess
 import gradio as gr
@@ -47,6 +48,9 @@ gradio_pipeline = GradioPipeline(
     args=args
 )
 
+if args.gradio_temp_dir not in (None, ''):
+    os.environ["GRADIO_TEMP_DIR"] = args.gradio_temp_dir
+    os.makedirs(args.gradio_temp_dir, exist_ok=True)
 
 def gpu_wrapped_execute_video(*args, **kwargs):
     return gradio_pipeline.execute_video(*args, **kwargs)

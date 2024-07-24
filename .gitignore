@@ -21,3 +21,4 @@ animations/*
 tmp/*
 .vscode/launch.json
 **/*.DS_Store
+gradio_temp/**
