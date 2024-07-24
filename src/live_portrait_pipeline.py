@@ -244,14 +244,14 @@ class LivePortraitPipeline(object):
                 x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
                 # let lip-open scalar to be 0 at first if the input is a video
-                if flag_normalize_lip:
+                if flag_normalize_lip and source_lmk is not None:
                     c_d_lip_before_animation = [0.]
                     combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
                     if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
                         lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
 
                 # let eye-open scalar to be the same as the first frame if the latter is eye-open state
-                if flag_source_video_eye_retargeting:
+                if flag_source_video_eye_retargeting and source_lmk is not None:
                     if i == 0:
                         combined_eye_ratio_tensor_frame_zero = c_s_eyes_lst[0]
                         c_d_eye_before_animation_frame_zero = [[combined_eye_ratio_tensor_frame_zero[0][:2].mean()]]
