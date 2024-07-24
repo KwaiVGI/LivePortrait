@@ -81,9 +81,9 @@ data_examples_v2v = [
 # Define components first
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
-head_pitch_slider = gr.Slider(minimum=-12.0, maximum=12.0, value=0, step=0.5, label="relative pitch")
-head_yaw_slider = gr.Slider(minimum=-12.0, maximum=12.0, value=0, step=0.5, label="relative yaw")
-head_roll_slider = gr.Slider(minimum=-12.0, maximum=12.0, value=0, step=0.5, label="relative roll")
+head_pitch_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.5, label="relative pitch (degree)")
+head_yaw_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.5, label="relative yaw (degree)")
+head_roll_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=0.5, label="relative roll (degree)")
 retargeting_input_image = gr.Image(type="filepath")
 output_image = gr.Image(type="numpy")
 output_image_paste_back = gr.Image(type="numpy")
@@ -280,6 +280,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         outputs=[output_image, output_image_paste_back],
         show_progress=True
     )
+    
     process_button_animation.click(
         fn=gpu_wrapped_execute_video,
         inputs=[
@@ -302,6 +303,12 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         ],
         outputs=[output_video_i2v, output_video_concat_i2v],
         show_progress=True
+    )
+
+    retargeting_input_image.change(
+        fn=gradio_pipeline.init_retargeting,
+        inputs=retargeting_input_image,
+        outputs=[eye_retargeting_slider, lip_retargeting_slider]
     )
 
 demo.launch(

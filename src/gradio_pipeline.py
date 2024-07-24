@@ -6,6 +6,7 @@ Pipeline for gradio
 
 import os.path as osp
 import gradio as gr
+import torch
 
 from .config.argument_config import ArgumentConfig
 from .live_portrait_pipeline import LivePortraitPipeline
@@ -14,6 +15,7 @@ from .utils.rprint import rlog as log
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.camera import get_rotation_matrix
 from .utils.helper import is_square_video
+from .utils.retargeting_utils import calc_eye_close_ratio, calc_lip_close_ratio
 
 
 def update_args(args, user_args):
@@ -32,6 +34,7 @@ class GradioPipeline(LivePortraitPipeline):
         # self.live_portrait_wrapper = self.live_portrait_wrapper
         self.args = args
 
+    @torch.no_grad()
     def execute_video(
         self,
         input_source_image_path=None,
@@ -93,6 +96,7 @@ class GradioPipeline(LivePortraitPipeline):
         else:
             raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
 
+    @torch.no_grad()
     def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_head_pitch_variation: float, input_head_yaw_variation: float, input_head_roll_variation: float, input_image, flag_do_crop=True):
         """ for single image retargeting
         """
@@ -120,10 +124,10 @@ class GradioPipeline(LivePortraitPipeline):
 
             x_d_new = scale_new * (x_c_s @ R_d_new + delta_new) + t_new
             # ∆_eyes,i = R_eyes(x_s; c_s,eyes, c_d,eyes,i)
-            combined_eye_ratio_tensor = self.live_portrait_wrapper.calc_combined_eye_ratio([[input_eye_ratio]], source_lmk_user)
+            combined_eye_ratio_tensor = self.live_portrait_wrapper.calc_combined_eye_ratio([[float(input_eye_ratio)]], source_lmk_user)
             eyes_delta = self.live_portrait_wrapper.retarget_eye(x_s_user, combined_eye_ratio_tensor)
             # ∆_lip,i = R_lip(x_s; c_s,lip, c_d,lip,i)
-            combined_lip_ratio_tensor = self.live_portrait_wrapper.calc_combined_lip_ratio([[input_lip_ratio]], source_lmk_user)
+            combined_lip_ratio_tensor = self.live_portrait_wrapper.calc_combined_lip_ratio([[float(input_lip_ratio)]], source_lmk_user)
             lip_delta = self.live_portrait_wrapper.retarget_lip(x_s_user, combined_lip_ratio_tensor)
             x_d_new = x_d_new + eyes_delta + lip_delta
             x_d_new = self.live_portrait_wrapper.stitching(x_s_user, x_d_new)
@@ -134,6 +138,7 @@ class GradioPipeline(LivePortraitPipeline):
             gr.Info("Run successfully!", duration=2)
             return out, out_to_ori_blend
 
+    @torch.no_grad()
     def prepare_retargeting(self, input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, flag_do_crop=True):
         """ for single image retargeting
         """
@@ -164,3 +169,18 @@ class GradioPipeline(LivePortraitPipeline):
         else:
             # when press the clear button, go here
             raise gr.Error("Please upload a source portrait as the retargeting input 🤗🤗🤗", duration=5)
+    
+    def init_retargeting(self, input_image = None):
+        """ initialize the retargeting slider
+        """
+        if input_image != None:
+            inference_cfg = self.live_portrait_wrapper.inference_cfg
+            ######## process source portrait ########
+            img_rgb = load_img_online(input_image, mode='rgb', max_dim=1280, n=16)
+            log(f"Load source image from {input_image}.")
+            crop_info = self.cropper.crop_source_image(img_rgb, self.cropper.crop_cfg)
+            source_eye_ratio = calc_eye_close_ratio(crop_info['lmk_crop'][None])
+            source_lip_ratio = calc_lip_close_ratio(crop_info['lmk_crop'][None])
+            return round(float(source_eye_ratio.mean()), 2), round(source_lip_ratio[0][0], 2)
+        return 0., 0.
+
