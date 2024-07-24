@@ -311,12 +311,12 @@ class LivePortraitPipeline(object):
                     x_d_i_new += eye_delta_before_animation
             else:
                 eyes_delta, lip_delta = None, None
-                if inf_cfg.flag_eye_retargeting:
+                if inf_cfg.flag_eye_retargeting and source_lmk is not None:
                     c_d_eyes_i = c_d_eyes_lst[i]
                     combined_eye_ratio_tensor = self.live_portrait_wrapper.calc_combined_eye_ratio(c_d_eyes_i, source_lmk)
                     # ∆_eyes,i = R_eyes(x_s; c_s,eyes, c_d,eyes,i)
                     eyes_delta = self.live_portrait_wrapper.retarget_eye(x_s, combined_eye_ratio_tensor)
-                if inf_cfg.flag_lip_retargeting:
+                if inf_cfg.flag_lip_retargeting and source_lmk is not None:
                     c_d_lip_i = c_d_lip_lst[i]
                     combined_lip_ratio_tensor = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_i, source_lmk)
                     # ∆_lip,i = R_lip(x_s; c_s,lip, c_d,lip,i)
