@@ -32,11 +32,14 @@ def fast_check_ffmpeg():
 tyro.extras.set_accent_color("bright_cyan")
 args = tyro.cli(ArgumentConfig)
 
+ffmpeg_dir = os.path.join(os.getcwd(), "ffmpeg")
+if osp.exists(ffmpeg_dir):
+    os.environ["PATH"] += (os.pathsep + ffmpeg_dir)
+
 if not fast_check_ffmpeg():
     raise ImportError(
         "FFmpeg is not installed. Please install FFmpeg (including ffmpeg and ffprobe) before running this script. https://ffmpeg.org/download.html"
     )
-
 # specify configs for inference
 inference_cfg = partial_fields(InferenceConfig, args.__dict__)  # use attribute of args to initial InferenceConfig
 crop_cfg = partial_fields(CropConfig, args.__dict__)  # use attribute of args to initial CropConfig
