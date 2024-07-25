@@ -193,12 +193,21 @@ class LivePortraitPipeline(object):
             I_s_lst = self.live_portrait_wrapper.prepare_videos(img_crop_256x256_lst)
             source_template_dct = self.make_motion_template(I_s_lst, c_s_eyes_lst, c_s_lip_lst, output_fps=source_fps)
 
-            x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + driving_template_dct['motion'][i]['exp'] - driving_template_dct['motion'][0]['exp'] for i in range(n_frames)]
-            x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
-            if inf_cfg.flag_video_editing_head_rotation:
-                key_r = 'R' if 'R' in driving_template_dct['motion'][0].keys() else 'R_d'  # compatible with previous keys
-                x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
-                x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+            if inf_cfg.flag_relative_motion:
+                x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + driving_template_dct['motion'][i]['exp'] - driving_template_dct['motion'][0]['exp'] for i in range(n_frames)]
+                x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                if inf_cfg.flag_video_editing_head_rotation:
+                    key_r = 'R' if 'R' in driving_template_dct['motion'][0].keys() else 'R_d'  # compatible with previous keys
+                    x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
+                    x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+            else:
+                x_d_exp_lst = [driving_template_dct['motion'][i]['exp'] for i in range(n_frames)]
+                x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                if inf_cfg.flag_video_editing_head_rotation:
+                    key_r = 'R' if 'R' in driving_template_dct['motion'][0].keys() else 'R_d'  # compatible with previous keys
+                    x_d_r_lst = [driving_template_dct['motion'][i][key_r] for i in range(n_frames)]
+                    x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+
         else:  # if the input is a source image, process it only once
             if inf_cfg.flag_do_crop:
                 crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)
@@ -217,7 +226,7 @@ class LivePortraitPipeline(object):
             x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
             # let lip-open scalar to be 0 at first
-            if flag_normalize_lip and source_lmk is not None:
+            if flag_normalize_lip and inf_cfg.flag_relative_motion and source_lmk is not None:
                 c_d_lip_before_animation = [0.]
                 combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
                 if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
@@ -244,11 +253,13 @@ class LivePortraitPipeline(object):
                 x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
                 # let lip-open scalar to be 0 at first if the input is a video
-                if flag_normalize_lip and source_lmk is not None:
+                if flag_normalize_lip and inf_cfg.flag_relative_motion and source_lmk is not None:
                     c_d_lip_before_animation = [0.]
                     combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
                     if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
                         lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
+                    else:
+                        lip_delta_before_animation = None
 
                 # let eye-open scalar to be the same as the first frame if the latter is eye-open state
                 if flag_source_video_eye_retargeting and source_lmk is not None:
@@ -284,8 +295,14 @@ class LivePortraitPipeline(object):
                 scale_new = x_s_info['scale'] if flag_is_source_video else x_s_info['scale'] * (x_d_i_info['scale'] / x_d_0_info['scale'])
                 t_new = x_s_info['t'] if flag_is_source_video else x_s_info['t'] + (x_d_i_info['t'] - x_d_0_info['t'])
             else:
-                R_new = R_d_i
-                delta_new = x_d_i_info['exp']
+                if flag_is_source_video:
+                    if inf_cfg.flag_video_editing_head_rotation:
+                        R_new = x_d_r_lst_smooth[i]
+                    else:
+                        R_new = R_s
+                else:
+                    R_new = R_d_i
+                delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_d_i_info['exp']
                 scale_new = x_s_info['scale']
                 t_new = x_d_i_info['t']
 
