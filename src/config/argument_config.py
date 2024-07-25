@@ -26,8 +26,8 @@ class ArgumentConfig(PrintableConfig):
     flag_normalize_lip: bool = True  # whether to let the lip to close state before animation, only take effect when flag_eye_retargeting and flag_lip_retargeting is False
     flag_source_video_eye_retargeting: bool = False  # when the input is a source video, whether to let the eye-open scalar of each frame to be the same as the first source frame before the animation, only take effect when flag_eye_retargeting and flag_lip_retargeting is False, may cause the inter-frame jittering
     flag_video_editing_head_rotation: bool = False  # when the input is a source video, whether to inherit the relative head rotation from the driving video
-    flag_eye_retargeting: bool = False  # not recommend to be True, WIP
-    flag_lip_retargeting: bool = False  # not recommend to be True, WIP
+    flag_eye_retargeting: bool = False  # not recommend to be True, WIP; whether to transfer the eyes-open ratio of each driving frame to the source image or the corresponding source frame
+    flag_lip_retargeting: bool = False  # not recommend to be True, WIP; whether to transfer the lip-open ratio of each driving frame to the source image or the corresponding source frame
     flag_stitching: bool = True  # recommend to True if head movement is small, False if head movement is large
     flag_relative_motion: bool = True  # whether to use relative motion
     flag_pasteback: bool = True  # whether to paste-back/stitch the animated face cropping from the face-cropping space to the original image space
