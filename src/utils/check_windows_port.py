@@ -15,4 +15,4 @@ if result == 0:
     print("LISTENING")
 else:
     print("NOT LISTENING")
-sock.close()
+sock.close
