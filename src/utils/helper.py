@@ -45,7 +45,7 @@ def remove_suffix(filepath):
 
 
 def is_image(file_path):
-    image_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff')
+    image_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp')
     return file_path.lower().endswith(image_extensions)
 
 
