@@ -226,3 +226,6 @@ If you find LivePortrait useful for your research, welcome to 🌟 this repo and
   year    = {2024}
 }
 ```
+
+## Contact 📧
+[**Jianzhu Guo (郭建珠)**](https://guojianzhu.com); **guojianzhu1994@gmail.com**
