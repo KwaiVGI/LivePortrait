@@ -1,7 +1,7 @@
---extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.3.0
-torchvision==0.18.0
-torchaudio==2.3.0
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2
+torchvision==0.17.2
+torchaudio==2.2.2
 
 numpy==1.26.4
 pyyaml==6.0.1
@@ -12,7 +12,7 @@ lmdb==1.4.1
 tqdm==4.66.4
 rich==13.7.1
 ffmpeg==1.4
-onnxruntime-gpu==1.18.0
+onnxruntime==1.16.3
 onnx==1.16.1
 scikit-image==0.24.0
 albumentations==1.4.10
