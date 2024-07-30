@@ -34,7 +34,10 @@ class LivePortraitPipelineAnimal(object):
 
     def __init__(self, inference_cfg: InferenceConfig, crop_cfg: CropConfig):
         self.live_portrait_wrapper_animal: LivePortraitWrapperAnimal = LivePortraitWrapperAnimal(inference_cfg=inference_cfg)
-        self.cropper: Cropper = Cropper(crop_cfg=crop_cfg)
+        if inference_cfg.flag_crop_driving_video:
+            self.cropper: Cropper = Cropper(crop_cfg=crop_cfg, image_type='human')
+        else:
+            self.cropper: Cropper = Cropper(crop_cfg=crop_cfg, image_type='animal')
 
     def make_motion_template(self, I_lst, **kwargs):
         n_frames = I_lst.shape[0]
@@ -110,10 +113,9 @@ class LivePortraitPipelineAnimal(object):
                 log(f'Driving video is cropped, {len(ret_d["frame_crop_lst"])} frames are processed.')
                 if len(ret_d["frame_crop_lst"]) is not n_frames:
                     n_frames = min(n_frames, len(ret_d["frame_crop_lst"]))
-                driving_rgb_crop_lst, driving_lmk_crop_lst = ret_d['frame_crop_lst'], ret_d['lmk_crop_lst']
+                driving_rgb_crop_lst = ret_d['frame_crop_lst']
                 driving_rgb_crop_256x256_lst = [cv2.resize(_, (256, 256)) for _ in driving_rgb_crop_lst]
             else:
-                driving_lmk_crop_lst = self.cropper.calc_lmks_from_cropped_video(driving_rgb_lst)
                 driving_rgb_crop_256x256_lst = [cv2.resize(_, (256, 256)) for _ in driving_rgb_lst]  # force to resize to 256x256
             #######################################
 

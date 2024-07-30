@@ -209,7 +209,7 @@ class LivePortraitPipeline(object):
 
         else:  # if the input is a source image, process it only once
             if inf_cfg.flag_do_crop:
-                if inf_cfg.det_type == "x":
+                if crop_cfg.det_type == "x":
                     crop_info = self.cropper.crop_source_image_xpose(source_rgb_lst[0], crop_cfg, face_type="face")
                 else:
                     crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)

@@ -43,6 +43,7 @@ class Trajectory:
 class Cropper(object):
     def __init__(self, **kwargs) -> None:
         self.crop_cfg: CropConfig = kwargs.get("crop_cfg", None)
+        self.image_type = kwargs.get("image_type", 'human')
         device_id = kwargs.get("device_id", 0)
         flag_force_cpu = kwargs.get("flag_force_cpu", False)
         if flag_force_cpu:
@@ -64,13 +65,14 @@ class Cropper(object):
         )
         self.landmark_runner.warmup()
 
-        self.face_analysis_wrapper = FaceAnalysisDIY(
-                name="buffalo_l",
-                root=make_abs_path(self.crop_cfg.insightface_root),
-                providers=face_analysis_wrapper_provider,
-            )
-        self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
-        self.face_analysis_wrapper.warmup()
+        if self.image_type == "human":
+            self.face_analysis_wrapper = FaceAnalysisDIY(
+                    name="buffalo_l",
+                    root=make_abs_path(self.crop_cfg.insightface_root),
+                    providers=face_analysis_wrapper_provider,
+                )
+            self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
+            self.face_analysis_wrapper.warmup()
 
         if self.crop_cfg.det_type == "x":
             self.animal_landmark_runner = XPoseRunner(make_abs_path(self.crop_cfg.xpose_config_file), make_abs_path(self.crop_cfg.xpose_ckpt_path), cpu_only=False)
