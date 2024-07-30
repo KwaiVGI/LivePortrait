@@ -1,7 +1,7 @@
 # coding: utf-8
 
 """
-Pipeline of LivePortrait
+Pipeline of LivePortrait (Human)
 """
 
 import torch
@@ -209,7 +209,10 @@ class LivePortraitPipeline(object):
 
         else:  # if the input is a source image, process it only once
             if inf_cfg.flag_do_crop:
-                crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)
+                if inf_cfg.det_type == "x":
+                    crop_info = self.cropper.crop_source_image_xpose(source_rgb_lst[0], crop_cfg, face_type="face")
+                else:
+                    crop_info = self.cropper.crop_source_image(source_rgb_lst[0], crop_cfg)
                 if crop_info is None:
                     raise Exception("No face detected in the source image!")
                 source_lmk = crop_info['lmk_crop']
@@ -386,7 +389,7 @@ class LivePortraitPipeline(object):
             log(f"Audio is selected from {audio_from_which_video}, concat mode")
             add_audio_to_video(wfp_concat, audio_from_which_video, wfp_concat_with_audio)
             os.replace(wfp_concat_with_audio, wfp_concat)
-            log(f"Replace {wfp_concat} with {wfp_concat_with_audio}")
+            log(f"Replace {wfp_concat_with_audio} with {wfp_concat}")
 
         # save the animated result
         wfp = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}.mp4')
@@ -402,7 +405,7 @@ class LivePortraitPipeline(object):
             log(f"Audio is selected from {audio_from_which_video}")
             add_audio_to_video(wfp, audio_from_which_video, wfp_with_audio)
             os.replace(wfp_with_audio, wfp)
-            log(f"Replace {wfp} with {wfp_with_audio}")
+            log(f"Replace {wfp_with_audio} with {wfp}")
 
         # final log
         if wfp_template not in (None, ''):

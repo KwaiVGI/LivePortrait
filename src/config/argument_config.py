@@ -13,7 +13,7 @@ from .base_config import PrintableConfig, make_abs_path
 @dataclass(repr=False)  # use repr from PrintableConfig
 class ArgumentConfig(PrintableConfig):
     ########## input arguments ##########
-    source: Annotated[str, tyro.conf.arg(aliases=["-s"])] = make_abs_path('../../assets/examples/source/s0.jpg')  # path to the source portrait or video
+    source: Annotated[str, tyro.conf.arg(aliases=["-s"])] = make_abs_path('../../assets/examples/source/s0.jpg')  # path to the source portrait (human/animal) or video (human)
     driving:  Annotated[str, tyro.conf.arg(aliases=["-d"])] = make_abs_path('../../assets/examples/driving/d0.mp4')  # path to driving video or template (.pkl format)
     output_dir: Annotated[str, tyro.conf.arg(aliases=["-o"])] = 'animations/'  # directory to save output video
 
@@ -27,14 +27,15 @@ class ArgumentConfig(PrintableConfig):
     flag_video_editing_head_rotation: bool = False  # when the input is a source video, whether to inherit the relative head rotation from the driving video
     flag_eye_retargeting: bool = False  # not recommend to be True, WIP; whether to transfer the eyes-open ratio of each driving frame to the source image or the corresponding source frame
     flag_lip_retargeting: bool = False  # not recommend to be True, WIP; whether to transfer the lip-open ratio of each driving frame to the source image or the corresponding source frame
-    flag_stitching: bool = True  # recommend to True if head movement is small, False if head movement is large
-    flag_relative_motion: bool = True  # whether to use relative motion
+    flag_stitching: bool = True  # recommend to True if head movement is small, False if head movement is large or the source image is an animal
+    flag_relative_motion: bool = True # whether to use relative motion
     flag_pasteback: bool = True  # whether to paste-back/stitch the animated face cropping from the face-cropping space to the original image space
     flag_do_crop: bool = True  # whether to crop the source portrait or video to the face-cropping space
     driving_smooth_observation_variance: float = 3e-7  # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
     audio_priority: Literal['source', 'driving'] = 'driving'  # whether to use the audio from source or driving video
     ########## source crop arguments ##########
     det_thresh: float = 0.15 # detection threshold
+    det_type: str = "insight" # "x" or "insight", "insight" only for human, "x" only when the source input is an image
     scale: float = 2.3  # the ratio of face area is smaller if scale is larger
     vx_ratio: float = 0  # the ratio to move the face to left or right in cropping space
     vy_ratio: float = -0.125  # the ratio to move the face to up or down in cropping space

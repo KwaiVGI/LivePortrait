@@ -59,8 +59,9 @@ def video2gif(video_fp, fps=30, size=256):
         # use the palette to generate the gif
         cmd = f'ffmpeg -i "{video_fp}" -i "{palette_wfp}" -filter_complex "fps={fps},scale={size}:-1:flags=lanczos[x];[x][1:v]paletteuse" "{gif_wfp}" -y'
         exec_cmd(cmd)
+        return gif_wfp
     else:
-        print(f'video_fp: {video_fp} not exists!')
+        raise FileNotFoundError(f"video_fp: {video_fp} not exists!")
 
 
 def merge_audio_video(video_fp, audio_fp, wfp):

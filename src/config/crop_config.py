@@ -13,9 +13,12 @@ from .base_config import PrintableConfig
 class CropConfig(PrintableConfig):
     insightface_root: str = "../../pretrained_weights/insightface"
     landmark_ckpt_path: str = "../../pretrained_weights/liveportrait/landmark.onnx"
+    xpose_config_file: str = "../utils/dependencies/XPose/config_model/UniPose_SwinT.py"
+    xpose_ckpt_path: str = "../../pretrained_weights/liveportrait/animal_landmark.pth"
     device_id: int = 0  # gpu device id
     flag_force_cpu: bool = False  # force cpu inference, WIP
     det_thresh: float = 0.1 # detection threshold
+    det_type: str = "insight" # "x" or "insight", "insight" only for human
     ########## source image or video cropping option ##########
     dsize: int = 512  # crop size
     scale: float = 2.8  # scale factor

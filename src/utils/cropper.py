@@ -6,6 +6,7 @@ from typing import List, Tuple, Union
 
 import cv2; cv2.setNumThreads(0); cv2.ocl.setUseOpenCL(False)
 import numpy as np
+from PIL import Image
 import torch
 
 from ..config.crop_config import CropConfig
@@ -19,6 +20,7 @@ from .io import contiguous
 from .rprint import rlog as log
 from .face_analysis_diy import FaceAnalysisDIY
 from .landmark_runner import LandmarkRunner
+from .animal_landmark_runner import XPoseRunner
 
 
 def make_abs_path(fn):
@@ -63,12 +65,16 @@ class Cropper(object):
         self.landmark_runner.warmup()
 
         self.face_analysis_wrapper = FaceAnalysisDIY(
-            name="buffalo_l",
-            root=make_abs_path(self.crop_cfg.insightface_root),
-            providers=face_analysis_wrapper_provider,
-        )
+                name="buffalo_l",
+                root=make_abs_path(self.crop_cfg.insightface_root),
+                providers=face_analysis_wrapper_provider,
+            )
         self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
         self.face_analysis_wrapper.warmup()
+
+        if self.crop_cfg.det_type == "x":
+            self.animal_landmark_runner = XPoseRunner(make_abs_path(self.crop_cfg.xpose_config_file), make_abs_path(self.crop_cfg.xpose_ckpt_path), cpu_only=False)
+            self.animal_landmark_runner.warmup()
 
     def update_config(self, user_args):
         for k, v in user_args.items():
@@ -116,6 +122,34 @@ class Cropper(object):
         ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
 
         return ret_dct
+
+    def crop_source_image_xpose(self, img_rgb_: np.ndarray, crop_cfg: CropConfig, face_type="animal_face"):
+        # crop a source image and get neccessary information, used for animal face
+        img_rgb = img_rgb_.copy()  # copy it
+        img_rgb_pil = Image.fromarray(img_rgb)
+
+        lmk = self.animal_landmark_runner.run_unipose(img_rgb_pil, 'face', face_type, 0, 0)
+
+        # crop the face
+        ret_dct = crop_image(
+            img_rgb,  # ndarray
+            lmk,  # Nx2
+            dsize=crop_cfg.dsize,
+            scale=crop_cfg.scale,
+            vx_ratio=crop_cfg.vx_ratio,
+            vy_ratio=crop_cfg.vy_ratio,
+            flag_do_rot=crop_cfg.flag_do_rot,
+        )
+
+        lmk = self.landmark_runner.run(img_rgb, lmk)
+        ret_dct["lmk_crop"] = lmk
+
+        # update a 256x256 version for network input
+        ret_dct["img_crop_256x256"] = cv2.resize(ret_dct["img_crop"], (256, 256), interpolation=cv2.INTER_AREA)
+        ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
+
+        return ret_dct
+
 
     def calc_lmk_from_cropped_image(self, img_rgb_, **kwargs):
         direction = kwargs.get("direction", "large-small")

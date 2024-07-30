@@ -9,6 +9,8 @@ import os.path as osp
 import torch
 from collections import OrderedDict
 import numpy as np
+from scipy.spatial import ConvexHull # pylint: disable=E0401,E0611
+from typing import Union
 import cv2
 
 from ..modules.spade_generator import SPADEDecoder
@@ -17,6 +19,26 @@ from ..modules.motion_extractor import MotionExtractor
 from ..modules.appearance_feature_extractor import AppearanceFeatureExtractor
 from ..modules.stitching_retargeting_network import StitchingRetargetingNetwork
 
+
+def tensor_to_numpy(data: Union[np.ndarray, torch.Tensor]) -> np.ndarray:
+    """transform torch.Tensor into numpy.ndarray"""
+    if isinstance(data, torch.Tensor):
+        return data.data.cpu().numpy()
+    return data
+
+def calc_motion_multiplier(
+    kp_source: Union[np.ndarray, torch.Tensor],
+    kp_driving_initial: Union[np.ndarray, torch.Tensor]
+) -> float:
+    """calculate motion_multiplier based on the source image and the first driving frame"""
+    kp_source_np = tensor_to_numpy(kp_source)
+    kp_driving_initial_np = tensor_to_numpy(kp_driving_initial)
+
+    source_area = ConvexHull(kp_source_np.squeeze(0)).volume
+    driving_area = ConvexHull(kp_driving_initial_np.squeeze(0)).volume
+    motion_multiplier = np.sqrt(source_area) / np.sqrt(driving_area)
+
+    return motion_multiplier
 
 def suffix(filename):
     """a.jpg -> jpg"""

@@ -1,7 +1,7 @@
 # coding: utf-8
 
 """
-The entrance of the gradio
+The entrance of the gradio for human
 """
 
 import os

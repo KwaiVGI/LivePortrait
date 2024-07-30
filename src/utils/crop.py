@@ -136,6 +136,29 @@ def parse_pt2_from_pt5(pt5, use_lip=True):
         ], axis=0)
     return pt2
 
+def parse_pt2_from_pt9(pt9, use_lip=True):
+    '''
+    parsing the 2 points according to the 9 points, which cancels the roll
+    ['right eye right', 'right eye left', 'left eye right', 'left eye left', 'nose tip', 'lip right', 'lip left', 'upper lip', 'lower lip']
+    '''
+    if use_lip:
+        pt9 = np.stack([
+            (pt9[2] + pt9[3]) / 2, # left eye
+            (pt9[0] + pt9[1]) / 2, # right eye
+            pt9[4],
+            (pt9[5] + pt9[6] ) / 2 # lip
+        ], axis=0)
+        pt2 = np.stack([
+            (pt9[0] + pt9[1]) / 2, # eye
+            pt9[3] # lip
+        ], axis=0)
+    else:
+        pt2 = np.stack([
+            (pt9[2] + pt9[3]) / 2,
+            (pt9[0] + pt9[1]) / 2,
+        ], axis=0)
+
+    return pt2
 
 def parse_pt2_from_pt_x(pts, use_lip=True):
     if pts.shape[0] == 101:
@@ -151,6 +174,8 @@ def parse_pt2_from_pt_x(pts, use_lip=True):
     elif pts.shape[0] > 101:
         # take the first 101 points
         pt2 = parse_pt2_from_pt101(pts[:101], use_lip=use_lip)
+    elif pts.shape[0] == 9:
+        pt2 = parse_pt2_from_pt9(pts, use_lip=use_lip)
     else:
         raise Exception(f'Unknow shape: {pts.shape}')
 
