@@ -199,6 +199,7 @@ class GradioPipelineAnimal(LivePortraitPipelineAnimal):
     """gradio for animal
     """
     def __init__(self, inference_cfg, crop_cfg, args: ArgumentConfig):
+        inference_cfg.flag_crop_driving_video = True # ensure the face_analysis_wrapper is enabled
         super().__init__(inference_cfg, crop_cfg)
         # self.live_portrait_wrapper_animal = self.live_portrait_wrapper_animal
         self.args = args
