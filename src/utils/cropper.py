@@ -135,6 +135,7 @@ class Cropper(object):
 
         return lmk
 
+    # TODO: support skipping frame with NO FACE
     def crop_source_video(self, source_rgb_lst, crop_cfg: CropConfig, **kwargs):
         """Tracking based landmarks/alignment and cropping"""
         trajectory = Trajectory()
@@ -157,8 +158,10 @@ class Cropper(object):
                 lmk = self.landmark_runner.run(frame_rgb, lmk)
                 trajectory.start, trajectory.end = idx, idx
             else:
+                # TODO: add IOU check for tracking
                 lmk = self.landmark_runner.run(frame_rgb, trajectory.lmk_lst[-1])
                 trajectory.end = idx
+
             trajectory.lmk_lst.append(lmk)
 
             # crop the face
