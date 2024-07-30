@@ -11,7 +11,7 @@ import io
 import numpy as np
 import torch
 import clip
-import src.utils.dependencies.XPose.transforms_uni as T
+import src.utils.dependencies.XPose.transforms as T
 from src.utils.dependencies.XPose.models import build_model
 from src.utils.dependencies.XPose.predefined_keypoints import *
 from src.utils.dependencies.XPose.util import box_ops
