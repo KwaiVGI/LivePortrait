@@ -1,13 +1,13 @@
 # coding: utf-8
 
 import os.path as osp
-from dataclasses import dataclass, field
-from typing import List, Tuple, Union
-
-import cv2; cv2.setNumThreads(0); cv2.ocl.setUseOpenCL(False)
-import numpy as np
-from PIL import Image
 import torch
+import numpy as np
+import cv2; cv2.setNumThreads(0); cv2.ocl.setUseOpenCL(False)
+
+from PIL import Image
+from typing import List, Tuple, Union
+from dataclasses import dataclass, field
 
 from ..config.crop_config import CropConfig
 from .crop import (
@@ -20,8 +20,6 @@ from .io import contiguous
 from .rprint import rlog as log
 from .face_analysis_diy import FaceAnalysisDIY
 from .human_landmark_runner import LandmarkRunner as HumanLandmark
-from .animal_landmark_runner import XPoseRunner as AnimalLandmarkRunner
-
 
 def make_abs_path(fn):
     return osp.join(osp.dirname(osp.realpath(__file__)), fn)
@@ -74,6 +72,7 @@ class Cropper(object):
                 device_id=device_id,
             )
         elif self.image_type == "animal_face":
+            from .animal_landmark_runner import XPoseRunner as AnimalLandmarkRunner
             self.landmark_runner = AnimalLandmarkRunner(
                     model_config_path=self.crop_cfg.xpose_config_file_path,
                     model_checkpoint_path=self.crop_cfg.xpose_ckpt_path,

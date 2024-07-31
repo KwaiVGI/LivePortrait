@@ -28,8 +28,6 @@ from .mask_generate import prepare_for_mask, post_process
 import random
 from .utils import sigmoid_focal_loss, MLP, _get_activation_fn, gen_sineembed_for_position
 from pathlib import Path
-import clip
-
 
 
 class UniPose(nn.Module):
@@ -116,12 +114,12 @@ class UniPose(nn.Module):
 
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        model, _ = clip.load("ViT-B/32", device=device)
-        self.clip_model = model
-        visual_parameters = list(self.clip_model.visual.parameters())
-        #
-        for param in visual_parameters:
-            param.requires_grad = False
+        # model, _ = clip.load("ViT-B/32", device=device)
+        # self.clip_model = model
+        # visual_parameters = list(self.clip_model.visual.parameters())
+        # #
+        # for param in visual_parameters:
+        #     param.requires_grad = False
 
         self.pos_proj = nn.Linear(hidden_dim, 768)
         self.padding = nn.Embedding(1, 768)
