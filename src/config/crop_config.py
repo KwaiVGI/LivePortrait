@@ -6,15 +6,17 @@ parameters used for crop faces
 
 from dataclasses import dataclass
 
-from .base_config import PrintableConfig
+from .base_config import PrintableConfig, make_abs_path
 
 
 @dataclass(repr=False)  # use repr from PrintableConfig
 class CropConfig(PrintableConfig):
-    insightface_root: str = "../../pretrained_weights/insightface"
-    landmark_ckpt_path: str = "../../pretrained_weights/liveportrait/landmark.onnx"
-    xpose_config_file: str = "../utils/dependencies/XPose/config_model/UniPose_SwinT.py"
-    xpose_ckpt_path: str = "../../pretrained_weights/liveportrait/animal_landmark.pth"
+    insightface_root: str = make_abs_path("../../pretrained_weights/insightface")
+    landmark_ckpt_path: str = make_abs_path("../../pretrained_weights/liveportrait/landmark.onnx")
+    xpose_config_file_path: str = make_abs_path("../utils/dependencies/XPose/config_model/UniPose_SwinT.py")
+    xpose_embedding_cache_path: str = make_abs_path('../utils/resources/clip_embedding.pkl')
+
+    xpose_ckpt_path: str = make_abs_path("../../pretrained_weights/liveportrait/animal_landmark.pth")
     device_id: int = 0  # gpu device id
     flag_force_cpu: bool = False  # force cpu inference, WIP
     det_thresh: float = 0.1 # detection threshold

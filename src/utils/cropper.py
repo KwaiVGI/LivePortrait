@@ -62,21 +62,23 @@ class Cropper(object):
         if self.image_type == "human_face":
             self.face_analysis_wrapper = FaceAnalysisDIY(
                     name="buffalo_l",
-                    root=make_abs_path(self.crop_cfg.insightface_root),
+                    root=self.crop_cfg.insightface_root,
                     providers=face_analysis_wrapper_provider,
                 )
             self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
             self.face_analysis_wrapper.warmup()
 
             self.landmark_runner = HumanLandmark(
-                ckpt_path=make_abs_path(self.crop_cfg.landmark_ckpt_path),
+                ckpt_path=self.crop_cfg.landmark_ckpt_path,
                 onnx_provider=device,
                 device_id=device_id,
             )
         elif self.image_type == "animal_face":
-            xpose_config_path = make_abs_path(self.crop_cfg.xpose_config_file)
-            xpose_ckpt_path = make_abs_path(self.crop_cfg.xpose_ckpt_path)
-            self.landmark_runner = AnimalLandmarkRunner(xpose_config_path, xpose_ckpt_path)
+            self.landmark_runner = AnimalLandmarkRunner(
+                    model_config_path=self.crop_cfg.xpose_config_file_path,
+                    model_checkpoint_path=self.crop_cfg.xpose_ckpt_path,
+                    embeddings_cache_path=self.crop_cfg.xpose_embedding_cache_path
+                )
         else:
             raise ValueError(f"Unsupported image type: {self.image_type}.")
 
@@ -131,7 +133,7 @@ class Cropper(object):
             lmk = self.landmark_runner.run(img_rgb, lmk)
             ret_dct["lmk_crop"] = lmk
             ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
-            
+
         return ret_dct
 
     def calc_lmk_from_cropped_image(self, img_rgb_, **kwargs):

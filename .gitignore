@@ -26,3 +26,9 @@ gradio_temp/**
 # Windows dependencies
 ffmpeg/
 LivePortrait_env/
+
+# XPose build files
+src/utils/dependencies/XPose/models/UniPose/ops/build
+src/utils/dependencies/XPose/models/UniPose/ops/dist
+src/utils/dependencies/XPose/models/UniPose/ops/MultiScaleDeformableAttention.egg-info
+

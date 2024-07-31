@@ -4,31 +4,40 @@
 face detectoin and alignment using XPose
 """
 
+
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 import io
-import numpy as np
+import pickle
 import torch
-import clip
+import numpy as np
+from PIL import Image
+from torchvision.ops import nms
+
+from src.utils.timer import Timer
+from src.utils.rprint import rlog as log
+from src.utils.helper import clean_state_dict
+
 import src.utils.dependencies.XPose.transforms as T
 from src.utils.dependencies.XPose.models import build_model
 from src.utils.dependencies.XPose.predefined_keypoints import *
 from src.utils.dependencies.XPose.util import box_ops
 from src.utils.dependencies.XPose.util.config import Config
-from src.utils.dependencies.XPose.util.utils import clean_state_dict
-from torchvision.ops import nms
-from .timer import Timer
-from .rprint import rlog as log
-from PIL import Image
-
 
 class XPoseRunner(object):
-    def __init__(self, model_config_path, model_checkpoint_path, cpu_only=False, device_id=0):
+    def __init__(self, model_config_path, model_checkpoint_path, embeddings_cache_path=None, cpu_only=False, device_id=0):
         self.device = f"cuda:{device_id}" if not cpu_only else "cpu"
         self.model = self.load_animal_model(model_config_path, model_checkpoint_path, self.device)
         self.timer = Timer()
-        self.clip_model, _ = clip.load("ViT-B/32", device=self.device)
+        # Load cached embeddings if available
+        if os.path.exists(embeddings_cache_path):
+            with open(embeddings_cache_path, 'rb') as f:
+                self.cached_embeddings = pickle.load(f)
+            print("Loaded cached embeddings from file.")
+        else:
+            raise ValueError("Could not load clip embeddings from file, please check your file path.")
 
     def load_animal_model(self, model_config_path, model_checkpoint_path, device):
         args = Config.fromfile(model_config_path)
@@ -40,25 +49,14 @@ class XPoseRunner(object):
         return model
 
     def text_encoding(self, instance_names, keypoints_names):
-        ins_text_embeddings = []
-        for cat in instance_names:
-            instance_description = f"a photo of {cat.lower().replace('_', ' ').replace('-', ' ')}"
-            text = clip.tokenize(instance_description).to(self.device)
-            text_features = self.clip_model.encode_text(text)
-            print(text_features.mean())
-            ins_text_embeddings.append(text_features)
-        ins_text_embeddings = torch.cat(ins_text_embeddings, dim=0)
-
-        kpt_text_embeddings = []
-        for kpt in keypoints_names:
-            kpt_description = f"a photo of {kpt.lower().replace('_', ' ')}"
-            text = clip.tokenize(kpt_description).to(self.device)
-            with torch.no_grad():
-                text_features = self.clip_model.encode_text(text)
-            kpt_text_embeddings.append(text_features)
-        kpt_text_embeddings = torch.cat(kpt_text_embeddings, dim=0)
-
-        return ins_text_embeddings, kpt_text_embeddings
+        # Create unique key for caching
+        cache_key = (tuple(instance_names), tuple(keypoints_names))
+        if cache_key in self.cached_embeddings:
+            ins_text_embeddings, kpt_text_embeddings = self.cached_embeddings[cache_key]
+            print("Loaded embeddings from cache.")
+        else:
+            raise ValueError("Could not load embeddings from cache, please check your embedding file.")
+        return ins_text_embeddings.to(self.device), kpt_text_embeddings.to(self.device)
 
     def load_image(self, input_image):
         image_pil = input_image.convert("RGB")
