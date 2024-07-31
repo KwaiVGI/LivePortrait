@@ -375,7 +375,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     process_button_retargeting_video.click(
         fn=gpu_wrapped_execute_video_retargeting,
         inputs=[video_lip_retargeting_slider, retargeting_input_video, video_retargeting_source_scale, flag_do_crop_input_retargeting_video],
-        outputs=[output_image, output_image_paste_back],
+        outputs=[output_video, output_video_paste_back],
         show_progress=True
     )
 
