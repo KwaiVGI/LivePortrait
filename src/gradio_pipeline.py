@@ -34,7 +34,7 @@ class GradioPipeline(LivePortraitPipeline):
 
     def __init__(self, inference_cfg, crop_cfg, args: ArgumentConfig):
         super().__init__(inference_cfg, crop_cfg)
-        # self.live_portrait_wrapper_animal = self.live_portrait_wrapper_animal
+        # self.live_portrait_wrapper = self.live_portrait_wrapper
         self.args = args
 
     @torch.no_grad()
@@ -90,7 +90,7 @@ class GradioPipeline(LivePortraitPipeline):
             }
             # update config from user input
             self.args = update_args(self.args, args_user)
-            self.live_portrait_wrapper_animal.update_config(self.args.__dict__)
+            self.live_portrait_wrapper.update_config(self.args.__dict__)
             self.cropper.update_config(self.args.__dict__)
             # video driven animation
             video_path, video_path_concat = self.execute(self.args)
@@ -100,20 +100,20 @@ class GradioPipeline(LivePortraitPipeline):
             raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
 
     @torch.no_grad()
-    def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_head_pitch_variation: float, input_head_yaw_variation: float, input_head_roll_variation: float, input_image, retargeting_source_scale: float, flag_do_crop=True):
+    def execute_image(self, input_eye_ratio: float, input_lip_ratio: float, input_head_pitch_variation: float, input_head_yaw_variation: float, input_head_roll_variation: float, input_image, retargeting_source_scale: float, flag_do_crop_input_retargeting_image=True):
         """ for single image retargeting
         """
         if input_head_pitch_variation is None or input_head_yaw_variation is None or input_head_roll_variation is None:
             raise gr.Error("Invalid relative pose input 💥!", duration=5)
         # disposable feature
         f_s_user, x_s_user, R_s_user, R_d_user, x_s_info, source_lmk_user, crop_M_c2o, mask_ori, img_rgb = \
-            self.prepare_retargeting(input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, retargeting_source_scale, flag_do_crop)
+            self.prepare_retargeting(input_image, input_head_pitch_variation, input_head_yaw_variation, input_head_roll_variation, retargeting_source_scale, flag_do_crop=flag_do_crop_input_retargeting_image)
 
         if input_eye_ratio is None or input_lip_ratio is None:
             raise gr.Error("Invalid ratio input 💥!", duration=5)
         else:
-            device = self.live_portrait_wrapper_animal.device
-            # inference_cfg = self.live_portrait_wrapper_animal.inference_cfg
+            device = self.live_portrait_wrapper.device
+            # inference_cfg = self.live_portrait_wrapper.inference_cfg
             x_s_user = x_s_user.to(device)
             f_s_user = f_s_user.to(device)
             R_s_user = R_s_user.to(device)
@@ -127,17 +127,20 @@ class GradioPipeline(LivePortraitPipeline):
 
             x_d_new = scale_new * (x_c_s @ R_d_new + delta_new) + t_new
             # ∆_eyes,i = R_eyes(x_s; c_s,eyes, c_d,eyes,i)
-            combined_eye_ratio_tensor = self.live_portrait_wrapper_animal.calc_combined_eye_ratio([[float(input_eye_ratio)]], source_lmk_user)
-            eyes_delta = self.live_portrait_wrapper_animal.retarget_eye(x_s_user, combined_eye_ratio_tensor)
+            combined_eye_ratio_tensor = self.live_portrait_wrapper.calc_combined_eye_ratio([[float(input_eye_ratio)]], source_lmk_user)
+            eyes_delta = self.live_portrait_wrapper.retarget_eye(x_s_user, combined_eye_ratio_tensor)
             # ∆_lip,i = R_lip(x_s; c_s,lip, c_d,lip,i)
-            combined_lip_ratio_tensor = self.live_portrait_wrapper_animal.calc_combined_lip_ratio([[float(input_lip_ratio)]], source_lmk_user)
-            lip_delta = self.live_portrait_wrapper_animal.retarget_lip(x_s_user, combined_lip_ratio_tensor)
+            combined_lip_ratio_tensor = self.live_portrait_wrapper.calc_combined_lip_ratio([[float(input_lip_ratio)]], source_lmk_user)
+            lip_delta = self.live_portrait_wrapper.retarget_lip(x_s_user, combined_lip_ratio_tensor)
             x_d_new = x_d_new + eyes_delta + lip_delta
-            x_d_new = self.live_portrait_wrapper_animal.stitching(x_s_user, x_d_new)
+            x_d_new = self.live_portrait_wrapper.stitching(x_s_user, x_d_new)
             # D(W(f_s; x_s, x′_d))
-            out = self.live_portrait_wrapper_animal.warp_decode(f_s_user, x_s_user, x_d_new)
-            out = self.live_portrait_wrapper_animal.parse_output(out['out'])[0]
-            out_to_ori_blend = paste_back(out, crop_M_c2o, img_rgb, mask_ori)
+            out = self.live_portrait_wrapper.warp_decode(f_s_user, x_s_user, x_d_new)
+            out = self.live_portrait_wrapper.parse_output(out['out'])[0]
+            if flag_do_crop_input_retargeting_image:
+                out_to_ori_blend = paste_back(out, crop_M_c2o, img_rgb, mask_ori)
+            else:
+                out_to_ori_blend = out
             gr.Info("Run successfully!", duration=2)
             return out, out_to_ori_blend
 
@@ -150,27 +153,30 @@ class GradioPipeline(LivePortraitPipeline):
             args_user = {'scale': retargeting_source_scale}
             self.args = update_args(self.args, args_user)
             self.cropper.update_config(self.args.__dict__)
-            inference_cfg = self.live_portrait_wrapper_animal.inference_cfg
+            inference_cfg = self.live_portrait_wrapper.inference_cfg
             ######## process source portrait ########
             img_rgb = load_img_online(input_image, mode='rgb', max_dim=1280, n=2)
             log(f"Load source image from {input_image}.")
-            crop_info = self.cropper.crop_source_image(img_rgb, self.cropper.crop_cfg)
             if flag_do_crop:
-                I_s = self.live_portrait_wrapper_animal.prepare_source(crop_info['img_crop_256x256'])
+                crop_info = self.cropper.crop_source_image(img_rgb, self.cropper.crop_cfg)
+                I_s = self.live_portrait_wrapper.prepare_source(crop_info['img_crop_256x256'])
+                source_lmk_user = crop_info['lmk_crop']
+                crop_M_c2o = crop_info['M_c2o']
+                mask_ori = prepare_paste_back(inference_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
             else:
-                I_s = self.live_portrait_wrapper_animal.prepare_source(img_rgb)
-            x_s_info = self.live_portrait_wrapper_animal.get_kp_info(I_s)
+                I_s = self.live_portrait_wrapper.prepare_source(img_rgb)
+                source_lmk_user = self.cropper.calc_lmk_from_cropped_image(img_rgb)
+                crop_M_c2o = None
+                mask_ori = None
+            x_s_info = self.live_portrait_wrapper.get_kp_info(I_s)
             x_s_info_user_pitch = x_s_info['pitch'] + input_head_pitch_variation
             x_s_info_user_yaw = x_s_info['yaw'] + input_head_yaw_variation
             x_s_info_user_roll = x_s_info['roll'] + input_head_roll_variation
             R_s_user = get_rotation_matrix(x_s_info['pitch'], x_s_info['yaw'], x_s_info['roll'])
             R_d_user = get_rotation_matrix(x_s_info_user_pitch, x_s_info_user_yaw, x_s_info_user_roll)
             ############################################
-            f_s_user = self.live_portrait_wrapper_animal.extract_feature_3d(I_s)
-            x_s_user = self.live_portrait_wrapper_animal.transform_keypoint(x_s_info)
-            source_lmk_user = crop_info['lmk_crop']
-            crop_M_c2o = crop_info['M_c2o']
-            mask_ori = prepare_paste_back(inference_cfg.mask_crop, crop_info['M_c2o'], dsize=(img_rgb.shape[1], img_rgb.shape[0]))
+            f_s_user = self.live_portrait_wrapper.extract_feature_3d(I_s)
+            x_s_user = self.live_portrait_wrapper.transform_keypoint(x_s_info)
             return f_s_user, x_s_user, R_s_user, R_d_user, x_s_info, source_lmk_user, crop_M_c2o, mask_ori, img_rgb
         else:
             # when press the clear button, go here
@@ -183,7 +189,7 @@ class GradioPipeline(LivePortraitPipeline):
             args_user = {'scale': retargeting_source_scale}
             self.args = update_args(self.args, args_user)
             self.cropper.update_config(self.args.__dict__)
-            inference_cfg = self.live_portrait_wrapper_animal.inference_cfg
+            inference_cfg = self.live_portrait_wrapper.inference_cfg
             ######## process source portrait ########
             img_rgb = load_img_online(input_image, mode='rgb', max_dim=1280, n=16)
             log(f"Load source image from {input_image}.")
@@ -194,6 +200,15 @@ class GradioPipeline(LivePortraitPipeline):
             source_lip_ratio = calc_lip_close_ratio(crop_info['lmk_crop'][None])
             return round(float(source_eye_ratio.mean()), 2), round(source_lip_ratio[0][0], 2)
         return 0., 0.
+
+    def execute_video_retargeting(self, input_lip_ratio: float, retargeting_source_scale: float, flag_do_crop_input_retargeting_video=True):
+        """ retargeting the lip-open ratio of each frame in the source video
+        """
+        
+
+
+
+
 
 class GradioPipelineAnimal(LivePortraitPipelineAnimal):
     """gradio for animal

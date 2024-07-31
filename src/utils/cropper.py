@@ -63,7 +63,7 @@ class Cropper(object):
             onnx_provider=device,
             device_id=device_id,
         )
-        self.landmark_runner.warmup()
+        # self.landmark_runner.warmup()
 
         if self.image_type == "human":
             self.face_analysis_wrapper = FaceAnalysisDIY(
@@ -72,11 +72,11 @@ class Cropper(object):
                     providers=face_analysis_wrapper_provider,
                 )
             self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
-            self.face_analysis_wrapper.warmup()
+            # self.face_analysis_wrapper.warmup()
 
         if self.crop_cfg.det_type == "x":
             self.animal_landmark_runner = XPoseRunner(make_abs_path(self.crop_cfg.xpose_config_file), make_abs_path(self.crop_cfg.xpose_ckpt_path), cpu_only=False)
-            self.animal_landmark_runner.warmup()
+            # self.animal_landmark_runner.warmup()
 
     def update_config(self, user_args):
         for k, v in user_args.items():
@@ -84,7 +84,7 @@ class Cropper(object):
                 setattr(self.crop_cfg, k, v)
 
     def crop_source_image(self, img_rgb_: np.ndarray, crop_cfg: CropConfig):
-        # crop a source image and get neccessary information
+        # crop a source image and get neccessary information, used for human face
         img_rgb = img_rgb_.copy()  # copy it
 
         img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
@@ -126,7 +126,7 @@ class Cropper(object):
         return ret_dct
 
     def crop_source_image_xpose(self, img_rgb_: np.ndarray, crop_cfg: CropConfig, face_type="animal_face"):
-        # crop a source image and get neccessary information, used for animal face
+        # crop a source image and get neccessary information, used for animal face and human face
         img_rgb = img_rgb_.copy()  # copy it
         img_rgb_pil = Image.fromarray(img_rgb)
 
