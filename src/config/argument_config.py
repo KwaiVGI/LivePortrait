@@ -35,7 +35,6 @@ class ArgumentConfig(PrintableConfig):
     audio_priority: Literal['source', 'driving'] = 'driving'  # whether to use the audio from source or driving video
     ########## source crop arguments ##########
     det_thresh: float = 0.15 # detection threshold
-    det_type: str = "insight" # "x" or "insight", "insight" could only be used for human, "x" could only be used when the source input is an image
     scale: float = 2.3  # the ratio of face area is smaller if scale is larger
     vx_ratio: float = 0  # the ratio to move the face to left or right in cropping space
     vy_ratio: float = -0.125  # the ratio to move the face to up or down in cropping space

@@ -45,6 +45,7 @@ class XPoseRunner(object):
             instance_description = f"a photo of {cat.lower().replace('_', ' ').replace('-', ' ')}"
             text = clip.tokenize(instance_description).to(self.device)
             text_features = self.clip_model.encode_text(text)
+            print(text_features.mean())
             ins_text_embeddings.append(text_features)
         ins_text_embeddings = torch.cat(ins_text_embeddings, dim=0)
 
@@ -105,7 +106,7 @@ class XPoseRunner(object):
 
         return filtered_boxes, filtered_keypoints
 
-    def run_unipose(self, input_image, instance_text_prompt, keypoint_text_example, box_threshold, IoU_threshold):
+    def run(self, input_image, instance_text_prompt, keypoint_text_example, box_threshold, IoU_threshold):
         if keypoint_text_example in globals():
             keypoint_dict = globals()[keypoint_text_example]
         elif instance_text_prompt in globals():
@@ -134,7 +135,7 @@ class XPoseRunner(object):
         self.timer.tic()
 
         img_rgb = Image.fromarray(np.zeros((512, 512, 3), dtype=np.uint8))
-        self.run_unipose(img_rgb,'face', 'animal_face', box_threshold=0.0, IoU_threshold=0.0)
+        self.run(img_rgb,'face', 'animal_face', box_threshold=0.0, IoU_threshold=0.0)
 
         elapse = self.timer.toc()
         log(f'XPoseRunner warmup time: {elapse:.3f}s')

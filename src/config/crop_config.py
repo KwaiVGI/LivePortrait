@@ -18,7 +18,6 @@ class CropConfig(PrintableConfig):
     device_id: int = 0  # gpu device id
     flag_force_cpu: bool = False  # force cpu inference, WIP
     det_thresh: float = 0.1 # detection threshold
-    det_type: str = "insight" # "x" or "insight", "insight" only for human
     ########## source image or video cropping option ##########
     dsize: int = 512  # crop size
     scale: float = 2.8  # scale factor

@@ -213,9 +213,6 @@ class GradioPipeline(LivePortraitPipeline):
         pass
 
 
-
-
-
 class GradioPipelineAnimal(LivePortraitPipelineAnimal):
     """gradio for animal
     """

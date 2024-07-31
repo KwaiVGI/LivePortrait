@@ -34,10 +34,7 @@ class LivePortraitPipelineAnimal(object):
 
     def __init__(self, inference_cfg: InferenceConfig, crop_cfg: CropConfig):
         self.live_portrait_wrapper_animal: LivePortraitWrapperAnimal = LivePortraitWrapperAnimal(inference_cfg=inference_cfg)
-        if inference_cfg.flag_crop_driving_video:
-            self.cropper: Cropper = Cropper(crop_cfg=crop_cfg, image_type='human')
-        else:
-            self.cropper: Cropper = Cropper(crop_cfg=crop_cfg, image_type='animal')
+        self.cropper: Cropper = Cropper(crop_cfg=crop_cfg, image_type='animal_face')
 
     def make_motion_template(self, I_lst, **kwargs):
         n_frames = I_lst.shape[0]
@@ -138,7 +135,7 @@ class LivePortraitPipelineAnimal(object):
 
         ######## process source info ########
         if inf_cfg.flag_do_crop:
-            crop_info = self.cropper.crop_source_image_xpose(img_rgb, crop_cfg, face_type="animal_face")
+            crop_info = self.cropper.crop_source_image(img_rgb, crop_cfg)
             if crop_info is None:
                 raise Exception("No animal face detected in the source image!")
             img_crop_256x256 = crop_info['img_crop_256x256']
