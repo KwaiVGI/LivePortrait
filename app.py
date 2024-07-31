@@ -315,6 +315,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         [osp.join(example_portrait_dir, "s18.mp4")],
                         [osp.join(example_portrait_dir, "s20.mp4")],
                         [osp.join(example_portrait_dir, "s55.mp4")],
+                        [osp.join(example_portrait_dir, "s58.mp4")],
                     ],
                     inputs=[retargeting_input_video],
                     cache_examples=False,
