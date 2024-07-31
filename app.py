@@ -59,8 +59,8 @@ def gpu_wrapped_execute_video(*args, **kwargs):
     return gradio_pipeline.execute_video(*args, **kwargs)
 
 
-def gpu_wrapped_execute_image(*args, **kwargs):
-    return gradio_pipeline.execute_image(*args, **kwargs)
+def gpu_wrapped_execute_image_retargeting(*args, **kwargs):
+    return gradio_pipeline.execute_image_retargeting(*args, **kwargs)
 
 def gpu_wrapped_execute_video_retargeting(*args, **kwargs):
     return gradio_pipeline.execute_video_retargeting(*args, **kwargs)
@@ -359,14 +359,14 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     )
 
     retargeting_input_image.change(
-        fn=gradio_pipeline.init_retargeting,
+        fn=gradio_pipeline.init_retargeting_image,
         inputs=[retargeting_source_scale, retargeting_input_image],
         outputs=[eye_retargeting_slider, lip_retargeting_slider]
     )
 
     process_button_retargeting.click(
         # fn=gradio_pipeline.execute_image,
-        fn=gpu_wrapped_execute_image,
+        fn=gpu_wrapped_execute_image_retargeting,
         inputs=[eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, retargeting_input_image, retargeting_source_scale, flag_do_crop_input_retargeting_image],
         outputs=[output_image, output_image_paste_back],
         show_progress=True
