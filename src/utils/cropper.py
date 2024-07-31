@@ -56,7 +56,7 @@ class Cropper(object):
             else:
                 device = "cuda"
                 face_analysis_wrapper_provider = ["CUDAExecutionProvider"]
-                
+
         if self.image_type == "human_face":
             self.face_analysis_wrapper = FaceAnalysisDIY(
                     name="buffalo_l",
@@ -82,7 +82,7 @@ class Cropper(object):
             raise ValueError(f"Unsupported image type: {self.image_type}.")
 
         self.landmark_runner.warmup()
-        
+
 
     def update_config(self, user_args):
         for k, v in user_args.items():

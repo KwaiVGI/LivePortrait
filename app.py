@@ -90,7 +90,8 @@ data_examples_v2v = [
 
 # Define components first
 retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.5, step=0.05, label="crop scale")
-video_retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.5, step=0.05, label="crop scale")
+video_retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.3, step=0.05, label="crop scale")
+driving_smooth_observation_variance_retargeting = gr.Number(value=3e-7, label="motion smooth strength", minimum=1e-11, maximum=1e-2, step=1e-8)
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
 video_lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
@@ -301,6 +302,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         flag_do_crop_input_retargeting_video = gr.Checkbox(value=True, label="do crop (source)")
         video_retargeting_source_scale.render()
         video_lip_retargeting_slider.render()
+        driving_smooth_observation_variance_retargeting.render()
     with gr.Row(visible=True):
         process_button_retargeting_video = gr.Button("🍄 Retargeting Video", variant="primary")
     with gr.Row(visible=True):
@@ -312,6 +314,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         [osp.join(example_portrait_dir, "s13.mp4")],
                         [osp.join(example_portrait_dir, "s18.mp4")],
                         [osp.join(example_portrait_dir, "s20.mp4")],
+                        [osp.join(example_portrait_dir, "s55.mp4")],
                     ],
                     inputs=[retargeting_input_video],
                     cache_examples=False,
@@ -374,7 +377,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
 
     process_button_retargeting_video.click(
         fn=gpu_wrapped_execute_video_retargeting,
-        inputs=[video_lip_retargeting_slider, retargeting_input_video, video_retargeting_source_scale, flag_do_crop_input_retargeting_video],
+        inputs=[video_lip_retargeting_slider, retargeting_input_video, video_retargeting_source_scale, driving_smooth_observation_variance_retargeting, flag_do_crop_input_retargeting_video],
         outputs=[output_video, output_video_paste_back],
         show_progress=True
     )
