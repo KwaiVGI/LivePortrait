@@ -5,6 +5,8 @@ Pipeline for gradio
 """
 
 import os.path as osp
+import os
+from rich.progress import track
 import gradio as gr
 import torch
 
@@ -15,8 +17,8 @@ from .utils.io import load_img_online, load_video, resize_to_limit
 from .utils.rprint import rlog as log
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.camera import get_rotation_matrix
-from .utils.video import get_fps
-from .utils.helper import is_square_video
+from .utils.video import get_fps, has_audio_stream, concat_frames, images2video, add_audio_to_video
+from .utils.helper import is_square_video, mkdir, dct2device, basename
 from .utils.retargeting_utils import calc_eye_close_ratio, calc_lip_close_ratio
 
 
@@ -205,13 +207,124 @@ class GradioPipeline(LivePortraitPipeline):
     def execute_video_retargeting(self, input_lip_ratio: float, input_video, retargeting_source_scale: float, flag_do_crop_input_retargeting_video=True):
         """ retargeting the lip-open ratio of each frame in the source video
         """
-        pass
-    
-    def prepare_retargeting_video(self, input_video, retargeting_source_scale, flag_do_crop=True):
+        # disposable feature
+        device = self.live_portrait_wrapper.device
+        f_s_user_lst, x_s_user_lst, source_lmk_crop_lst, source_M_c2o_lst, mask_ori_lst, source_rgb_lst, img_crop_256x256_lst, source_fps, n_frames = \
+            self.prepare_retargeting_video(input_video, retargeting_source_scale, device, flag_do_crop=flag_do_crop_input_retargeting_video)
+
+        if input_lip_ratio is None:
+            raise gr.Error("Invalid ratio input 💥!", duration=5)
+        else:
+            # inference_cfg = self.live_portrait_wrapper.inference_cfg
+            I_p_pstbk_lst = None
+            if flag_do_crop_input_retargeting_video:
+                I_p_pstbk_lst = []
+            I_p_lst = []
+            for i in track(range(n_frames), description='Retargeting video...', total=n_frames):
+                x_s_user_i = x_s_user_lst[i].to(device)
+                f_s_user_i = f_s_user_lst[i].to(device)
+
+                c_d_lip_retargeting = [input_lip_ratio]
+                combined_lip_ratio_tensor_retargeting = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_retargeting, source_lmk_crop_lst[i])
+                lip_delta_retargeting = self.live_portrait_wrapper.retarget_lip(x_s_user_i, combined_lip_ratio_tensor_retargeting)
+
+                x_d_i_new = x_s_user_i + lip_delta_retargeting
+                x_d_i_new = self.live_portrait_wrapper.stitching(x_s_user_i, x_d_i_new)
+
+                out = self.live_portrait_wrapper.warp_decode(f_s_user_i, x_s_user_i, x_d_i_new)
+                I_p_i = self.live_portrait_wrapper.parse_output(out['out'])[0]
+                I_p_lst.append(I_p_i)
+
+                if flag_do_crop_input_retargeting_video:
+                    I_p_pstbk = paste_back(I_p_i, source_M_c2o_lst[i], source_rgb_lst[i], mask_ori_lst[i])
+                    I_p_pstbk_lst.append(I_p_pstbk)
+
+            gradio_retargeting_video_path = "./gradio_retargeting_video"
+            mkdir(gradio_retargeting_video_path)
+            wfp_concat = None
+            flag_source_has_audio = has_audio_stream(input_video)
+
+            ######### build the final concatenation result #########
+            # source frame | generation
+            frames_concatenated = concat_frames(driving_image_lst=None, source_image_lst=img_crop_256x256_lst, I_p_lst=I_p_lst)
+            wfp_concat = osp.join(gradio_retargeting_video_path, f'{basename(input_video)}_retargeting_concat.mp4')
+            images2video(frames_concatenated, wfp=wfp_concat, fps=source_fps)
+
+            if flag_source_has_audio:
+                # final result with concatenation
+                wfp_concat_with_audio = osp.join(gradio_retargeting_video_path, f'{basename(input_video)}_retargeting_concat_with_audio.mp4')
+                add_audio_to_video(wfp_concat, input_video, wfp_concat_with_audio)
+                os.replace(wfp_concat_with_audio, wfp_concat)
+                log(f"Replace {wfp_concat} with {wfp_concat_with_audio}")
+
+            # save the animated result
+            wfp = osp.join(gradio_retargeting_video_path, f'{basename(input_video)}_retargeting.mp4')
+            if I_p_pstbk_lst is not None and len(I_p_pstbk_lst) > 0:
+                images2video(I_p_pstbk_lst, wfp=wfp, fps=source_fps)
+            else:
+                images2video(I_p_lst, wfp=wfp, fps=source_fps)
+
+            ######### build the final result #########
+            if flag_source_has_audio:
+                wfp_with_audio = osp.join(gradio_retargeting_video_path, f'{basename(input_video)}_retargeting_with_audio.mp4')
+                add_audio_to_video(wfp, input_video, wfp_with_audio)
+                os.replace(wfp_with_audio, wfp)
+                log(f"Replace {wfp} with {wfp_with_audio}")
+                gr.Info("Run successfully!", duration=2)
+                return wfp_concat_with_audio, wfp_with_audio
+            return wfp_concat, wfp
+
+    def prepare_retargeting_video(self, input_video, retargeting_source_scale, device, flag_do_crop=True):
         """ for video retargeting
         """
-        pass
+        if input_video is not None:
+            # gr.Info("Upload successfully!", duration=2)
+            args_user = {'scale': retargeting_source_scale}
+            self.args = update_args(self.args, args_user)
+            self.cropper.update_config(self.args.__dict__)
+            inference_cfg = self.live_portrait_wrapper.inference_cfg
+            ######## process source video ########
+            source_rgb_lst = load_video(input_video)
+            source_rgb_lst = [resize_to_limit(img, inference_cfg.source_max_dim, inference_cfg.source_division) for img in source_rgb_lst]
+            source_fps = int(get_fps(input_video))
+            n_frames = len(source_rgb_lst)
+            log(f"Load source video from {input_video}. FPS is {source_fps}")
 
+            if flag_do_crop:
+                ret_s = self.cropper.crop_source_video(source_rgb_lst, self.cropper.crop_cfg)
+                log(f'Source video is cropped, {len(ret_s["frame_crop_lst"])} frames are processed.')
+                if len(ret_s["frame_crop_lst"]) != n_frames:
+                    n_frames = min(len(source_rgb_lst), len(ret_s["frame_crop_lst"]))
+                img_crop_256x256_lst, source_lmk_crop_lst, source_M_c2o_lst = ret_s['frame_crop_lst'], ret_s['lmk_crop_lst'], ret_s['M_c2o_lst']
+                mask_ori_lst = [prepare_paste_back(inference_cfg.mask_crop, source_M_c2o, dsize=(source_rgb_lst[0].shape[1], source_rgb_lst[0].shape[0])) for source_M_c2o in source_M_c2o_lst]
+            else:
+                source_lmk_crop_lst = self.cropper.calc_lmks_from_cropped_video(source_rgb_lst)
+                img_crop_256x256_lst = [cv2.resize(_, (256, 256)) for _ in source_rgb_lst]  # force to resize to 256x256
+                source_M_c2o_lst, mask_ori_lst = None, None
+
+            c_s_eyes_lst, c_s_lip_lst = self.live_portrait_wrapper.calc_ratio(source_lmk_crop_lst)
+            # save the motion template
+            I_s_lst = self.live_portrait_wrapper.prepare_videos(img_crop_256x256_lst)
+            source_template_dct = self.make_motion_template(I_s_lst, c_s_eyes_lst, c_s_lip_lst, output_fps=source_fps)
+
+            f_s_user_lst, x_s_user_lst = [], []
+            for i in track(range(n_frames), description='Preparing retargeting video...', total=n_frames):
+                x_s_info_tiny = source_template_dct['motion'][i]
+                x_s_info_tiny = dct2device(x_s_info_tiny, device)
+
+                source_lmk = source_lmk_crop_lst[i]
+                img_crop_256x256 = img_crop_256x256_lst[i]
+                I_s = I_s_lst[i]
+
+                x_s_info = source_template_dct['x_i_info_lst'][i]
+                f_s_user = self.live_portrait_wrapper.extract_feature_3d(I_s)
+                x_s_user = self.live_portrait_wrapper.transform_keypoint(x_s_info)
+                f_s_user_lst.append(f_s_user); x_s_user_lst.append(x_s_user)
+
+            return f_s_user_lst, x_s_user_lst, source_lmk_crop_lst, source_M_c2o_lst, mask_ori_lst, source_rgb_lst, img_crop_256x256_lst, source_fps, n_frames
+        else:
+            # when press the clear button, go here
+            raise gr.Error("Please upload a source video as the retargeting input 🤗🤗🤗", duration=5)
 
 class GradioPipelineAnimal(LivePortraitPipelineAnimal):
     """gradio for animal
