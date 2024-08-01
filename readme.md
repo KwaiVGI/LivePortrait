@@ -144,11 +144,12 @@ python inference.py -h
 ```
 
 #### Driving video auto-cropping 📢📢📢
-To use your own driving video, we **recommend**: ⬇️
- - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or enable auto-cropping by `--flag_crop_driving_video`.
- - Focus on the head area, similar to the example videos.
- - Minimize shoulder movement.
- - Make sure the first frame of driving video is a frontal face with **neutral expression**.
+> [!IMPORTANT]
+> To use your own driving video, we **recommend**: ⬇️
+> - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or > enable auto-cropping by `--flag_crop_driving_video`.
+> - Focus on the head area, similar to the example videos.
+> - Minimize shoulder movement.
+> - Make sure the first frame of driving video is a frontal face with **neutral expression**.
 
 Below is a auto-cropping case by `--flag_crop_driving_video`:
 ```bash
