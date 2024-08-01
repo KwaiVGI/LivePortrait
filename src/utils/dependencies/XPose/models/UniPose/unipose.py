@@ -6,28 +6,21 @@
 # Modified from Deformable DETR (https://github.com/fundamentalvision/Deformable-DETR)
 # Copyright (c) 2020 SenseTime. All Rights Reserved.
 # ------------------------------------------------------------------------
-import copy
-import math
 import os
-from typing import List
+import copy
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torchvision.ops.boxes import nms
-from util.keypoint_ops import keypoint_xyzxyz_to_xyxyzz
-from util import box_ops
-from util.misc import (NestedTensor, nested_tensor_from_tensor_list,
-                       accuracy, get_world_size, interpolate,
-                       is_dist_avail_and_initialized, inverse_sigmoid)
-from .backbone import build_backbone
-from .deformable_transformer import build_deformable_transformer
-from .utils import sigmoid_focal_loss, MLP
+from typing import List
 
+from util.keypoint_ops import keypoint_xyzxyz_to_xyxyzz
+from util.misc import NestedTensor, nested_tensor_from_tensor_list,inverse_sigmoid
+
+from .utils import MLP
+from .backbone import build_backbone
 from ..registry import MODULE_BUILD_FUNCS
 from .mask_generate import prepare_for_mask, post_process
-import random
-from .utils import sigmoid_focal_loss, MLP, _get_activation_fn, gen_sineembed_for_position
-from pathlib import Path
+from .deformable_transformer import build_deformable_transformer
 
 
 class UniPose(nn.Module):

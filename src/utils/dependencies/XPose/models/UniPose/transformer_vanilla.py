@@ -8,15 +8,11 @@ Copy-paste from torch.nn.Transformer with modifications:
     * extra LN at the end of encoder is removed
     * decoder returns a stack of activations from all decoding layers
 """
-import copy
-import os
-from typing import List, Optional
-import pdb
 import torch
-import torch.nn.functional as F
 from torch import Tensor, nn
+from typing import List, Optional
 
-from .utils import gen_encoder_output_proposals, sigmoid_focal_loss, MLP, _get_activation_fn, gen_sineembed_for_position, _get_clones
+from .utils import  _get_activation_fn, _get_clones
 
 
 class TextTransformer(nn.Module):

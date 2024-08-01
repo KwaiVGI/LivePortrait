@@ -1,12 +1,9 @@
-from typing import List
-import torch, os
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import pdb
-import math
-from timm.models.layers import DropPath
 
-from transformers.activations import ACT2FN
+# from timm.models.layers import DropPath
+from src.modules.util import DropPath
 
 class FeatureResizer(nn.Module):
     """

@@ -12,19 +12,15 @@
 # ------------------------------------------------------------------------
 
 import copy
-import os
-from typing import Optional, List
 import math
-
 import torch
-import torch.nn.functional as F
 from torch import nn, Tensor
-from torch.nn.init import xavier_uniform_, constant_, uniform_, normal_
+from torch.nn.init import xavier_uniform_, constant_, normal_
+from typing import Optional
 
 from util.misc import inverse_sigmoid
 from .ops.modules import MSDeformAttn
-
-from .utils import sigmoid_focal_loss, MLP, _get_activation_fn, gen_sineembed_for_position
+from .utils import MLP, _get_activation_fn, gen_sineembed_for_position
 
 class DeformableTransformer(nn.Module):
     def __init__(self, d_model=256, nhead=8,
