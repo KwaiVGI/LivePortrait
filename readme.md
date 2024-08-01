@@ -71,7 +71,7 @@ pip install -r requirements.txt
 pip install -r requirements_macOS.txt
 ```
 
-**Note:** make sure your system has [FFmpeg](https://ffmpeg.org/download.html) installed, including both `ffmpeg` and `ffprobe`!
+**Note:** make sure your system has [FFmpeg](https://ffmpeg.org/download.html) installed, including both `ffmpeg` and `ffprobe`! See [how to install ffmpeg](assets/docs/how-to-install-ffmpeg.md) for more details.
 
 ### 2. Download pretrained weights
 
