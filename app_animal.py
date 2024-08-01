@@ -64,15 +64,17 @@ example_portrait_dir = "assets/examples/source"
 example_video_dir = "assets/examples/driving"
 data_examples_i2v = [
     [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "d0.mp4"), True, False, False, False],
-    # [osp.join(example_portrait_dir, "s26.jpg"), osp.join(example_video_dir, "d3.mp4"), True, False, False, False],
-    # [osp.join(example_portrait_dir, "s27.jpg"), osp.join(example_video_dir, "d6.mp4"), True, False, False, False],
-    # [osp.join(example_portrait_dir, "s28.jpg"), osp.join(example_video_dir, "d18.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s26.jpg"), osp.join(example_video_dir, "d3.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s27.jpg"), osp.join(example_video_dir, "d6.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s28.jpg"), osp.join(example_video_dir, "d18.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s29.jpg"), osp.join(example_video_dir, "d19.mp4"), True, False, False, False],
 ]
 data_examples_i2v_pickle = [
-    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "d0.pkl"), True, False, False, False],
-    # [osp.join(example_portrait_dir, "s26.jpg"), osp.join(example_video_dir, "d3.pkl"), True, False, False, False],
-    # [osp.join(example_portrait_dir, "s27.jpg"), osp.join(example_video_dir, "d6.pkl"), True, False, False, False],
-    # [osp.join(example_portrait_dir, "s28.jpg"), osp.join(example_video_dir, "d18.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "chinese_take_it_easy.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s26.jpg"), osp.join(example_video_dir, "wink.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s27.jpg"), osp.join(example_video_dir, "aggrieved.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s28.jpg"), osp.join(example_video_dir, "laugh.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s28.jpg"), osp.join(example_video_dir, "shake_face.pkl"), True, False, False, False],
 ]
 #################### interface logic ####################
 

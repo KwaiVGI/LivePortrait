@@ -16,7 +16,7 @@ class CropConfig(PrintableConfig):
     xpose_config_file_path: str = make_abs_path("../utils/dependencies/XPose/config_model/UniPose_SwinT.py")
     xpose_embedding_cache_path: str = make_abs_path('../utils/resources/clip_embedding.pkl')
 
-    xpose_ckpt_path: str = make_abs_path("../../pretrained_weights/liveportrait/animal_landmark.pth")
+    xpose_ckpt_path: str = make_abs_path("../../pretrained_weights/liveportrait_animals/xpose.pth")
     device_id: int = 0  # gpu device id
     flag_force_cpu: bool = False  # force cpu inference, WIP
     det_thresh: float = 0.1 # detection threshold

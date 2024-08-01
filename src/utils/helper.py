@@ -37,6 +37,7 @@ def calc_motion_multiplier(
     source_area = ConvexHull(kp_source_np.squeeze(0)).volume
     driving_area = ConvexHull(kp_driving_initial_np.squeeze(0)).volume
     motion_multiplier = np.sqrt(source_area) / np.sqrt(driving_area)
+    # motion_multiplier = np.cbrt(source_area) / np.cbrt(driving_area)
 
     return motion_multiplier
 

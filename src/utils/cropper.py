@@ -56,7 +56,7 @@ class Cropper(object):
             else:
                 device = "cuda"
                 face_analysis_wrapper_provider = ["CUDAExecutionProvider"]
-                
+
         self.face_analysis_wrapper = FaceAnalysisDIY(
                     name="buffalo_l",
                     root=self.crop_cfg.insightface_root,
@@ -71,7 +71,7 @@ class Cropper(object):
             device_id=device_id,
         )
         self.human_landmark_runner.warmup()
-        
+
         if self.image_type == "animal_face":
             from .animal_landmark_runner import XPoseRunner as AnimalLandmarkRunner
             self.animal_landmark_runner = AnimalLandmarkRunner(
@@ -87,7 +87,7 @@ class Cropper(object):
                 setattr(self.crop_cfg, k, v)
 
     def crop_source_image(self, img_rgb_: np.ndarray, crop_cfg: CropConfig):
-        # crop a source image and get neccessary information, used for human face
+        # crop a source image and get neccessary information
         img_rgb = img_rgb_.copy()  # copy it
         img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
 

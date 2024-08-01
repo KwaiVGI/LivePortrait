@@ -65,7 +65,6 @@ def gpu_wrapped_execute_image_retargeting(*args, **kwargs):
 def gpu_wrapped_execute_video_retargeting(*args, **kwargs):
     return gradio_pipeline.execute_video_retargeting(*args, **kwargs)
 
-
 # assets
 title_md = "assets/gradio/gradio_title.md"
 example_portrait_dir = "assets/examples/source"
@@ -90,7 +89,8 @@ data_examples_v2v = [
 
 # Define components first
 retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.5, step=0.05, label="crop scale")
-video_retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.5, step=0.05, label="crop scale")
+video_retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.3, step=0.05, label="crop scale")
+driving_smooth_observation_variance_retargeting = gr.Number(value=3e-6, label="motion smooth strength", minimum=1e-11, maximum=1e-2, step=1e-8)
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
 video_lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
@@ -187,6 +187,9 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             with gr.Row():
                 flag_relative_input = gr.Checkbox(value=True, label="relative motion")
                 flag_remap_input = gr.Checkbox(value=True, label="paste-back")
+                flag_stitching_input = gr.Checkbox(value=True, label="stitching")
+                driving_option_input = gr.Radio(['non global adaption', 'global adaption'], value="non global adaption", label="driving option (i2v)")
+                driving_adaption_scalar = gr.Number(value=0.95, label="driving adaption scalar (i2v)", minimum=0.0, maximum=1.0, step=0.01)
                 flag_video_editing_head_rotation = gr.Checkbox(value=False, label="relative head rotation (v2v)")
                 driving_smooth_observation_variance = gr.Number(value=3e-7, label="motion smooth strength (v2v)", minimum=1e-11, maximum=1e-2, step=1e-8)
 
@@ -301,6 +304,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         flag_do_crop_input_retargeting_video = gr.Checkbox(value=True, label="do crop (source)")
         video_retargeting_source_scale.render()
         video_lip_retargeting_slider.render()
+        driving_smooth_observation_variance_retargeting.render()
     with gr.Row(visible=True):
         process_button_retargeting_video = gr.Button("🍄 Retargeting Video", variant="primary")
     with gr.Row(visible=True):
@@ -312,6 +316,9 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         [osp.join(example_portrait_dir, "s13.mp4")],
                         [osp.join(example_portrait_dir, "s18.mp4")],
                         [osp.join(example_portrait_dir, "s20.mp4")],
+                        [osp.join(example_portrait_dir, "s29.mp4")],
+                        [osp.join(example_portrait_dir, "s31.mp4")],
+                        [osp.join(example_portrait_dir, "s32.mp4")],
                     ],
                     inputs=[retargeting_input_video],
                     cache_examples=False,
@@ -343,6 +350,9 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             flag_relative_input,
             flag_do_crop_input,
             flag_remap_input,
+            flag_stitching_input,
+            driving_option_input,
+            driving_adaption_scalar,
             flag_crop_driving_video_input,
             flag_video_editing_head_rotation,
             scale,
@@ -374,8 +384,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
 
     process_button_retargeting_video.click(
         fn=gpu_wrapped_execute_video_retargeting,
-        inputs=[video_lip_retargeting_slider, retargeting_input_video, video_retargeting_source_scale, flag_do_crop_input_retargeting_video],
-        outputs=[output_image, output_image_paste_back],
+        inputs=[video_lip_retargeting_slider, retargeting_input_video, video_retargeting_source_scale, driving_smooth_observation_variance_retargeting, flag_do_crop_input_retargeting_video],
+        outputs=[output_video, output_video_paste_back],
         show_progress=True
     )
 

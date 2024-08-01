@@ -22,10 +22,10 @@ class InferenceConfig(PrintableConfig):
     checkpoint_S: str = make_abs_path('../../pretrained_weights/liveportrait/retargeting_models/stitching_retargeting_module.pth')  # path to checkpoint to S and R_eyes, R_lip
 
     # ANIMAL MODEL CONFIG, NOT EXPORTED PARAMS
-    checkpoint_F_animal: str = make_abs_path('../../pretrained_weights/liveportrait/base_models_animal/appearance_feature_extractor.pth')  # path to checkpoint of F
-    checkpoint_M_animal: str = make_abs_path('../../pretrained_weights/liveportrait/base_models_animal/motion_extractor.pth')  # path to checkpoint pf M
-    checkpoint_G_animal: str = make_abs_path('../../pretrained_weights/liveportrait/base_models_animal/spade_generator.pth')  # path to checkpoint of G
-    checkpoint_W_animal: str = make_abs_path('../../pretrained_weights/liveportrait/base_models_animal/warping_module.pth')  # path to checkpoint of W
+    checkpoint_F_animal: str = make_abs_path('../../pretrained_weights/liveportrait_animals/appearance_feature_extractor.pth')  # path to checkpoint of F
+    checkpoint_M_animal: str = make_abs_path('../../pretrained_weights/liveportrait_animals/motion_extractor.pth')  # path to checkpoint pf M
+    checkpoint_G_animal: str = make_abs_path('../../pretrained_weights/liveportrait_animals/spade_generator.pth')  # path to checkpoint of G
+    checkpoint_W_animal: str = make_abs_path('../../pretrained_weights/liveportrait_animals/warping_module.pth')  # path to checkpoint of W
 
     # EXPORTED PARAMS
     flag_use_half_precision: bool = True
@@ -43,6 +43,8 @@ class InferenceConfig(PrintableConfig):
     flag_do_rot: bool = True
     flag_force_cpu: bool = False
     flag_do_torch_compile: bool = False
+    driving_option: str = "non global adaption" # "global adaption" or "non global adaption"
+    driving_adaption_scalar: float = 1.0
     driving_smooth_observation_variance: float = 3e-7 # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
     source_max_dim: int = 1280 # the max dim of height and width of source image or video
     source_division: int = 2 # make sure the height and width of source image or video can be divided by this number

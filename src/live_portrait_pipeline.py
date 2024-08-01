@@ -21,7 +21,7 @@ from .utils.camera import get_rotation_matrix
 from .utils.video import images2video, concat_frames, get_fps, add_audio_to_video, has_audio_stream
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.io import load_image_rgb, load_video, resize_to_limit, dump, load
-from .utils.helper import mkdir, basename, dct2device, is_video, is_template, remove_suffix, is_image, is_square_video
+from .utils.helper import mkdir, basename, dct2device, is_video, is_template, remove_suffix, is_image, is_square_video, calc_motion_multiplier
 from .utils.filter import smooth
 from .utils.rprint import rlog as log
 # from .utils.viz import viz_lmk
@@ -307,6 +307,15 @@ class LivePortraitPipeline(object):
 
             t_new[..., 2].fill_(0)  # zero tz
             x_d_i_new = scale_new * (x_c_s @ R_new + delta_new) + t_new
+
+            if inf_cfg.driving_option == "global adaption" and not flag_is_source_video and not inf_cfg.flag_relative_motion:
+                if i == 0:
+                    x_d_0_new = x_d_i_new
+                    motion_multiplier = calc_motion_multiplier(x_s, x_d_0_new)
+                    print(motion_multiplier)
+                    motion_multiplier *= inf_cfg.driving_adaption_scalar
+                x_d_diff = (x_d_i_new - x_d_0_new) * motion_multiplier
+                x_d_i_new = x_d_diff + x_s
 
             # Algorithm 1:
             if not inf_cfg.flag_stitching and not inf_cfg.flag_eye_retargeting and not inf_cfg.flag_lip_retargeting:
