@@ -312,7 +312,6 @@ class LivePortraitPipeline(object):
                 if i == 0:
                     x_d_0_new = x_d_i_new
                     motion_multiplier = calc_motion_multiplier(x_s, x_d_0_new)
-                    print(motion_multiplier)
                     motion_multiplier *= inf_cfg.driving_adaption_scalar
                 x_d_diff = (x_d_i_new - x_d_0_new) * motion_multiplier
                 x_d_i_new = x_d_diff + x_s

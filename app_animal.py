@@ -63,18 +63,14 @@ title_md = "assets/gradio/gradio_title.md"
 example_portrait_dir = "assets/examples/source"
 example_video_dir = "assets/examples/driving"
 data_examples_i2v = [
-    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "d0.mp4"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s26.jpg"), osp.join(example_video_dir, "d3.mp4"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s27.jpg"), osp.join(example_video_dir, "d6.mp4"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s28.jpg"), osp.join(example_video_dir, "d18.mp4"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s29.jpg"), osp.join(example_video_dir, "d19.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "d3.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s40.jpg"), osp.join(example_video_dir, "d6.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s41.jpg"), osp.join(example_video_dir, "d19.mp4"), True, False, False, False],
 ]
 data_examples_i2v_pickle = [
-    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "chinese_take_it_easy.pkl"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s26.jpg"), osp.join(example_video_dir, "wink.pkl"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s27.jpg"), osp.join(example_video_dir, "aggrieved.pkl"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s28.jpg"), osp.join(example_video_dir, "laugh.pkl"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s28.jpg"), osp.join(example_video_dir, "shake_face.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "talking.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s40.jpg"), osp.join(example_video_dir, "wink.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s41.jpg"), osp.join(example_video_dir, "aggrieved.pkl"), True, False, False, False],
 ]
 #################### interface logic ####################
 
@@ -97,17 +93,14 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                 gr.Examples(
                     examples=[
                         [osp.join(example_portrait_dir, "s25.jpg")],
-                        [osp.join(example_portrait_dir, "s26.jpg")],
-                        [osp.join(example_portrait_dir, "s27.jpg")],
-                        [osp.join(example_portrait_dir, "s28.jpg")],
-                        [osp.join(example_portrait_dir, "s29.jpg")],
                         [osp.join(example_portrait_dir, "s30.jpg")],
                         [osp.join(example_portrait_dir, "s31.jpg")],
                         [osp.join(example_portrait_dir, "s32.jpg")],
-                        [osp.join(example_portrait_dir, "s34.jpg")],
-                        [osp.join(example_portrait_dir, "s36.jpg")],
-                        [osp.join(example_portrait_dir, "s38.jpg")],
                         [osp.join(example_portrait_dir, "s39.jpg")],
+                        [osp.join(example_portrait_dir, "s40.jpg")],
+                        [osp.join(example_portrait_dir, "s41.jpg")],
+                        [osp.join(example_portrait_dir, "s38.jpg")],
+                        [osp.join(example_portrait_dir, "s36.jpg")],
                     ],
                     inputs=[source_image_input],
                     cache_examples=False,
@@ -127,8 +120,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         driving_video_input = gr.Video()
                         gr.Examples(
                             examples=[
-                                [osp.join(example_video_dir, "d0.mp4")],
-                                [osp.join(example_video_dir, "d18.mp4")],
+                                # [osp.join(example_video_dir, "d0.mp4")],
+                                # [osp.join(example_video_dir, "d18.mp4")],
                                 [osp.join(example_video_dir, "d19.mp4")],
                                 [osp.join(example_video_dir, "d14.mp4")],
                                 [osp.join(example_video_dir, "d6.mp4")],
@@ -142,12 +135,12 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         driving_video_pickle_input = gr.File()
                         gr.Examples(
                             examples=[
-                                [osp.join(example_video_dir, "chinese_take_it_easy.pkl")],
                                 [osp.join(example_video_dir, "wink.pkl")],
                                 [osp.join(example_video_dir, "shy.pkl")],
                                 [osp.join(example_video_dir, "aggrieved.pkl")],
                                 [osp.join(example_video_dir, "open_lip.pkl")],
                                 [osp.join(example_video_dir, "laugh.pkl")],
+                                [osp.join(example_video_dir, "talking.pkl")],
                                 [osp.join(example_video_dir, "shake_face.pkl")],
                             ],
                             inputs=[driving_video_pickle_input],
