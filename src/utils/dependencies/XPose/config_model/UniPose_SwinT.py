@@ -108,7 +108,7 @@ shuffle_type = None
 use_text_enhancer = True
 use_fusion_layer = True
 
-use_checkpoint = True
+use_checkpoint = False # True
 use_transformer_ckpt = True
 text_encoder_type = 'bert-base-uncased'
 

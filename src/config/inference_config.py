@@ -43,8 +43,8 @@ class InferenceConfig(PrintableConfig):
     flag_do_rot: bool = True
     flag_force_cpu: bool = False
     flag_do_torch_compile: bool = False
-    driving_option: str = "non global adaption" # "global adaption" or "non global adaption"
-    driving_adaption_scalar: float = 1.0
+    driving_option: str = "pose-friendly" # "expression-friendly" or "pose-friendly"
+    driving_multiplier: float = 1.0
     driving_smooth_observation_variance: float = 3e-7 # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
     source_max_dim: int = 1280 # the max dim of height and width of source image or video
     source_division: int = 2 # make sure the height and width of source image or video can be divided by this number

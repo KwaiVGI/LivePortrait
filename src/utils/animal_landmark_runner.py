@@ -15,19 +15,21 @@ import numpy as np
 from PIL import Image
 from torchvision.ops import nms
 
-from src.utils.timer import Timer
-from src.utils.rprint import rlog as log
-from src.utils.helper import clean_state_dict
+from ..utils.timer import Timer
+from ..utils.rprint import rlog as log
+from ..utils.helper import clean_state_dict
 
-import src.utils.dependencies.XPose.transforms as T
-from src.utils.dependencies.XPose.models import build_model
-from src.utils.dependencies.XPose.predefined_keypoints import *
-from src.utils.dependencies.XPose.util import box_ops
-from src.utils.dependencies.XPose.util.config import Config
+from ..utils.dependencies.XPose import transforms as T
+from ..utils.dependencies.XPose.models import build_model
+from ..utils.dependencies.XPose.predefined_keypoints import *
+from ..utils.dependencies.XPose.util import box_ops
+from ..utils.dependencies.XPose.util.config import Config
 
 class XPoseRunner(object):
-    def __init__(self, model_config_path, model_checkpoint_path, embeddings_cache_path=None, cpu_only=False, device_id=0):
-        self.device = f"cuda:{device_id}" if not cpu_only else "cpu"
+    def __init__(self, model_config_path, model_checkpoint_path, embeddings_cache_path=None, cpu_only=False, **kwargs):
+        self.device_id = kwargs.get("device_id", 0)
+        self.flag_use_half_precision = kwargs.get("flag_use_half_precision", True)
+        self.device = f"cuda:{self.device_id}" if not cpu_only else "cpu"
         self.model = self.load_animal_model(model_config_path, model_checkpoint_path, self.device)
         self.timer = Timer()
         # Load cached embeddings if available
@@ -42,7 +44,7 @@ class XPoseRunner(object):
         args = Config.fromfile(model_config_path)
         args.device = device
         model = build_model(args)
-        checkpoint = torch.load(model_checkpoint_path, map_location="cpu")
+        checkpoint = torch.load(model_checkpoint_path, map_location=lambda storage, loc: storage)
         load_res = model.load_state_dict(clean_state_dict(checkpoint["model"]), strict=False)
         model.eval()
         return model
@@ -60,7 +62,7 @@ class XPoseRunner(object):
     def load_image(self, input_image):
         image_pil = input_image.convert("RGB")
         transform = T.Compose([
-            T.RandomResize([800], max_size=1333),
+            T.RandomResize([800], max_size=1333), # NOTE: fixed size to 800
             T.ToTensor(),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ])
@@ -82,7 +84,8 @@ class XPoseRunner(object):
         image = image.to(self.device)
 
         with torch.no_grad():
-            outputs = self.model(image[None], [target])
+            with torch.autocast(device_type=self.device[:4], dtype=torch.float16, enabled=self.flag_use_half_precision):
+                outputs = self.model(image[None], [target])
 
         logits = outputs["pred_logits"].sigmoid()[0]
         boxes = outputs["pred_boxes"][0]

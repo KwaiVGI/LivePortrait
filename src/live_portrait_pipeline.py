@@ -308,11 +308,11 @@ class LivePortraitPipeline(object):
             t_new[..., 2].fill_(0)  # zero tz
             x_d_i_new = scale_new * (x_c_s @ R_new + delta_new) + t_new
 
-            if inf_cfg.driving_option == "global adaption" and not flag_is_source_video and not inf_cfg.flag_relative_motion:
+            if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video:
                 if i == 0:
                     x_d_0_new = x_d_i_new
                     motion_multiplier = calc_motion_multiplier(x_s, x_d_0_new)
-                    motion_multiplier *= inf_cfg.driving_adaption_scalar
+                    # motion_multiplier *= inf_cfg.driving_multiplier
                 x_d_diff = (x_d_i_new - x_d_0_new) * motion_multiplier
                 x_d_i_new = x_d_diff + x_s
 
@@ -358,6 +358,7 @@ class LivePortraitPipeline(object):
                 if inf_cfg.flag_stitching:
                     x_d_i_new = self.live_portrait_wrapper.stitching(x_s, x_d_i_new)
 
+            x_d_i_new = x_s + (x_d_i_new - x_s) * inf_cfg.driving_multiplier
             out = self.live_portrait_wrapper.warp_decode(f_s, x_s, x_d_i_new)
             I_p_i = self.live_portrait_wrapper.parse_output(out['out'])[0]
             I_p_lst.append(I_p_i)

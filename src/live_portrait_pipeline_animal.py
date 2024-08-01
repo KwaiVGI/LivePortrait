@@ -4,6 +4,11 @@
 Pipeline of LivePortrait (Animal)
 """
 
+import warnings
+warnings.filterwarnings("ignore", message="torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument.")
+warnings.filterwarnings("ignore", message="torch.utils.checkpoint: please pass in use_reentrant=True or use_reentrant=False explicitly.")
+warnings.filterwarnings("ignore", message="None of the inputs have requires_grad=True. Gradients will be None")
+
 import torch
 torch.backends.cudnn.benchmark = True # disable CUDNN_BACKEND_EXECUTION_PLAN_DESCRIPTOR warning
 
@@ -34,7 +39,7 @@ class LivePortraitPipelineAnimal(object):
 
     def __init__(self, inference_cfg: InferenceConfig, crop_cfg: CropConfig):
         self.live_portrait_wrapper_animal: LivePortraitWrapperAnimal = LivePortraitWrapperAnimal(inference_cfg=inference_cfg)
-        self.cropper: Cropper = Cropper(crop_cfg=crop_cfg, image_type='animal_face')
+        self.cropper: Cropper = Cropper(crop_cfg=crop_cfg, image_type='animal_face', flag_use_half_precision=inference_cfg.flag_use_half_precision)
 
     def make_motion_template(self, I_lst, **kwargs):
         n_frames = I_lst.shape[0]
@@ -178,6 +183,7 @@ class LivePortraitPipelineAnimal(object):
             else:
                 x_d_i = self.live_portrait_wrapper_animal.stitching(x_s, x_d_i)
 
+            x_d_i = x_s + (x_d_i - x_s) * inf_cfg.driving_multiplier
             out = self.live_portrait_wrapper_animal.warp_decode(f_s, x_s, x_d_i)
             I_p_i = self.live_portrait_wrapper_animal.parse_output(out['out'])[0]
             I_p_lst.append(I_p_i)

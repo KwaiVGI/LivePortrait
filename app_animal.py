@@ -44,7 +44,7 @@ if not fast_check_ffmpeg():
 inference_cfg = partial_fields(InferenceConfig, args.__dict__)  # use attribute of args to initial InferenceConfig
 crop_cfg = partial_fields(CropConfig, args.__dict__)  # use attribute of args to initial CropConfig
 
-gradio_pipeline_animal = GradioPipelineAnimal(
+gradio_pipeline_animal: GradioPipelineAnimal = GradioPipelineAnimal(
     inference_cfg=inference_cfg,
     crop_cfg=crop_cfg,
     args=args
@@ -115,21 +115,6 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
 
         with gr.Column():
             with gr.Tabs():
-                with gr.TabItem("🎞️ Driving Video") as tab_video:
-                    with gr.Accordion(open=True, label="Driving Video"):
-                        driving_video_input = gr.Video()
-                        gr.Examples(
-                            examples=[
-                                # [osp.join(example_video_dir, "d0.mp4")],
-                                # [osp.join(example_video_dir, "d18.mp4")],
-                                [osp.join(example_video_dir, "d19.mp4")],
-                                [osp.join(example_video_dir, "d14.mp4")],
-                                [osp.join(example_video_dir, "d6.mp4")],
-                                [osp.join(example_video_dir, "d3.mp4")],
-                            ],
-                            inputs=[driving_video_input],
-                            cache_examples=False,
-                        )
                 with gr.TabItem("📁 Driving Pickle") as tab_pickle:
                     with gr.Accordion(open=True, label="Driving Pickle"):
                         driving_video_pickle_input = gr.File()
@@ -146,10 +131,25 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                             inputs=[driving_video_pickle_input],
                             cache_examples=False,
                         )
+                with gr.TabItem("🎞️ Driving Video") as tab_video:
+                    with gr.Accordion(open=True, label="Driving Video"):
+                        driving_video_input = gr.Video()
+                        gr.Examples(
+                            examples=[
+                                # [osp.join(example_video_dir, "d0.mp4")],
+                                # [osp.join(example_video_dir, "d18.mp4")],
+                                [osp.join(example_video_dir, "d19.mp4")],
+                                [osp.join(example_video_dir, "d14.mp4")],
+                                [osp.join(example_video_dir, "d6.mp4")],
+                                [osp.join(example_video_dir, "d3.mp4")],
+                            ],
+                            inputs=[driving_video_input],
+                            cache_examples=False,
+                        )
 
                     tab_selection = gr.Textbox(visible=False)
-                    tab_video.select(lambda: "Video", None, tab_selection)
                     tab_pickle.select(lambda: "Pickle", None, tab_selection)
+                    tab_video.select(lambda: "Video", None, tab_selection)
             with gr.Accordion(open=True, label="Cropping Options for Driving Video"):
                 with gr.Row():
                     flag_crop_driving_video_input = gr.Checkbox(value=False, label="do crop (driving)")
@@ -162,6 +162,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             with gr.Row():
                 flag_stitching = gr.Checkbox(value=False, label="stitching")
                 flag_remap_input = gr.Checkbox(value=False, label="paste-back")
+                driving_multiplier = gr.Number(value=1.0, label="driving multiplier (i2v)", minimum=0.0, maximum=2.0, step=0.02)
 
     gr.Markdown(load_description("assets/gradio/gradio_description_animate_clear.md"))
     with gr.Row():
@@ -225,6 +226,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             driving_video_pickle_input,
             flag_do_crop_input,
             flag_remap_input,
+            driving_multiplier,
             flag_stitching,
             flag_crop_driving_video_input,
             scale,

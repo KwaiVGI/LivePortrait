@@ -361,7 +361,7 @@ class LivePortraitWrapperAnimal(object):
         # init G
         self.spade_generator = load_model(inference_cfg.checkpoint_G_animal, model_config, self.device, 'spade_generator')
         log(f'Load spade_generator done.')
-         # init S and R
+        # init S and R
         if inference_cfg.checkpoint_S is not None and osp.exists(inference_cfg.checkpoint_S):
             self.stitching_retargeting_module = load_model(inference_cfg.checkpoint_S, model_config, self.device, 'stitching_retargeting_module')
             log(f'Load stitching_retargeting_module done.')

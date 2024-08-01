@@ -7,7 +7,7 @@
     </div>
     <div style="flex: 1; text-align: center; margin-left: 20px;">
         <div style="display: inline-block;">
-            Step 2: Upload a <strong>Driving Video</strong> (any aspect ratio) or <strong>Driving Pickle</strong> ⬇️
+            Step 2: Upload a <strong>Driving Pickle</strong> or <strong>Driving Video</strong> (any aspect ratio) ⬇️
         </div>
         <div style="display: inline-block; font-size: 0.8em;">
             <strong>Tips:</strong> Focus on the head, minimize shoulder movement, <strong>neutral expression</strong> in first frame.

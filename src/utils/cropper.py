@@ -77,7 +77,8 @@ class Cropper(object):
             self.animal_landmark_runner = AnimalLandmarkRunner(
                     model_config_path=self.crop_cfg.xpose_config_file_path,
                     model_checkpoint_path=self.crop_cfg.xpose_ckpt_path,
-                    embeddings_cache_path=self.crop_cfg.xpose_embedding_cache_path
+                    embeddings_cache_path=self.crop_cfg.xpose_embedding_cache_path,
+                    flag_use_half_precision=kwargs.get("flag_use_half_precision", True),
                 )
             self.animal_landmark_runner.warmup()
 

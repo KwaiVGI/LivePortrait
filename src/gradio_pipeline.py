@@ -53,8 +53,8 @@ class GradioPipeline(LivePortraitPipeline):
         flag_do_crop_input=True,
         flag_remap_input=True,
         flag_stitching_input=True,
-        driving_option_input="non global adaption",
-        driving_adaption_scalar=1.0,
+        driving_option_input="pose-friendly",
+        driving_multiplier=1.0,
         flag_crop_driving_video_input=True,
         flag_video_editing_head_rotation=False,
         scale=2.3,
@@ -89,7 +89,7 @@ class GradioPipeline(LivePortraitPipeline):
                 'flag_pasteback': flag_remap_input,
                 'flag_stitching': flag_stitching_input,
                 'driving_option': driving_option_input,
-                'driving_adaption_scalar': driving_adaption_scalar,
+                'driving_multiplier': driving_multiplier,
                 'flag_crop_driving_video': flag_crop_driving_video_input,
                 'flag_video_editing_head_rotation': flag_video_editing_head_rotation,
                 'scale': scale,
@@ -353,6 +353,7 @@ class GradioPipelineAnimal(LivePortraitPipelineAnimal):
         input_driving_video_pickle_path=None,
         flag_do_crop_input=False,
         flag_remap_input=False,
+        driving_multiplier=1.0,
         flag_stitching=False,
         flag_crop_driving_video_input=False,
         scale=2.3,
@@ -372,7 +373,7 @@ class GradioPipelineAnimal(LivePortraitPipelineAnimal):
         elif tab_selection == 'Pickle':
             input_driving_path = input_driving_video_pickle_path
         else:
-            input_driving_path = input_driving_video_path
+            input_driving_path = input_driving_video_pickle_path
 
         if input_source_path is not None and input_driving_path is not None:
             if osp.exists(input_driving_path) and tab_selection == 'Video' and is_square_video(input_driving_path) is False:
@@ -385,6 +386,7 @@ class GradioPipelineAnimal(LivePortraitPipelineAnimal):
                 'driving': input_driving_path,
                 'flag_do_crop': flag_do_crop_input,
                 'flag_pasteback': flag_remap_input,
+                'driving_multiplier': driving_multiplier,
                 'flag_stitching': flag_stitching,
                 'flag_crop_driving_video': flag_crop_driving_video_input,
                 'scale': scale,

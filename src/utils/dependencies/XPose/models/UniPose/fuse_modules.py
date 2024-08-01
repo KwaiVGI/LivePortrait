@@ -178,7 +178,7 @@ class BiMultiHeadAttention(nn.Module):
 
         if self.stable_softmax_2d:
             attn_weights = attn_weights - attn_weights.max()
-        
+
         if self.clamp_min_for_underflow:
             attn_weights = torch.clamp(attn_weights, min=-50000) # Do not increase -50000, data type half has quite limited range
         if self.clamp_max_for_overflow:
@@ -261,8 +261,8 @@ class BiAttentionBlock(nn.Module):
 
         # add layer scale for training stability
         self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
-        self.gamma_v = nn.Parameter(init_values * torch.ones((v_dim)), requires_grad=True)
-        self.gamma_l = nn.Parameter(init_values * torch.ones((l_dim)), requires_grad=True)
+        self.gamma_v = nn.Parameter(init_values * torch.ones((v_dim)), requires_grad=False)
+        self.gamma_l = nn.Parameter(init_values * torch.ones((l_dim)), requires_grad=False)
 
     def forward(self, v, l, attention_mask_v=None, attention_mask_l=None):
         v = self.layer_norm_v(v)
@@ -272,4 +272,3 @@ class BiAttentionBlock(nn.Module):
         v = v + self.drop_path(self.gamma_v * delta_v)
         l = l + self.drop_path(self.gamma_l * delta_l)
         return v, l
-    

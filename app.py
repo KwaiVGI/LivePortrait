@@ -188,8 +188,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                 flag_relative_input = gr.Checkbox(value=True, label="relative motion")
                 flag_remap_input = gr.Checkbox(value=True, label="paste-back")
                 flag_stitching_input = gr.Checkbox(value=True, label="stitching")
-                driving_option_input = gr.Radio(['non global adaption', 'global adaption'], value="non global adaption", label="driving option (i2v)")
-                driving_adaption_scalar = gr.Number(value=0.95, label="driving adaption scalar (i2v)", minimum=0.0, maximum=1.0, step=0.01)
+                driving_option_input = gr.Radio(['expression-friendly', 'pose-friendly'], value="expression-friendly", label="driving option (i2v)")
+                driving_multiplier = gr.Number(value=1.0, label="driving multiplier (i2v)", minimum=0.0, maximum=2.0, step=0.02)
                 flag_video_editing_head_rotation = gr.Checkbox(value=False, label="relative head rotation (v2v)")
                 driving_smooth_observation_variance = gr.Number(value=3e-7, label="motion smooth strength (v2v)", minimum=1e-11, maximum=1e-2, step=1e-8)
 
@@ -351,7 +351,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             flag_remap_input,
             flag_stitching_input,
             driving_option_input,
-            driving_adaption_scalar,
+            driving_multiplier,
             flag_crop_driving_video_input,
             flag_video_editing_head_rotation,
             scale,

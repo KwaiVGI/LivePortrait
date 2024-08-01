@@ -115,6 +115,12 @@ python inference.py
 
 # For macOS with Apple Silicon, Intel not supported, this maybe 20x slower than RTX 4090
 PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py
+
+# 🐱🐶 For animals mode (ONLY tested on Linux with NVIDIA GPU)
+cd src/utils/dependencies/XPose/models/UniPose/ops
+python setup.py build install
+cd - # equal to cd ../../../../../../../
+python inference_animal.py -s assets/examples/source/s30.jpg -d assets/examples/driving/wink.pkl --no_flag_stitching
 ```
 
 If the script runs successfully, you will get an output mp4 file named `animations/s6--d0_concat.mp4`. This file includes the following results: driving video, input image or video, and generated result.
