@@ -23,43 +23,18 @@ Mostly copy-paste from https://github.com/pytorch/pytorch/blob/master/torch/nn/m
 and https://github.com/pytorch/pytorch/blob/master/torch/nn/functional.py#L4837
 """
 
-import copy
-from typing import Optional, List
-
-import torch
-import torch.nn.functional as F
-from torch import nn, Tensor
-
 import warnings
-from typing import Tuple, Optional
-
 import torch
-from torch import Tensor
 from torch.nn.modules.linear import Linear
-from torch.nn.init import xavier_uniform_
 from torch.nn.init import constant_
-from torch.nn.init import xavier_normal_
-from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
-from torch.nn import functional as F
-
-import warnings
-import math
-
-from torch._C import _infer_size, _add_docstr
-from torch.nn import _reduction as _Reduction
-from torch.nn.modules import utils
-from torch.nn.modules.utils import _single, _pair, _triple, _list_with_default
-from torch.nn import grad
-from torch import _VF
-from torch._jit_internal import boolean_dispatch, List, Optional, _overload, Tuple
+from torch._jit_internal import Optional, Tuple
 try:
     from torch.overrides import has_torch_function, handle_torch_function
 except:
     from torch._overrides import has_torch_function, handle_torch_function
-Tensor = torch.Tensor
-
 from torch.nn.functional import linear, pad, softmax, dropout
+Tensor = torch.Tensor
 
 class MultiheadAttention(Module):
     r"""Allows the model to jointly attend to information

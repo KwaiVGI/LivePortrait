@@ -16,21 +16,16 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 # ------------------------------------------------------------------------
 
-import math, random
-import os
+import math
 import copy
-from typing import Optional
-
-from util.misc import inverse_sigmoid
-
 import torch
-from torch import nn, Tensor
-
 import torch.utils.checkpoint as checkpoint
+from torch import nn, Tensor
+from typing import Optional
+from util.misc import inverse_sigmoid
 
 from .transformer_vanilla import TransformerEncoderLayer
 from .fuse_modules import BiAttentionBlock
-
 from .utils import gen_encoder_output_proposals, MLP, _get_activation_fn, gen_sineembed_for_position, get_sine_pos_embed
 from .ops.modules import MSDeformAttn
 

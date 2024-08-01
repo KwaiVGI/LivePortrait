@@ -11,7 +11,8 @@ import torch
 import torch.nn.utils.spectral_norm as spectral_norm
 import math
 import warnings
-
+import collections.abc
+from itertools import repeat
 
 def kp2gaussian(kp, spatial_size, kp_variance):
     """
@@ -439,3 +440,13 @@ class DropPath(nn.Module):
 
 def trunc_normal_(tensor, mean=0., std=1., a=-2., b=2.):
     return _no_grad_trunc_normal_(tensor, mean, std, a, b)
+
+# From PyTorch internals
+def _ntuple(n):
+    def parse(x):
+        if isinstance(x, collections.abc.Iterable) and not isinstance(x, str):
+            return tuple(x)
+        return tuple(repeat(x, n))
+    return parse
+
+to_2tuple = _ntuple(2)
