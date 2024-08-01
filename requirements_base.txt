@@ -20,7 +20,8 @@ imageio-ffmpeg==0.5.1
 tyro==0.8.5
 gradio==4.37.1
 pykalman==0.9.7
-transformers==4.22.0
+
 timm==0.9.7
+transformers==4.22.0
 addict==2.4.0
 yapf==0.32.0
