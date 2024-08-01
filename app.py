@@ -91,7 +91,7 @@ data_examples_v2v = [
 # Define components first
 retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.5, step=0.05, label="crop scale")
 video_retargeting_source_scale = gr.Number(minimum=1.8, maximum=3.2, value=2.3, step=0.05, label="crop scale")
-driving_smooth_observation_variance_retargeting = gr.Number(value=3e-7, label="motion smooth strength", minimum=1e-11, maximum=1e-2, step=1e-8)
+driving_smooth_observation_variance_retargeting = gr.Number(value=3e-6, label="motion smooth strength", minimum=1e-11, maximum=1e-2, step=1e-8)
 eye_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target eyes-open ratio")
 lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
 video_lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, label="target lip-open ratio")
@@ -314,8 +314,9 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         [osp.join(example_portrait_dir, "s13.mp4")],
                         [osp.join(example_portrait_dir, "s18.mp4")],
                         [osp.join(example_portrait_dir, "s20.mp4")],
+                        [osp.join(example_portrait_dir, "s29.mp4")],
                         [osp.join(example_portrait_dir, "s31.mp4")],
-                        [osp.join(example_portrait_dir, "s55.mp4")],
+                        [osp.join(example_portrait_dir, "s32.mp4")],
                     ],
                     inputs=[retargeting_input_video],
                     cache_examples=False,
