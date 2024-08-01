@@ -57,32 +57,29 @@ class Cropper(object):
                 device = "cuda"
                 face_analysis_wrapper_provider = ["CUDAExecutionProvider"]
 
-        if self.image_type == "human_face":
-            self.face_analysis_wrapper = FaceAnalysisDIY(
+        self.face_analysis_wrapper = FaceAnalysisDIY(
                     name="buffalo_l",
                     root=self.crop_cfg.insightface_root,
                     providers=face_analysis_wrapper_provider,
                 )
-            self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
-            self.face_analysis_wrapper.warmup()
+        self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
+        self.face_analysis_wrapper.warmup()
 
-            self.landmark_runner = HumanLandmark(
-                ckpt_path=self.crop_cfg.landmark_ckpt_path,
-                onnx_provider=device,
-                device_id=device_id,
-            )
-        elif self.image_type == "animal_face":
+        self.human_landmark_runner = HumanLandmark(
+            ckpt_path=self.crop_cfg.landmark_ckpt_path,
+            onnx_provider=device,
+            device_id=device_id,
+        )
+        self.human_landmark_runner.warmup()
+
+        if self.image_type == "animal_face":
             from .animal_landmark_runner import XPoseRunner as AnimalLandmarkRunner
-            self.landmark_runner = AnimalLandmarkRunner(
+            self.animal_landmark_runner = AnimalLandmarkRunner(
                     model_config_path=self.crop_cfg.xpose_config_file_path,
                     model_checkpoint_path=self.crop_cfg.xpose_ckpt_path,
                     embeddings_cache_path=self.crop_cfg.xpose_embedding_cache_path
                 )
-        else:
-            raise ValueError(f"Unsupported image type: {self.image_type}.")
-
-        self.landmark_runner.warmup()
-
+            self.animal_landmark_runner.warmup()
 
     def update_config(self, user_args):
         for k, v in user_args.items():
@@ -113,7 +110,7 @@ class Cropper(object):
             lmk = src_face.landmark_2d_106  # this is the 106 landmarks from insightface
         else :
             img_rgb_pil = Image.fromarray(img_rgb)
-            lmk = self.landmark_runner.run(img_rgb_pil, 'face', 'animal_face', 0, 0)
+            lmk = self.animal_landmark_runner.run(img_rgb_pil, 'face', 'animal_face', 0, 0)
 
         # crop the face
         ret_dct = crop_image(
@@ -129,7 +126,7 @@ class Cropper(object):
         # update a 256x256 version for network input
         ret_dct["img_crop_256x256"] = cv2.resize(ret_dct["img_crop"], (256, 256), interpolation=cv2.INTER_AREA)
         if self.image_type == "human_face":
-            lmk = self.landmark_runner.run(img_rgb, lmk)
+            lmk = self.human_landmark_runner.run(img_rgb, lmk)
             ret_dct["lmk_crop"] = lmk
             ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
 
@@ -149,7 +146,7 @@ class Cropper(object):
             log(f"More than one face detected in the image, only pick one face by rule {direction}.")
         src_face = src_face[0]
         lmk = src_face.landmark_2d_106
-        lmk = self.landmark_runner.run(img_rgb_, lmk)
+        lmk = self.human_landmark_runner.run(img_rgb_, lmk)
 
         return lmk
 
@@ -173,11 +170,11 @@ class Cropper(object):
                     log(f"More than one face detected in the source frame_{idx}, only pick one face by rule {direction}.")
                 src_face = src_face[0]
                 lmk = src_face.landmark_2d_106
-                lmk = self.landmark_runner.run(frame_rgb, lmk)
+                lmk = self.human_landmark_runner.run(frame_rgb, lmk)
                 trajectory.start, trajectory.end = idx, idx
             else:
                 # TODO: add IOU check for tracking
-                lmk = self.landmark_runner.run(frame_rgb, trajectory.lmk_lst[-1])
+                lmk = self.human_landmark_runner.run(frame_rgb, trajectory.lmk_lst[-1])
                 trajectory.end = idx
 
             trajectory.lmk_lst.append(lmk)
@@ -192,7 +189,7 @@ class Cropper(object):
                 vy_ratio=crop_cfg.vy_ratio,
                 flag_do_rot=crop_cfg.flag_do_rot,
             )
-            lmk = self.landmark_runner.run(frame_rgb, lmk)
+            lmk = self.human_landmark_runner.run(frame_rgb, lmk)
             ret_dct["lmk_crop"] = lmk
 
             # update a 256x256 version for network input
@@ -227,10 +224,10 @@ class Cropper(object):
                     log(f"More than one face detected in the driving frame_{idx}, only pick one face by rule {direction}.")
                 src_face = src_face[0]
                 lmk = src_face.landmark_2d_106
-                lmk = self.landmark_runner.run(frame_rgb, lmk)
+                lmk = self.human_landmark_runner.run(frame_rgb, lmk)
                 trajectory.start, trajectory.end = idx, idx
             else:
-                lmk = self.landmark_runner.run(frame_rgb, trajectory.lmk_lst[-1])
+                lmk = self.human_landmark_runner.run(frame_rgb, trajectory.lmk_lst[-1])
                 trajectory.end = idx
 
             trajectory.lmk_lst.append(lmk)
@@ -288,10 +285,10 @@ class Cropper(object):
                     log(f"More than one face detected in the driving frame_{idx}, only pick one face by rule {direction}.")
                 src_face = src_face[0]
                 lmk = src_face.landmark_2d_106
-                lmk = self.landmark_runner.run(frame_rgb_crop, lmk)
+                lmk = self.human_landmark_runner.run(frame_rgb_crop, lmk)
                 trajectory.start, trajectory.end = idx, idx
             else:
-                lmk = self.landmark_runner.run(frame_rgb_crop, trajectory.lmk_lst[-1])
+                lmk = self.human_landmark_runner.run(frame_rgb_crop, trajectory.lmk_lst[-1])
                 trajectory.end = idx
 
             trajectory.lmk_lst.append(lmk)
