@@ -63,13 +63,13 @@ title_md = "assets/gradio/gradio_title.md"
 example_portrait_dir = "assets/examples/source"
 example_video_dir = "assets/examples/driving"
 data_examples_i2v = [
-    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "d3.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s41.jpg"), osp.join(example_video_dir, "d3.mp4"), True, False, False, False],
     [osp.join(example_portrait_dir, "s40.jpg"), osp.join(example_video_dir, "d6.mp4"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s41.jpg"), osp.join(example_video_dir, "d19.mp4"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "d19.mp4"), True, False, False, False],
 ]
 data_examples_i2v_pickle = [
-    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "talking.pkl"), True, False, False, False],
-    [osp.join(example_portrait_dir, "s40.jpg"), osp.join(example_video_dir, "wink.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s25.jpg"), osp.join(example_video_dir, "wink.pkl"), True, False, False, False],
+    [osp.join(example_portrait_dir, "s40.jpg"), osp.join(example_video_dir, "talking.pkl"), True, False, False, False],
     [osp.join(example_portrait_dir, "s41.jpg"), osp.join(example_video_dir, "aggrieved.pkl"), True, False, False, False],
 ]
 #################### interface logic ####################
@@ -162,7 +162,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             with gr.Row():
                 flag_stitching = gr.Checkbox(value=False, label="stitching")
                 flag_remap_input = gr.Checkbox(value=False, label="paste-back")
-                driving_multiplier = gr.Number(value=1.0, label="driving multiplier (i2v)", minimum=0.0, maximum=2.0, step=0.02)
+                driving_multiplier = gr.Number(value=1.0, label="driving multiplier", minimum=0.0, maximum=2.0, step=0.02)
 
     gr.Markdown(load_description("assets/gradio/gradio_description_animate_clear.md"))
     with gr.Row():
@@ -185,22 +185,6 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         gr.Markdown("## You could also choose the examples below by one click ⬇️")
     with gr.Row():
         with gr.Tabs():
-            with gr.TabItem("🎞️ Driving Video") as tab_video:
-                gr.Examples(
-                    examples=data_examples_i2v,
-                    fn=gpu_wrapped_execute_video,
-                    inputs=[
-                        source_image_input,
-                        driving_video_input,
-                        flag_do_crop_input,
-                        flag_stitching,
-                        flag_remap_input,
-                        flag_crop_driving_video_input,
-                    ],
-                    outputs=[output_image, output_image_paste_back, output_video_i2v_gif],
-                    examples_per_page=len(data_examples_i2v),
-                    cache_examples=False,
-                )
             with gr.TabItem("📁 Driving Pickle") as tab_video:
                 gr.Examples(
                     examples=data_examples_i2v_pickle,
@@ -215,6 +199,22 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                     ],
                     outputs=[output_image, output_image_paste_back, output_video_i2v_gif],
                     examples_per_page=len(data_examples_i2v_pickle),
+                    cache_examples=False,
+                )
+            with gr.TabItem("🎞️ Driving Video") as tab_video:
+                gr.Examples(
+                    examples=data_examples_i2v,
+                    fn=gpu_wrapped_execute_video,
+                    inputs=[
+                        source_image_input,
+                        driving_video_input,
+                        flag_do_crop_input,
+                        flag_stitching,
+                        flag_remap_input,
+                        flag_crop_driving_video_input,
+                    ],
+                    outputs=[output_image, output_image_paste_back, output_video_i2v_gif],
+                    examples_per_page=len(data_examples_i2v),
                     cache_examples=False,
                 )
 

@@ -314,16 +314,14 @@ class GradioPipeline(LivePortraitPipeline):
             c_d_lip_retargeting = [input_lip_ratio]
             f_s_user_lst, x_s_user_lst, lip_delta_retargeting_lst = [], [], []
             for i in track(range(n_frames), description='Preparing retargeting video...', total=n_frames):
-                x_s_info_tiny = source_template_dct['motion'][i]
-                x_s_info_tiny = dct2device(x_s_info_tiny, device)
+                x_s_info = source_template_dct['motion'][i]
+                x_s_info = dct2device(x_s_info, device)
+                x_s_user = x_s_info['x_s']
 
                 source_lmk = source_lmk_crop_lst[i]
                 img_crop_256x256 = img_crop_256x256_lst[i]
                 I_s = I_s_lst[i]
-
-                x_s_info = source_template_dct['x_i_info_lst'][i]
                 f_s_user = self.live_portrait_wrapper.extract_feature_3d(I_s)
-                x_s_user = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
                 combined_lip_ratio_tensor_retargeting = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_retargeting, source_lmk)
                 lip_delta_retargeting = self.live_portrait_wrapper.retarget_lip(x_s_user, combined_lip_ratio_tensor_retargeting)

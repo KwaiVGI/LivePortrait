@@ -47,7 +47,6 @@ class LivePortraitPipelineAnimal(object):
             'n_frames': n_frames,
             'output_fps': kwargs.get('output_fps', 25),
             'motion': [],
-            'x_i_info_lst': [],
         }
 
         for i in track(range(n_frames), description='Making driving motion templates...', total=n_frames):
@@ -64,7 +63,6 @@ class LivePortraitPipelineAnimal(object):
             }
 
             template_dct['motion'].append(item_dct)
-            template_dct['x_i_info_lst'].append(x_i_info)
 
         return template_dct
 

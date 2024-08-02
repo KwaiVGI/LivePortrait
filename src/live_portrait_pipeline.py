@@ -46,13 +46,13 @@ class LivePortraitPipeline(object):
             'motion': [],
             'c_eyes_lst': [],
             'c_lip_lst': [],
-            'x_i_info_lst': [],
         }
 
         for i in track(range(n_frames), description='Making motion templates...', total=n_frames):
             # collect s, R, δ and t for inference
             I_i = I_lst[i]
             x_i_info = self.live_portrait_wrapper.get_kp_info(I_i)
+            x_s = self.live_portrait_wrapper.transform_keypoint(x_i_info)
             R_i = get_rotation_matrix(x_i_info['pitch'], x_i_info['yaw'], x_i_info['roll'])
 
             item_dct = {
@@ -60,6 +60,8 @@ class LivePortraitPipeline(object):
                 'R': R_i.cpu().numpy().astype(np.float32),
                 'exp': x_i_info['exp'].cpu().numpy().astype(np.float32),
                 't': x_i_info['t'].cpu().numpy().astype(np.float32),
+                'kp': x_i_info['kp'].cpu().numpy().astype(np.float32),
+                'x_s': x_s.cpu().numpy().astype(np.float32),
             }
 
             template_dct['motion'].append(item_dct)
@@ -70,7 +72,6 @@ class LivePortraitPipeline(object):
             c_lip = c_lip_lst[i].astype(np.float32)
             template_dct['c_lip_lst'].append(c_lip)
 
-            template_dct['x_i_info_lst'].append(x_i_info)
 
         return template_dct
 
@@ -238,18 +239,17 @@ class LivePortraitPipeline(object):
         log(f"The animated video consists of {n_frames} frames.")
         for i in track(range(n_frames), description='🚀Animating...', total=n_frames):
             if flag_is_source_video:  # source video
-                x_s_info_tiny = source_template_dct['motion'][i]
-                x_s_info_tiny = dct2device(x_s_info_tiny, device)
+                x_s_info = source_template_dct['motion'][i]
+                x_s_info = dct2device(x_s_info, device)
 
                 source_lmk = source_lmk_crop_lst[i]
                 img_crop_256x256 = img_crop_256x256_lst[i]
                 I_s = I_s_lst[i]
-
-                x_s_info = source_template_dct['x_i_info_lst'][i]
-                x_c_s = x_s_info['kp']
-                R_s = x_s_info_tiny['R']
                 f_s = self.live_portrait_wrapper.extract_feature_3d(I_s)
-                x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
+
+                x_c_s = x_s_info['kp']
+                R_s = x_s_info['R']
+                x_s =x_s_info['x_s']
 
                 # let lip-open scalar to be 0 at first if the input is a video
                 if flag_normalize_lip and inf_cfg.flag_relative_motion and source_lmk is not None:
