@@ -39,7 +39,7 @@
 
 
 ## 🔥 Updates
-- **`2024/08/02`**: 🐱 We release a version of Animals model 🐱🐶, and several features and improvements! More to see [**here**](./assets/docs/changelog/2024-08-02.md).
+- **`2024/08/02`**: 🐱🐶 We released a new version of the Animals model, along with several other updates and improvements! Check out the details [**here**](./assets/docs/changelog/2024-08-02.md).
 - **`2024/07/25`**: 📦 Windows users can now download the package from [HuggingFace](https://huggingface.co/cleardusk/LivePortrait-Windows/tree/main) or [BaiduYun](https://pan.baidu.com/s/1FWsWqKe0eNfXrwjEhhCqlw?pwd=86q2). Simply unzip and double-click `run_windows.bat` to enjoy!
 - **`2024/07/24`**: 🎨 We support pose editing for source portraits in the Gradio interface. We’ve also lowered the default detection threshold to increase recall. [Have fun](assets/docs/changelog/2024-07-24.md)!
 - **`2024/07/19`**: ✨ We support 🎞️ **portrait video editing (aka v2v)**! More to see [here](assets/docs/changelog/2024-07-19.md).
@@ -89,7 +89,7 @@ export HF_ENDPOINT=https://hf-mirror.com
 huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
 ```
 
-Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) (WIP) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn) (WIP). Unzip and place them in `./pretrained_weights`.
+Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn) (WIP). Unzip and place them in `./pretrained_weights`.
 
 Ensuring the directory structure is as or contains [**this**](assets/docs/directory-structure.md).
 
@@ -135,8 +135,12 @@ cd - # equal to cd ../../../../../../../
 
 Then
 ```bash
-python inference_animal.py -s assets/examples/source/s30.jpg -d assets/examples/driving/wink.pkl --no_flag_stitching
+python inference_animal.py -s assets/examples/source/s39.jpg -d assets/examples/driving/wink.pkl --driving_multiplier 1.75 --no_flag_stitching
 ```
+If the script runs successfully, you will get an output mp4 file named `animations/s39--wink_concat.mp4`.
+<p align="center">
+  <img src="./assets/docs/inference-animals.gif" alt="image">
+</p>
 
 #### Driving video auto-cropping 📢📢📢
 > [!IMPORTANT]
