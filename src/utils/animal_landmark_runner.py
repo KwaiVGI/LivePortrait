@@ -33,7 +33,7 @@ class XPoseRunner(object):
         if os.path.exists(embeddings_cache_path):
             with open(embeddings_cache_path, 'rb') as f:
                 self.cached_embeddings = pickle.load(f)
-            print("Loaded cached embeddings from file.")
+            log("Loaded cached embeddings from file.")
         else:
             raise ValueError("Could not load clip embeddings from file, please check your file path.")
 
@@ -51,7 +51,7 @@ class XPoseRunner(object):
         cache_key = (tuple(instance_names), tuple(keypoints_names))
         if cache_key in self.cached_embeddings:
             ins_text_embeddings, kpt_text_embeddings = self.cached_embeddings[cache_key]
-            print("Loaded embeddings from cache.")
+            log("Loaded embeddings from cache.")
         else:
             raise ValueError("Could not load embeddings from cache, please check your embedding file.")
         return ins_text_embeddings.to(self.device), kpt_text_embeddings.to(self.device)

@@ -160,8 +160,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     with gr.Row():
         with gr.Accordion(open=False, label="Animation Options"):
             with gr.Row():
-                flag_stitching = gr.Checkbox(value=False, label="stitching")
-                flag_remap_input = gr.Checkbox(value=False, label="paste-back")
+                flag_stitching = gr.Checkbox(value=False, label="stitching (not recommended)")
+                flag_remap_input = gr.Checkbox(value=False, label="paste-back (not recommended)")
                 driving_multiplier = gr.Number(value=1.0, label="driving multiplier", minimum=0.0, maximum=2.0, step=0.02)
 
     gr.Markdown(load_description("assets/gradio/gradio_description_animate_clear.md"))
