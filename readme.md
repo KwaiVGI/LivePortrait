@@ -89,7 +89,7 @@ export HF_ENDPOINT=https://hf-mirror.com
 huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
 ```
 
-Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). Unzip and place them in `./pretrained_weights`.
+Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) (WIP) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn) (WIP). Unzip and place them in `./pretrained_weights`.
 
 Ensuring the directory structure is as or contains [**this**](assets/docs/directory-structure.md).
 
@@ -166,10 +166,15 @@ We also provide a Gradio <a href='https://github.com/gradio-app/gradio'><img src
 
 ```bash
 # For Linux and Windows users (and macOS with Intel??)
-python app.py
+python app.py # humans mode
 
 # For macOS with Apple Silicon users, Intel not supported, this maybe 20x slower than RTX 4090
-PYTORCH_ENABLE_MPS_FALLBACK=1 python app.py
+PYTORCH_ENABLE_MPS_FALLBACK=1 python app.py # humans mode
+```
+
+We also provide a Gradio interface of animals mode, which is only tested on Linux with NVIDIA GPU:
+```bash
+python app_animals.py # animals mode 🐱🐶
 ```
 
 You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
