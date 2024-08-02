@@ -39,7 +39,7 @@
 
 
 ## 🔥 Updates
-- **`2024/08/02`**: 🐱🐶 We released a new version of the Animals model, along with several other updates and improvements! Check out the details [**here**](./assets/docs/changelog/2024-08-02.md).
+- **`2024/08/02`**: 🐱 We released a new version of the Animals model, along with several other updates and improvements! Check out the details [**here**](./assets/docs/changelog/2024-08-02.md).
 - **`2024/07/25`**: 📦 Windows users can now download the package from [HuggingFace](https://huggingface.co/cleardusk/LivePortrait-Windows/tree/main) or [BaiduYun](https://pan.baidu.com/s/1FWsWqKe0eNfXrwjEhhCqlw?pwd=86q2). Simply unzip and double-click `run_windows.bat` to enjoy!
 - **`2024/07/24`**: 🎨 We support pose editing for source portraits in the Gradio interface. We’ve also lowered the default detection threshold to increase recall. [Have fun](assets/docs/changelog/2024-07-24.md)!
 - **`2024/07/19`**: ✨ We support 🎞️ **portrait video editing (aka v2v)**! More to see [here](assets/docs/changelog/2024-07-19.md).
