@@ -20,3 +20,5 @@ imageio-ffmpeg==0.5.1
 tyro==0.8.5
 gradio==4.37.1
 pykalman==0.9.7
+transformers==4.22.0
+pillow>=10.2.0

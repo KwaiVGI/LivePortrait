@@ -1,7 +1,7 @@
 # coding: utf-8
 
 """
-Pipeline of LivePortrait
+Pipeline of LivePortrait (Human)
 """
 
 import torch
@@ -21,7 +21,7 @@ from .utils.camera import get_rotation_matrix
 from .utils.video import images2video, concat_frames, get_fps, add_audio_to_video, has_audio_stream
 from .utils.crop import prepare_paste_back, paste_back
 from .utils.io import load_image_rgb, load_video, resize_to_limit, dump, load
-from .utils.helper import mkdir, basename, dct2device, is_video, is_template, remove_suffix, is_image, is_square_video
+from .utils.helper import mkdir, basename, dct2device, is_video, is_template, remove_suffix, is_image, is_square_video, calc_motion_multiplier
 from .utils.filter import smooth
 from .utils.rprint import rlog as log
 # from .utils.viz import viz_lmk
@@ -46,13 +46,13 @@ class LivePortraitPipeline(object):
             'motion': [],
             'c_eyes_lst': [],
             'c_lip_lst': [],
-            'x_i_info_lst': [],
         }
 
         for i in track(range(n_frames), description='Making motion templates...', total=n_frames):
             # collect s, R, δ and t for inference
             I_i = I_lst[i]
             x_i_info = self.live_portrait_wrapper.get_kp_info(I_i)
+            x_s = self.live_portrait_wrapper.transform_keypoint(x_i_info)
             R_i = get_rotation_matrix(x_i_info['pitch'], x_i_info['yaw'], x_i_info['roll'])
 
             item_dct = {
@@ -60,6 +60,8 @@ class LivePortraitPipeline(object):
                 'R': R_i.cpu().numpy().astype(np.float32),
                 'exp': x_i_info['exp'].cpu().numpy().astype(np.float32),
                 't': x_i_info['t'].cpu().numpy().astype(np.float32),
+                'kp': x_i_info['kp'].cpu().numpy().astype(np.float32),
+                'x_s': x_s.cpu().numpy().astype(np.float32),
             }
 
             template_dct['motion'].append(item_dct)
@@ -70,7 +72,6 @@ class LivePortraitPipeline(object):
             c_lip = c_lip_lst[i].astype(np.float32)
             template_dct['c_lip_lst'].append(c_lip)
 
-            template_dct['x_i_info_lst'].append(x_i_info)
 
         return template_dct
 
@@ -238,18 +239,17 @@ class LivePortraitPipeline(object):
         log(f"The animated video consists of {n_frames} frames.")
         for i in track(range(n_frames), description='🚀Animating...', total=n_frames):
             if flag_is_source_video:  # source video
-                x_s_info_tiny = source_template_dct['motion'][i]
-                x_s_info_tiny = dct2device(x_s_info_tiny, device)
+                x_s_info = source_template_dct['motion'][i]
+                x_s_info = dct2device(x_s_info, device)
 
                 source_lmk = source_lmk_crop_lst[i]
                 img_crop_256x256 = img_crop_256x256_lst[i]
                 I_s = I_s_lst[i]
-
-                x_s_info = source_template_dct['x_i_info_lst'][i]
-                x_c_s = x_s_info['kp']
-                R_s = x_s_info_tiny['R']
                 f_s = self.live_portrait_wrapper.extract_feature_3d(I_s)
-                x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
+
+                x_c_s = x_s_info['kp']
+                R_s = x_s_info['R']
+                x_s =x_s_info['x_s']
 
                 # let lip-open scalar to be 0 at first if the input is a video
                 if flag_normalize_lip and inf_cfg.flag_relative_motion and source_lmk is not None:
@@ -308,6 +308,14 @@ class LivePortraitPipeline(object):
             t_new[..., 2].fill_(0)  # zero tz
             x_d_i_new = scale_new * (x_c_s @ R_new + delta_new) + t_new
 
+            if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video:
+                if i == 0:
+                    x_d_0_new = x_d_i_new
+                    motion_multiplier = calc_motion_multiplier(x_s, x_d_0_new)
+                    # motion_multiplier *= inf_cfg.driving_multiplier
+                x_d_diff = (x_d_i_new - x_d_0_new) * motion_multiplier
+                x_d_i_new = x_d_diff + x_s
+
             # Algorithm 1:
             if not inf_cfg.flag_stitching and not inf_cfg.flag_eye_retargeting and not inf_cfg.flag_lip_retargeting:
                 # without stitching or retargeting
@@ -350,6 +358,7 @@ class LivePortraitPipeline(object):
                 if inf_cfg.flag_stitching:
                     x_d_i_new = self.live_portrait_wrapper.stitching(x_s, x_d_i_new)
 
+            x_d_i_new = x_s + (x_d_i_new - x_s) * inf_cfg.driving_multiplier
             out = self.live_portrait_wrapper.warp_decode(f_s, x_s, x_d_i_new)
             I_p_i = self.live_portrait_wrapper.parse_output(out['out'])[0]
             I_p_lst.append(I_p_i)
@@ -386,7 +395,7 @@ class LivePortraitPipeline(object):
             log(f"Audio is selected from {audio_from_which_video}, concat mode")
             add_audio_to_video(wfp_concat, audio_from_which_video, wfp_concat_with_audio)
             os.replace(wfp_concat_with_audio, wfp_concat)
-            log(f"Replace {wfp_concat} with {wfp_concat_with_audio}")
+            log(f"Replace {wfp_concat_with_audio} with {wfp_concat}")
 
         # save the animated result
         wfp = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}.mp4')
@@ -402,7 +411,7 @@ class LivePortraitPipeline(object):
             log(f"Audio is selected from {audio_from_which_video}")
             add_audio_to_video(wfp, audio_from_which_video, wfp_with_audio)
             os.replace(wfp_with_audio, wfp)
-            log(f"Replace {wfp} with {wfp_with_audio}")
+            log(f"Replace {wfp_with_audio} with {wfp}")
 
         # final log
         if wfp_template not in (None, ''):

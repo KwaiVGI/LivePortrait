@@ -1,7 +1,7 @@
 # coding: utf-8
 
 """
-Wrapper for LivePortrait core functions
+Wrappers for LivePortrait core functions
 """
 
 import contextlib
@@ -20,6 +20,9 @@ from .utils.rprint import rlog as log
 
 
 class LivePortraitWrapper(object):
+    """
+    Wrapper for Human
+    """
 
     def __init__(self, inference_cfg: InferenceConfig):
 
@@ -37,20 +40,20 @@ class LivePortraitWrapper(object):
         model_config = yaml.load(open(inference_cfg.models_config, 'r'), Loader=yaml.SafeLoader)
         # init F
         self.appearance_feature_extractor = load_model(inference_cfg.checkpoint_F, model_config, self.device, 'appearance_feature_extractor')
-        log(f'Load appearance_feature_extractor done.')
+        log(f'Load appearance_feature_extractor from {osp.realpath(inference_cfg.checkpoint_F)} done.')
         # init M
         self.motion_extractor = load_model(inference_cfg.checkpoint_M, model_config, self.device, 'motion_extractor')
-        log(f'Load motion_extractor done.')
+        log(f'Load motion_extractor from {osp.realpath(inference_cfg.checkpoint_M)} done.')
         # init W
         self.warping_module = load_model(inference_cfg.checkpoint_W, model_config, self.device, 'warping_module')
-        log(f'Load warping_module done.')
+        log(f'Load warping_module from {osp.realpath(inference_cfg.checkpoint_W)} done.')
         # init G
         self.spade_generator = load_model(inference_cfg.checkpoint_G, model_config, self.device, 'spade_generator')
-        log(f'Load spade_generator done.')
+        log(f'Load spade_generator from {osp.realpath(inference_cfg.checkpoint_G)} done.')
         # init S and R
         if inference_cfg.checkpoint_S is not None and osp.exists(inference_cfg.checkpoint_S):
             self.stitching_retargeting_module = load_model(inference_cfg.checkpoint_S, model_config, self.device, 'stitching_retargeting_module')
-            log(f'Load stitching_retargeting_module done.')
+            log(f'Load stitching_retargeting_module from {osp.realpath(inference_cfg.checkpoint_S)} done.')
         else:
             self.stitching_retargeting_module = None
         # Optimize for inference
@@ -326,3 +329,50 @@ class LivePortraitWrapper(object):
         # [c_s,lip, c_d,lip,i]
         combined_lip_ratio_tensor = torch.cat([c_s_lip_tensor, c_d_lip_i_tensor], dim=1) # 1x2
         return combined_lip_ratio_tensor
+
+
+class LivePortraitWrapperAnimal(LivePortraitWrapper):
+    """
+    Wrapper for Animal
+    """
+    def __init__(self, inference_cfg: InferenceConfig):
+        # super().__init__(inference_cfg)  # 调用父类的初始化方法
+
+        self.inference_cfg = inference_cfg
+        self.device_id = inference_cfg.device_id
+        self.compile = inference_cfg.flag_do_torch_compile
+        if inference_cfg.flag_force_cpu:
+            self.device = 'cpu'
+        else:
+            if torch.backends.mps.is_available():
+                self.device = 'mps'
+            else:
+                self.device = 'cuda:' + str(self.device_id)
+
+        model_config = yaml.load(open(inference_cfg.models_config, 'r'), Loader=yaml.SafeLoader)
+        # init F
+        self.appearance_feature_extractor = load_model(inference_cfg.checkpoint_F_animal, model_config, self.device, 'appearance_feature_extractor')
+        log(f'Load appearance_feature_extractor from {osp.realpath(inference_cfg.checkpoint_F_animal)} done.')
+        # init M
+        self.motion_extractor = load_model(inference_cfg.checkpoint_M_animal, model_config, self.device, 'motion_extractor')
+        log(f'Load motion_extractor from {osp.realpath(inference_cfg.checkpoint_M_animal)} done.')
+        # init W
+        self.warping_module = load_model(inference_cfg.checkpoint_W_animal, model_config, self.device, 'warping_module')
+        log(f'Load warping_module from {osp.realpath(inference_cfg.checkpoint_W_animal)} done.')
+        # init G
+        self.spade_generator = load_model(inference_cfg.checkpoint_G_animal, model_config, self.device, 'spade_generator')
+        log(f'Load spade_generator from {osp.realpath(inference_cfg.checkpoint_G_animal)} done.')
+        # init S and R
+        if inference_cfg.checkpoint_S_animal is not None and osp.exists(inference_cfg.checkpoint_S_animal):
+            self.stitching_retargeting_module = load_model(inference_cfg.checkpoint_S_animal, model_config, self.device, 'stitching_retargeting_module')
+            log(f'Load stitching_retargeting_module from {osp.realpath(inference_cfg.checkpoint_S_animal)} done.')
+        else:
+            self.stitching_retargeting_module = None
+
+        # Optimize for inference
+        if self.compile:
+            torch._dynamo.config.suppress_errors = True  # Suppress errors and fall back to eager execution
+            self.warping_module = torch.compile(self.warping_module, mode='max-autotune')
+            self.spade_generator = torch.compile(self.spade_generator, mode='max-autotune')
+
+        self.timer = Timer()

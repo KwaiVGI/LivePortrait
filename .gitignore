@@ -12,6 +12,7 @@ __pycache__/
 pretrained_weights/*.md
 pretrained_weights/docs
 pretrained_weights/liveportrait
+pretrained_weights/liveportrait_animals
 
 # Ipython notebook
 *.ipynb
@@ -26,3 +27,8 @@ gradio_temp/**
 # Windows dependencies
 ffmpeg/
 LivePortrait_env/
+
+# XPose build files
+src/utils/dependencies/XPose/models/UniPose/ops/build
+src/utils/dependencies/XPose/models/UniPose/ops/dist
+src/utils/dependencies/XPose/models/UniPose/ops/MultiScaleDeformableAttention.egg-info

@@ -1,2 +1,4 @@
 -r requirements_base.txt
+
+--extra-index-url https://download.pytorch.org/whl/cpu
 onnxruntime-silicon==1.16.3

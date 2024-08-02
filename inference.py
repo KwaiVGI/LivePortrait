@@ -1,4 +1,7 @@
 # coding: utf-8
+"""
+for human
+"""
 
 import os
 import os.path as osp

@@ -13,13 +13,20 @@ from .base_config import PrintableConfig, make_abs_path
 
 @dataclass(repr=False)  # use repr from PrintableConfig
 class InferenceConfig(PrintableConfig):
-    # MODEL CONFIG, NOT EXPORTED PARAMS
+    # HUMAN MODEL CONFIG, NOT EXPORTED PARAMS
     models_config: str = make_abs_path('./models.yaml')  # portrait animation config
     checkpoint_F: str = make_abs_path('../../pretrained_weights/liveportrait/base_models/appearance_feature_extractor.pth')  # path to checkpoint of F
     checkpoint_M: str = make_abs_path('../../pretrained_weights/liveportrait/base_models/motion_extractor.pth')  # path to checkpoint pf M
     checkpoint_G: str = make_abs_path('../../pretrained_weights/liveportrait/base_models/spade_generator.pth')  # path to checkpoint of G
     checkpoint_W: str = make_abs_path('../../pretrained_weights/liveportrait/base_models/warping_module.pth')  # path to checkpoint of W
     checkpoint_S: str = make_abs_path('../../pretrained_weights/liveportrait/retargeting_models/stitching_retargeting_module.pth')  # path to checkpoint to S and R_eyes, R_lip
+
+    # ANIMAL MODEL CONFIG, NOT EXPORTED PARAMS
+    checkpoint_F_animal: str = make_abs_path('../../pretrained_weights/liveportrait_animals/base_models/appearance_feature_extractor.pth')  # path to checkpoint of F
+    checkpoint_M_animal: str = make_abs_path('../../pretrained_weights/liveportrait_animals/base_models/motion_extractor.pth')  # path to checkpoint pf M
+    checkpoint_G_animal: str = make_abs_path('../../pretrained_weights/liveportrait_animals/base_models/spade_generator.pth')  # path to checkpoint of G
+    checkpoint_W_animal: str = make_abs_path('../../pretrained_weights/liveportrait_animals/base_models/warping_module.pth')  # path to checkpoint of W
+    checkpoint_S_animal: str = make_abs_path('../../pretrained_weights/liveportrait/retargeting_models/stitching_retargeting_module.pth')  # path to checkpoint to S and R_eyes, R_lip, NOTE: use human temporarily!
 
     # EXPORTED PARAMS
     flag_use_half_precision: bool = True
@@ -37,6 +44,8 @@ class InferenceConfig(PrintableConfig):
     flag_do_rot: bool = True
     flag_force_cpu: bool = False
     flag_do_torch_compile: bool = False
+    driving_option: str = "pose-friendly" # "expression-friendly" or "pose-friendly"
+    driving_multiplier: float = 1.0
     driving_smooth_observation_variance: float = 3e-7 # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
     source_max_dim: int = 1280 # the max dim of height and width of source image or video
     source_division: int = 2 # make sure the height and width of source image or video can be divided by this number

@@ -39,6 +39,7 @@
 
 
 ## 🔥 Updates
+- **`2024/08/02`**: 😸 We released a version of the **Animals model**, along with several other updates and improvements. Check out the details [**here**](./assets/docs/changelog/2024-08-02.md)!
 - **`2024/07/25`**: 📦 Windows users can now download the package from [HuggingFace](https://huggingface.co/cleardusk/LivePortrait-Windows/tree/main) or [BaiduYun](https://pan.baidu.com/s/1FWsWqKe0eNfXrwjEhhCqlw?pwd=86q2). Simply unzip and double-click `run_windows.bat` to enjoy!
 - **`2024/07/24`**: 🎨 We support pose editing for source portraits in the Gradio interface. We’ve also lowered the default detection threshold to increase recall. [Have fun](assets/docs/changelog/2024-07-24.md)!
 - **`2024/07/19`**: ✨ We support 🎞️ **portrait video editing (aka v2v)**! More to see [here](assets/docs/changelog/2024-07-19.md).
@@ -55,7 +56,7 @@ This repo, named **LivePortrait**, contains the official PyTorch implementation 
 We are actively updating and improving this repository. If you find any bugs or have suggestions, welcome to raise issues or submit pull requests (PR) 💖.
 
 ## Getting Started 🏁
-### 1. Clone the code and prepare the environment
+### 1. Clone the code and prepare the environment 🛠️
 ```bash
 git clone https://github.com/KwaiVGI/LivePortrait
 cd LivePortrait
@@ -64,56 +65,42 @@ cd LivePortrait
 conda create -n LivePortrait python=3.9
 conda activate LivePortrait
 
-# install dependencies with pip
 # for Linux and Windows users
 pip install -r requirements.txt
 # for macOS with Apple Silicon users
 pip install -r requirements_macOS.txt
 ```
 
-**Note:** make sure your system has [FFmpeg](https://ffmpeg.org/download.html) installed, including both `ffmpeg` and `ffprobe`!
+> [!Note]
+> Make sure your system has [`git`](https://git-scm.com/), [`conda`](https://anaconda.org/anaconda/conda), and [`FFmpeg`](https://ffmpeg.org/download.html) installed. For details on FFmpeg installation, see [**how to install FFmpeg**](assets/docs/how-to-install-ffmpeg.md).
 
-### 2. Download pretrained weights
+### 2. Download pretrained weights 📥
 
 The easiest way to download the pretrained weights is from HuggingFace:
 ```bash
-# first, ensure git-lfs is installed, see: https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage
-git lfs install
-# clone and move the weights
-git clone https://huggingface.co/KwaiVGI/LivePortrait temp_pretrained_weights
-mv temp_pretrained_weights/* pretrained_weights/
-rm -rf temp_pretrained_weights
+# !pip install -U "huggingface_hub[cli]"
+huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
 ```
 
-Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). Unzip and place them in `./pretrained_weights`.
-
-Ensuring the directory structure is as follows, or contains:
-```text
-pretrained_weights
-├── insightface
-│   └── models
-│       └── buffalo_l
-│           ├── 2d106det.onnx
-│           └── det_10g.onnx
-└── liveportrait
-    ├── base_models
-    │   ├── appearance_feature_extractor.pth
-    │   ├── motion_extractor.pth
-    │   ├── spade_generator.pth
-    │   └── warping_module.pth
-    ├── landmark.onnx
-    └── retargeting_models
-        └── stitching_retargeting_module.pth
+If you cannot access to Huggingface, you can use [hf-mirror](https://hf-mirror.com/) to download:
+```bash
+# !pip install -U "huggingface_hub[cli]"
+export HF_ENDPOINT=https://hf-mirror.com
+huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
 ```
+
+Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn) (WIP). Unzip and place them in `./pretrained_weights`.
+
+Ensuring the directory structure is as or contains [**this**](assets/docs/directory-structure.md).
 
 ### 3. Inference 🚀
 
-#### Fast hands-on
+#### Fast hands-on (humans) 👤
 ```bash
-# For Linux and Windows
+# For Linux and Windows users
 python inference.py
 
-# For macOS with Apple Silicon, Intel not supported, this maybe 20x slower than RTX 4090
+# For macOS users with Apple Silicon (Intel is not tested). NOTE: this maybe 20x slower than RTX 4090
 PYTORCH_ENABLE_MPS_FALLBACK=1 python inference.py
 ```
 
@@ -136,12 +123,32 @@ python inference.py -s assets/examples/source/s13.mp4 -d assets/examples/driving
 python inference.py -h
 ```
 
+#### Fast hands-on (animals) 🐱🐶
+Animals mode is ONLY tested on Linux with NVIDIA GPU.
+
+You need to build an OP named `MultiScaleDeformableAttention` first, which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
+```bash
+cd src/utils/dependencies/XPose/models/UniPose/ops
+python setup.py build install
+cd - # equal to cd ../../../../../../../
+```
+
+Then
+```bash
+python inference_animal.py -s assets/examples/source/s39.jpg -d assets/examples/driving/wink.pkl --driving_multiplier 1.75 --no_flag_stitching
+```
+If the script runs successfully, you will get an output mp4 file named `animations/s39--wink_concat.mp4`.
+<p align="center">
+  <img src="./assets/docs/inference-animals.gif" alt="image">
+</p>
+
 #### Driving video auto-cropping 📢📢📢
-To use your own driving video, we **recommend**: ⬇️
- - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or enable auto-cropping by `--flag_crop_driving_video`.
- - Focus on the head area, similar to the example videos.
- - Minimize shoulder movement.
- - Make sure the first frame of driving video is a frontal face with **neutral expression**.
+> [!IMPORTANT]
+> To use your own driving video, we **recommend**: ⬇️
+> - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or enable auto-cropping by `--flag_crop_driving_video`.
+> - Focus on the head area, similar to the example videos.
+> - Minimize shoulder movement.
+> - Make sure the first frame of driving video is a frontal face with **neutral expression**.
 
 Below is a auto-cropping case by `--flag_crop_driving_video`:
 ```bash
@@ -163,10 +170,15 @@ We also provide a Gradio <a href='https://github.com/gradio-app/gradio'><img src
 
 ```bash
 # For Linux and Windows users (and macOS with Intel??)
-python app.py
+python app.py # humans mode
 
 # For macOS with Apple Silicon users, Intel not supported, this maybe 20x slower than RTX 4090
-PYTORCH_ENABLE_MPS_FALLBACK=1 python app.py
+PYTORCH_ENABLE_MPS_FALLBACK=1 python app.py # humans mode
+```
+
+We also provide a Gradio interface of animals mode, which is only tested on Linux with NVIDIA GPU:
+```bash
+python app_animals.py # animals mode 🐱🐶
 ```
 
 You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
@@ -188,17 +200,7 @@ We have also provided a script to evaluate the inference speed of each module:
 python speed.py
 ```
 
-Below are the results of inferring one frame on an RTX 4090 GPU using the native PyTorch framework with `torch.compile`:
-
-| Model                             | Parameters(M) | Model Size(MB) | Inference(ms) |
-|-----------------------------------|:-------------:|:--------------:|:-------------:|
-| Appearance Feature Extractor      |     0.84      |       3.3      |     0.82      |
-| Motion Extractor                  |     28.12     |       108      |     0.84      |
-| Spade Generator                   |     55.37     |       212      |     7.59      |
-| Warping Module                    |     45.53     |       174      |     5.21      |
-| Stitching and Retargeting Modules |     0.23      |       2.3      |     0.31      |
-
-*Note: The values for the Stitching and Retargeting Modules represent the combined parameter counts and total inference time of three sequential MLP networks.*
+The results are [**here**](./assets/docs/speed.md).
 
 ## Community Resources 🤗
 
