@@ -114,7 +114,7 @@ class Cropper(object):
             lmk = self.animal_landmark_runner.run(
                 img_rgb_pil, 
                 'face', 
-                'face', # 'face' -> 68 landmarks, 'animal_face' -> 9 landmarks
+                crop_cfg.animal_face_type, # 'face' -> 68 landmarks, 'animal_face' -> 9 landmarks
                 0, 
                 0
             ) 
