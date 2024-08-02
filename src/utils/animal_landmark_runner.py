@@ -4,26 +4,23 @@
 face detectoin and alignment using XPose
 """
 
-
 import os
-import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 import pickle
 import torch
 import numpy as np
 from PIL import Image
 from torchvision.ops import nms
 
-from ..utils.timer import Timer
-from ..utils.rprint import rlog as log
-from ..utils.helper import clean_state_dict
+from .timer import Timer
+from .rprint import rlog as log
+from .helper import clean_state_dict
 
-from ..utils.dependencies.XPose import transforms as T
-from ..utils.dependencies.XPose.models import build_model
-from ..utils.dependencies.XPose.predefined_keypoints import *
-from ..utils.dependencies.XPose.util import box_ops
-from ..utils.dependencies.XPose.util.config import Config
+from .dependencies.XPose import transforms as T
+from .dependencies.XPose.models import build_model
+from .dependencies.XPose.predefined_keypoints import *
+from .dependencies.XPose.util import box_ops
+from .dependencies.XPose.util.config import Config
+
 
 class XPoseRunner(object):
     def __init__(self, model_config_path, model_checkpoint_path, embeddings_cache_path=None, cpu_only=False, **kwargs):
@@ -62,7 +59,7 @@ class XPoseRunner(object):
     def load_image(self, input_image):
         image_pil = input_image.convert("RGB")
         transform = T.Compose([
-            T.RandomResize([800], max_size=1333), # NOTE: fixed size to 800
+            T.RandomResize([800], max_size=1333),  # NOTE: fixed size to 800
             T.ToTensor(),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
         ])
@@ -135,7 +132,7 @@ class XPoseRunner(object):
         self.timer.tic()
 
         img_rgb = Image.fromarray(np.zeros((512, 512, 3), dtype=np.uint8))
-        self.run(img_rgb,'face', 'animal_face', box_threshold=0.0, IoU_threshold=0.0)
+        self.run(img_rgb, 'face', 'animal_face', box_threshold=0.0, IoU_threshold=0.0)
 
         elapse = self.timer.toc()
         log(f'XPoseRunner warmup time: {elapse:.3f}s')

@@ -55,7 +55,7 @@ This repo, named **LivePortrait**, contains the official PyTorch implementation 
 We are actively updating and improving this repository. If you find any bugs or have suggestions, welcome to raise issues or submit pull requests (PR) 💖.
 
 ## Getting Started 🏁
-### 1. Clone the code and prepare the environment
+### 1. Clone the code and prepare the environment 🛠️
 ```bash
 git clone https://github.com/KwaiVGI/LivePortrait
 cd LivePortrait
@@ -74,42 +74,28 @@ pip install -r requirements_macOS.txt
 > [!Note]
 > Tmake sure your system has [FFmpeg](https://ffmpeg.org/download.html) installed, including both `ffmpeg` and `ffprobe`! See [**how to install FFmpeg**](assets/docs/how-to-install-ffmpeg.md) for more details.
 
-### 2. Download pretrained weights
+### 2. Download pretrained weights 📥
 
 The easiest way to download the pretrained weights is from HuggingFace:
 ```bash
-# first, ensure git-lfs is installed, see: https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage
-git lfs install
-# clone and move the weights
-git clone https://huggingface.co/KwaiVGI/LivePortrait temp_pretrained_weights
-mv temp_pretrained_weights/* pretrained_weights/
-rm -rf temp_pretrained_weights
+# !pip install -U "huggingface_hub[cli]"
+huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
+```
+
+If you cannot access to Huggingface, you can use [hf-mirror](https://hf-mirror.com/) to download:
+```bash
+# !pip install -U "huggingface_hub[cli]"
+export HF_ENDPOINT=https://hf-mirror.com
+huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
 ```
 
 Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). Unzip and place them in `./pretrained_weights`.
 
-Ensuring the directory structure is as follows, or contains:
-```text
-pretrained_weights
-├── insightface
-│   └── models
-│       └── buffalo_l
-│           ├── 2d106det.onnx
-│           └── det_10g.onnx
-└── liveportrait
-    ├── base_models
-    │   ├── appearance_feature_extractor.pth
-    │   ├── motion_extractor.pth
-    │   ├── spade_generator.pth
-    │   └── warping_module.pth
-    ├── landmark.onnx
-    └── retargeting_models
-        └── stitching_retargeting_module.pth
-```
+Ensuring the directory structure is as or contains [**this**](assets/docs/directory-structure.md).
 
 ### 3. Inference 🚀
 
-#### Fast hands-on (humans)
+#### Fast hands-on (humans) 👤
 ```bash
 # For Linux and Windows users
 python inference.py
@@ -137,7 +123,7 @@ python inference.py -s assets/examples/source/s13.mp4 -d assets/examples/driving
 python inference.py -h
 ```
 
-#### Fast hands-on (🐱🐶 animals)
+#### Fast hands-on (animals) 🐱🐶
 Animals mode is ONLY tested on Linux with NVIDIA GPU.
 
 You need to build an OP named `MultiScaleDeformableAttention` first, which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
@@ -155,7 +141,7 @@ python inference_animal.py -s assets/examples/source/s30.jpg -d assets/examples/
 #### Driving video auto-cropping 📢📢📢
 > [!IMPORTANT]
 > To use your own driving video, we **recommend**: ⬇️
-> - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or > enable auto-cropping by `--flag_crop_driving_video`.
+> - Crop it to a **1:1** aspect ratio (e.g., 512x512 or 256x256 pixels), or enable auto-cropping by `--flag_crop_driving_video`.
 > - Focus on the head area, similar to the example videos.
 > - Minimize shoulder movement.
 > - Make sure the first frame of driving video is a frontal face with **neutral expression**.
