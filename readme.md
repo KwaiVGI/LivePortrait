@@ -72,9 +72,7 @@ pip install -r requirements_macOS.txt
 ```
 
 > [!Note]
-> Make sure your system has `git`, `conda` installed.
-
-> Make sure your system has [FFmpeg](https://ffmpeg.org/download.html) installed, including both `ffmpeg` and `ffprobe`! See [**how to install FFmpeg**](assets/docs/how-to-install-ffmpeg.md) for more details.
+> Make sure your system has [`git`](https://git-scm.com/), [`conda`](https://anaconda.org/anaconda/conda), and [`FFmpeg`](https://ffmpeg.org/download.html) installed. For details on FFmpeg installation, see [**how to install FFmpeg**](assets/docs/how-to-install-ffmpeg.md).
 
 ### 2. Download pretrained weights 📥
 
