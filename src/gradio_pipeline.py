@@ -274,7 +274,7 @@ class GradioPipeline(LivePortraitPipeline):
                 add_audio_to_video(wfp, input_video, wfp_with_audio)
                 os.replace(wfp_with_audio, wfp)
                 log(f"Replace {wfp_with_audio} with {wfp}")
-                gr.Info("Run successfully!", duration=2)
+            gr.Info("Run successfully!", duration=2)
             return wfp_concat, wfp
 
     def prepare_retargeting_video(self, input_video, retargeting_source_scale, device, input_lip_ratio, driving_smooth_observation_variance_retargeting, flag_do_crop=True):

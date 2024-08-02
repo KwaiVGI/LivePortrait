@@ -109,15 +109,20 @@ class Cropper(object):
             # NOTE: temporarily only pick the first face, to support multiple face in the future
             src_face = src_face[0]
             lmk = src_face.landmark_2d_106  # this is the 106 landmarks from insightface
-        else :
+        else:
+            tmp_dct = {
+                'animal_face_9': 'animal_face',
+                'animal_face_68': 'face'
+            }
+
             img_rgb_pil = Image.fromarray(img_rgb)
             lmk = self.animal_landmark_runner.run(
-                img_rgb_pil, 
-                'face', 
-                crop_cfg.animal_face_type, # 'face' -> 68 landmarks, 'animal_face' -> 9 landmarks
-                0, 
+                img_rgb_pil,
+                'face',
+                tmp_dct[crop_cfg.animal_face_type],
+                0,
                 0
-            ) 
+            )
 
         # crop the face
         ret_dct = crop_image(
