@@ -107,7 +107,7 @@ class GradioPipeline(LivePortraitPipeline):
             # video driven animation
             video_path, video_path_concat = self.execute(self.args)
             gr.Info("Run successfully!", duration=2)
-            return video_path, video_path_concat,
+            return video_path, video_path_concat
         else:
             raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
 
@@ -275,7 +275,6 @@ class GradioPipeline(LivePortraitPipeline):
                 os.replace(wfp_with_audio, wfp)
                 log(f"Replace {wfp_with_audio} with {wfp}")
                 gr.Info("Run successfully!", duration=2)
-                return wfp_concat_with_audio, wfp_with_audio
             return wfp_concat, wfp
 
     def prepare_retargeting_video(self, input_video, retargeting_source_scale, device, input_lip_ratio, driving_smooth_observation_variance_retargeting, flag_do_crop=True):
