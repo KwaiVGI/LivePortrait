@@ -135,7 +135,7 @@ cd - # equal to cd ../../../../../../../
 
 Then
 ```bash
-python inference_animal.py -s assets/examples/source/s39.jpg -d assets/examples/driving/wink.pkl --driving_multiplier 1.75 --no_flag_stitching
+python inference_animals.py -s assets/examples/source/s39.jpg -d assets/examples/driving/wink.pkl --driving_multiplier 1.75 --no_flag_stitching
 ```
 If the script runs successfully, you will get an output mp4 file named `animations/s39--wink_concat.mp4`.
 <p align="center">
