@@ -111,7 +111,13 @@ class Cropper(object):
             lmk = src_face.landmark_2d_106  # this is the 106 landmarks from insightface
         else :
             img_rgb_pil = Image.fromarray(img_rgb)
-            lmk = self.animal_landmark_runner.run(img_rgb_pil, 'face', 'animal_face', 0, 0)
+            lmk = self.animal_landmark_runner.run(
+                img_rgb_pil, 
+                'face', 
+                'face', # 'face' -> 68 landmarks, 'animal_face' -> 9 landmarks
+                0, 
+                0
+            ) 
 
         # crop the face
         ret_dct = crop_image(
@@ -130,6 +136,9 @@ class Cropper(object):
             lmk = self.human_landmark_runner.run(img_rgb, lmk)
             ret_dct["lmk_crop"] = lmk
             ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
+        else:
+            # 68x2 or 9x2
+            ret_dct["lmk_crop"] = lmk
 
         return ret_dct
 

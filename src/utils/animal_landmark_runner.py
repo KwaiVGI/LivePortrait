@@ -30,11 +30,13 @@ class XPoseRunner(object):
         self.model = self.load_animal_model(model_config_path, model_checkpoint_path, self.device)
         self.timer = Timer()
         # Load cached embeddings if available
-        if os.path.exists(embeddings_cache_path):
-            with open(embeddings_cache_path, 'rb') as f:
-                self.cached_embeddings = pickle.load(f)
-            log("Loaded cached embeddings from file.")
-        else:
+        try:
+            with open(f'{embeddings_cache_path}_9.pkl', 'rb') as f:
+                self.ins_text_embeddings_9, self.kpt_text_embeddings_9 = pickle.load(f)
+            with open(f'{embeddings_cache_path}_68.pkl', 'rb') as f:
+                self.ins_text_embeddings_68, self.kpt_text_embeddings_68 = pickle.load(f)
+            print("Loaded cached embeddings from file.")
+        except Exception:
             raise ValueError("Could not load clip embeddings from file, please check your file path.")
 
     def load_animal_model(self, model_config_path, model_checkpoint_path, device):
@@ -45,16 +47,6 @@ class XPoseRunner(object):
         load_res = model.load_state_dict(clean_state_dict(checkpoint["model"]), strict=False)
         model.eval()
         return model
-
-    def text_encoding(self, instance_names, keypoints_names):
-        # Create unique key for caching
-        cache_key = (tuple(instance_names), tuple(keypoints_names))
-        if cache_key in self.cached_embeddings:
-            ins_text_embeddings, kpt_text_embeddings = self.cached_embeddings[cache_key]
-            log("Loaded embeddings from cache.")
-        else:
-            raise ValueError("Could not load embeddings from cache, please check your embedding file.")
-        return ins_text_embeddings.to(self.device), kpt_text_embeddings.to(self.device)
 
     def load_image(self, input_image):
         image_pil = input_image.convert("RGB")
@@ -68,7 +60,15 @@ class XPoseRunner(object):
 
     def get_unipose_output(self, image, instance_text_prompt, keypoint_text_prompt, box_threshold, IoU_threshold):
         instance_list = instance_text_prompt.split(',')
-        ins_text_embeddings, kpt_text_embeddings = self.text_encoding(instance_list, keypoint_text_prompt)
+        
+        if len(keypoint_text_prompt) == 9:
+            # torch.Size([1, 512]) torch.Size([9, 512])
+            ins_text_embeddings, kpt_text_embeddings = self.ins_text_embeddings_9, self.kpt_text_embeddings_9
+        elif len(keypoint_text_prompt) ==68:
+            # torch.Size([1, 512]) torch.Size([68, 512])
+            ins_text_embeddings, kpt_text_embeddings = self.ins_text_embeddings_68, self.kpt_text_embeddings_68
+        else:
+            raise ValueError("Invalid number of keypoint embeddings.")
         target = {
             "instance_text_prompt": instance_list,
             "keypoint_text_prompt": keypoint_text_prompt,
@@ -132,7 +132,7 @@ class XPoseRunner(object):
         self.timer.tic()
 
         img_rgb = Image.fromarray(np.zeros((512, 512, 3), dtype=np.uint8))
-        self.run(img_rgb, 'face', 'animal_face', box_threshold=0.0, IoU_threshold=0.0)
+        self.run(img_rgb, 'face', 'face', box_threshold=0.0, IoU_threshold=0.0)
 
         elapse = self.timer.toc()
         log(f'XPoseRunner warmup time: {elapse:.3f}s')
