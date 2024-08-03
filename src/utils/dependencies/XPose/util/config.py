@@ -81,6 +81,7 @@ class Config(object):
                 temp_config_file = tempfile.NamedTemporaryFile(
                     dir=temp_config_dir, suffix='.py')
                 temp_config_name = osp.basename(temp_config_file.name)
+                temp_config_file.close()
                 shutil.copyfile(filename,
                                 osp.join(temp_config_dir, temp_config_name))
                 temp_module_name = osp.splitext(temp_config_name)[0]
