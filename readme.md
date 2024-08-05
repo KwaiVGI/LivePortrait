@@ -64,9 +64,32 @@ cd LivePortrait
 # create env using conda
 conda create -n LivePortrait python=3.9
 conda activate LivePortrait
+```
+#### For Linux or Windows Users
 
-# for Linux and Windows users
+The [X-Pose](https://github.com/IDEA-Research/X-Pose?tab=readme-ov-file) dependency has **strict limitations** on the CUDA version. To check your current CUDA version, run the following command:
+```bash
+nvcc -V # example versions: 11.1, 11.8, 12.1, etc.
+```
+We provide installation commands for `torch` corresponding to three common CUDA versions. If your version is not listed, please visit [PyTorch Official Website](https://pytorch.org/get-started/previous-versions/) to find the appropriate installation command for your CUDA version.
+```bash
+# for Linux and Windows users (choose one):
+# for CUDA 11.1
+pip install torch==1.10.1+cu111 torchvision==0.11.2 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+# for CUDA 11.8
+pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu118
+# for CUDA 12.1
+pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+```
+Finally, install the remaining dependencies:
+```bash
 pip install -r requirements.txt
+```
+
+#### For Apple Silicon Users
+
+The [X-Pose](https://github.com/IDEA-Research/X-Pose?tab=readme-ov-file) dependency currently does not support macOS, so you can skip its installation:
+```bash
 # for macOS with Apple Silicon users
 pip install -r requirements_macOS.txt
 ```
@@ -216,7 +239,7 @@ Discover the invaluable resources contributed by our community to enhance your L
 And many more amazing contributions from our community!
 
 ## Acknowledgements 💐
-We would like to thank the contributors of [FOMM](https://github.com/AliaksandrSiarohin/first-order-model), [Open Facevid2vid](https://github.com/zhanglonghao1992/One-Shot_Free-View_Neural_Talking_Head_Synthesis), [SPADE](https://github.com/NVlabs/SPADE), [InsightFace](https://github.com/deepinsight/insightface) repositories, for their open research and contributions.
+We would like to thank the contributors of [FOMM](https://github.com/AliaksandrSiarohin/first-order-model), [Open Facevid2vid](https://github.com/zhanglonghao1992/One-Shot_Free-View_Neural_Talking_Head_Synthesis), [SPADE](https://github.com/NVlabs/SPADE), [InsightFace](https://github.com/deepinsight/insightface) and [X-Pose](https://github.com/IDEA-Research/X-Pose?tab=readme-ov-file) repositories, for their open research and contributions.
 
 ## Citation 💖
 If you find LivePortrait useful for your research, welcome to 🌟 this repo and cite our work using the following BibTeX:
