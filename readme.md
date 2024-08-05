@@ -71,7 +71,7 @@ The [X-Pose](https://github.com/IDEA-Research/X-Pose?tab=readme-ov-file) depende
 ```bash
 nvcc -V # example versions: 11.1, 11.8, 12.1, etc.
 ```
-We provide installation commands for `torch` corresponding to three common CUDA versions. If your version is not listed, please visit [PyTorch Official Website](https://pytorch.org/get-started/previous-versions/) to find the appropriate installation command for your CUDA version.
+We provide installation commands for `torch` corresponding to three common CUDA versions. If your version is not listed, please visit [PyTorch Official Website](https://pytorch.org/get-started/previous-versions/) to find the installation command for your CUDA version.
 ```bash
 # for Linux and Windows users (choose one):
 # for CUDA 11.1
