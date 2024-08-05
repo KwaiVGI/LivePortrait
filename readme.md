@@ -86,7 +86,7 @@ Finally, install the remaining dependencies:
 pip install -r requirements.txt
 ```
 
-#### For Apple Silicon Users
+#### For macOS with Apple Silicon Users
 
 The [X-Pose](https://github.com/IDEA-Research/X-Pose?tab=readme-ov-file) dependency currently does not support macOS, so you can skip its installation:
 ```bash
@@ -147,7 +147,7 @@ python inference.py -h
 ```
 
 #### Fast hands-on (animals) 🐱🐶
-Animals mode is ONLY tested on Linux with NVIDIA GPU.
+Animals mode is ONLY tested on Linux and Windows with NVIDIA GPU.
 
 You need to build an OP named `MultiScaleDeformableAttention` first, which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
 ```bash
