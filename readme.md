@@ -177,7 +177,7 @@ If the script runs successfully, you will get an output mp4 file named `animatio
 > - Minimize shoulder movement.
 > - Make sure the first frame of driving video is a frontal face with **neutral expression**.
 
-Below is a auto-cropping case by `--flag_crop_driving_video`:
+Below is an auto-cropping case by `--flag_crop_driving_video`:
 ```bash
 python inference.py -s assets/examples/source/s9.jpg -d assets/examples/driving/d13.mp4 --flag_crop_driving_video
 ```
