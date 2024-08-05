@@ -71,14 +71,15 @@ conda activate LivePortrait
 ```
 
 #### For Linux or Windows Users
+[X-Pose](https://github.com/IDEA-Research/X-Pose) requires your `torch` version to be compatible with the CUDA version.
 
-The [X-Pose](https://github.com/IDEA-Research/X-Pose) dependency has **strict limitations** on the CUDA version. To check your current CUDA version, run the following command:
+Firstly, check your current CUDA version by:
 ```bash
 nvcc -V # example versions: 11.1, 11.8, 12.1, etc.
 ```
-We provide installation commands for `torch` corresponding to three common CUDA versions. If your version is not listed, please visit [PyTorch Official Website](https://pytorch.org/get-started/previous-versions/) to find the installation command for your CUDA version.
+
+Then, install the corresponding torch version. Here are examples for different CUDA versions. Visit the [PyTorch Official Website](https://pytorch.org/get-started/previous-versions) for installation commands if your CUDA version is not listed:
 ```bash
-# for Linux and Windows users (choose one based on your CUDA version):
 # for CUDA 11.1
 pip install torch==1.10.1+cu111 torchvision==0.11.2 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
 # for CUDA 11.8
@@ -87,6 +88,7 @@ pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https
 pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121
 # ...
 ```
+
 Finally, install the remaining dependencies:
 ```bash
 pip install -r requirements.txt
