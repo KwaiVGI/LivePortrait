@@ -1,4 +1,7 @@
 -r requirements_base.txt
 
 --extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.3.0
+torchvision==0.18.0
+torchaudio==2.3.0
 onnxruntime-silicon==1.16.3
