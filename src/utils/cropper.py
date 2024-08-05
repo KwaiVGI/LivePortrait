@@ -48,15 +48,18 @@ class Cropper(object):
             device = "cpu"
             face_analysis_wrapper_provider = ["CPUExecutionProvider"]
         else:
-            if torch.backends.mps.is_available():
-                # Shape inference currently fails with CoreMLExecutionProvider
-                # for the retinaface model
-                device = "mps"
-                face_analysis_wrapper_provider = ["CPUExecutionProvider"]
-            else:
-                device = "cuda"
-                face_analysis_wrapper_provider = ["CUDAExecutionProvider"]
-
+            try:
+                if torch.backends.mps.is_available():
+                    # Shape inference currently fails with CoreMLExecutionProvider
+                    # for the retinaface model
+                    device = "mps"
+                    face_analysis_wrapper_provider = ["CPUExecutionProvider"]
+                else:
+                    device = "cuda"
+                    face_analysis_wrapper_provider = ["CUDAExecutionProvider"]
+            except:
+                    device = "cuda"
+                    face_analysis_wrapper_provider = ["CUDAExecutionProvider"]
         self.face_analysis_wrapper = FaceAnalysisDIY(
                     name="buffalo_l",
                     root=self.crop_cfg.insightface_root,
