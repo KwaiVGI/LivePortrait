@@ -97,10 +97,24 @@ video_lip_retargeting_slider = gr.Slider(minimum=0, maximum=0.8, step=0.01, labe
 head_pitch_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=1, label="relative pitch")
 head_yaw_slider = gr.Slider(minimum=-25, maximum=25, value=0, step=1, label="relative yaw")
 head_roll_slider = gr.Slider(minimum=-15.0, maximum=15.0, value=0, step=1, label="relative roll")
+mov_x = gr.Slider(minimum=-0.19, maximum=0.19, value=0.0, step=0.01, label="x-axis movement")
+mov_y = gr.Slider(minimum=-0.19, maximum=0.19, value=0.0, step=0.01, label="y-axis movement")
+mov_z = gr.Slider(minimum=0.9, maximum=1.2, value=1.0, step=0.01, label="z-axis movement")
+lip_variation_zero = gr.Slider(minimum=-0.09, maximum=0.09, value=0, step=0.01, label="pouting")
+lip_variation_one = gr.Slider(minimum=-20.0, maximum=15.0, value=0, step=0.01, label="lip compressed<->pursing")
+lip_variation_two = gr.Slider(minimum=0.0, maximum=15.0, value=0, step=0.01, label="grin😬")
+lip_variation_three = gr.Slider(minimum=-90.0, maximum=120.0, value=0, step=1.0, label="lip close <-> lip open")
+smile = gr.Slider(minimum=-0.3, maximum=1.3, value=0, step=0.01, label="smile")
+wink = gr.Slider(minimum=0, maximum=39, value=0, step=0.01, label="wink")
+eyebrow = gr.Slider(minimum=-30, maximum=30, value=0, step=0.01, label="eyebrow")
+eyeball_direction_x = gr.Slider(minimum=-30.0, maximum=30.0, value=0, step=0.01, label="eye gaze (horizontal)")
+eyeball_direction_y = gr.Slider(minimum=-63.0, maximum=63.0, value=0, step=0.01, label="eye gaze (vertical)")
 retargeting_input_image = gr.Image(type="filepath")
 retargeting_input_video = gr.Video()
 output_image = gr.Image(type="numpy")
 output_image_paste_back = gr.Image(type="numpy")
+retargeting_output_image = gr.Image(type="numpy")
+retargeting_output_image_paste_back = gr.Image(type="numpy")
 output_video = gr.Video(autoplay=False)
 output_video_paste_back = gr.Video(autoplay=False)
 output_video_i2v = gr.Video(autoplay=False)
@@ -250,15 +264,40 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     gr.Markdown(load_description("assets/gradio/gradio_description_retargeting.md"), visible=True)
     with gr.Row(visible=True):
         flag_do_crop_input_retargeting_image = gr.Checkbox(value=True, label="do crop (source)")
+        flag_stitching_retargeting_input = gr.Checkbox(value=True, label="stitching")
         retargeting_source_scale.render()
         eye_retargeting_slider.render()
         lip_retargeting_slider.render()
+    gr.Markdown(
+        """
+        <div style="text-align: center;">
+            <h5>Face movement sliders</h5>
+        </div>
+        """)
     with gr.Row(visible=True):
         head_pitch_slider.render()
         head_yaw_slider.render()
         head_roll_slider.render()
+        mov_x.render()
+        mov_y.render()
+        mov_z.render()
+    gr.Markdown(
+        """
+        <div style="text-align: center;">
+            <h5>Expression blendshape sliders</h5>
+        </div>
+        """)
     with gr.Row(visible=True):
-        process_button_retargeting = gr.Button("🚗 Retargeting Image", variant="primary")
+        lip_variation_zero.render()
+        lip_variation_one.render()
+        lip_variation_two.render()
+        lip_variation_three.render()
+        smile.render()
+    with gr.Row(visible=True):
+        wink.render()
+        eyebrow.render()
+        eyeball_direction_x.render()
+        eyeball_direction_y.render()
     with gr.Row(visible=True):
         with gr.Column():
             with gr.Accordion(open=True, label="Retargeting Image Input"):
@@ -279,21 +318,16 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                 )
         with gr.Column():
             with gr.Accordion(open=True, label="Retargeting Result"):
-                output_image.render()
+                retargeting_output_image.render()
         with gr.Column():
             with gr.Accordion(open=True, label="Paste-back Result"):
-                output_image_paste_back.render()
+                retargeting_output_image_paste_back.render()
     with gr.Row(visible=True):
         process_button_reset_retargeting = gr.ClearButton(
             [
-                eye_retargeting_slider,
-                lip_retargeting_slider,
-                head_pitch_slider,
-                head_yaw_slider,
-                head_roll_slider,
                 retargeting_input_image,
-                output_image,
-                output_image_paste_back
+                retargeting_output_image,
+                retargeting_output_image_paste_back
             ],
             value="🧹 Clear"
         )
@@ -306,7 +340,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         video_lip_retargeting_slider.render()
         driving_smooth_observation_variance_retargeting.render()
     with gr.Row(visible=True):
-        process_button_retargeting_video = gr.Button("🍄 Retargeting Video", variant="primary")
+        process_button_retargeting_video = gr.Button("🚗 Retargeting Video", variant="primary")
     with gr.Row(visible=True):
         with gr.Column():
             with gr.Accordion(open=True, label="Retargeting Video Input"):
@@ -369,17 +403,22 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
 
     retargeting_input_image.change(
         fn=gradio_pipeline.init_retargeting_image,
-        inputs=[retargeting_source_scale, retargeting_input_image],
+        inputs=[retargeting_source_scale, eye_retargeting_slider, lip_retargeting_slider, retargeting_input_image],
         outputs=[eye_retargeting_slider, lip_retargeting_slider]
     )
 
-    process_button_retargeting.click(
-        # fn=gradio_pipeline.execute_image,
-        fn=gpu_wrapped_execute_image_retargeting,
-        inputs=[eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, retargeting_input_image, retargeting_source_scale, flag_do_crop_input_retargeting_image],
-        outputs=[output_image, output_image_paste_back],
-        show_progress=True
-    )
+    sliders = [eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, mov_x, mov_y, mov_z, lip_variation_zero, lip_variation_one, lip_variation_two, lip_variation_three, smile, wink, eyebrow, eyeball_direction_x, eyeball_direction_y]
+    for slider in sliders:
+        # NOTE: gradio >= 4.0.0 may cause slow response
+        slider.change(
+            fn=gpu_wrapped_execute_image_retargeting,
+            inputs=[
+                eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, mov_x, mov_y, mov_z,
+                lip_variation_zero, lip_variation_one, lip_variation_two, lip_variation_three, smile, wink, eyebrow, eyeball_direction_x, eyeball_direction_y,
+                retargeting_input_image, retargeting_source_scale, flag_stitching_retargeting_input, flag_do_crop_input_retargeting_image
+                ],
+            outputs=[retargeting_output_image, retargeting_output_image_paste_back],
+        )
 
     process_button_retargeting_video.click(
         fn=gpu_wrapped_execute_video_retargeting,
