@@ -102,7 +102,7 @@ mov_y = gr.Slider(minimum=-0.19, maximum=0.19, value=0.0, step=0.01, label="y-ax
 mov_z = gr.Slider(minimum=0.9, maximum=1.2, value=1.0, step=0.01, label="z-axis movement")
 lip_variation_zero = gr.Slider(minimum=-0.09, maximum=0.09, value=0, step=0.01, label="pouting")
 lip_variation_one = gr.Slider(minimum=-20.0, maximum=15.0, value=0, step=0.01, label="lip compressed<->pursing")
-lip_variation_two = gr.Slider(minimum=0.0, maximum=15.0, value=0, step=0.01, label="grin😬")
+lip_variation_two = gr.Slider(minimum=0.0, maximum=15.0, value=0, step=0.01, label="grin")
 lip_variation_three = gr.Slider(minimum=-90.0, maximum=120.0, value=0, step=1.0, label="lip close <-> lip open")
 smile = gr.Slider(minimum=-0.3, maximum=1.3, value=0, step=0.01, label="smile")
 wink = gr.Slider(minimum=0, maximum=39, value=0, step=0.01, label="wink")
@@ -268,36 +268,31 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         retargeting_source_scale.render()
         eye_retargeting_slider.render()
         lip_retargeting_slider.render()
-    gr.Markdown(
-        """
-        <div style="text-align: center;">
-            <h5>Face movement sliders</h5>
-        </div>
-        """)
     with gr.Row(visible=True):
-        head_pitch_slider.render()
-        head_yaw_slider.render()
-        head_roll_slider.render()
-        mov_x.render()
-        mov_y.render()
-        mov_z.render()
-    gr.Markdown(
-        """
-        <div style="text-align: center;">
-            <h5>Expression blendshape sliders</h5>
-        </div>
-        """)
-    with gr.Row(visible=True):
-        lip_variation_zero.render()
-        lip_variation_one.render()
-        lip_variation_two.render()
-        lip_variation_three.render()
-        smile.render()
-    with gr.Row(visible=True):
-        wink.render()
-        eyebrow.render()
-        eyeball_direction_x.render()
-        eyeball_direction_y.render()
+        with gr.Column():
+            with gr.Accordion(open=True, label="Facial movement sliders"):
+                with gr.Row(visible=True):
+                    head_pitch_slider.render()
+                    head_yaw_slider.render()
+                    head_roll_slider.render()
+                with gr.Row(visible=True):
+                    mov_x.render()
+                    mov_y.render()
+                    mov_z.render()
+        with gr.Column():
+            with gr.Accordion(open=True, label="Facial expression sliders"):
+                with gr.Row(visible=True):
+                    lip_variation_zero.render()
+                    lip_variation_one.render()
+                    lip_variation_two.render()
+                with gr.Row(visible=True):
+                    lip_variation_three.render()
+                    smile.render()
+                    wink.render()
+                with gr.Row(visible=True):
+                    eyebrow.render()
+                    eyeball_direction_x.render()
+                    eyeball_direction_y.render()
     with gr.Row(visible=True):
         with gr.Column():
             with gr.Accordion(open=True, label="Retargeting Image Input"):
