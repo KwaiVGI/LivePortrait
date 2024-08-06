@@ -65,6 +65,10 @@ def gpu_wrapped_execute_image_retargeting(*args, **kwargs):
 def gpu_wrapped_execute_video_retargeting(*args, **kwargs):
     return gradio_pipeline.execute_video_retargeting(*args, **kwargs)
 
+def reset_sliders(*args, **kwargs):
+    return 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.5, True, True
+
+
 # assets
 title_md = "assets/gradio/gradio_title.md"
 example_portrait_dir = "assets/examples/source"
@@ -101,14 +105,14 @@ mov_x = gr.Slider(minimum=-0.19, maximum=0.19, value=0.0, step=0.01, label="x-ax
 mov_y = gr.Slider(minimum=-0.19, maximum=0.19, value=0.0, step=0.01, label="y-axis movement")
 mov_z = gr.Slider(minimum=0.9, maximum=1.2, value=1.0, step=0.01, label="z-axis movement")
 lip_variation_zero = gr.Slider(minimum=-0.09, maximum=0.09, value=0, step=0.01, label="pouting")
-lip_variation_one = gr.Slider(minimum=-20.0, maximum=15.0, value=0, step=0.01, label="lip compressed<->pursing")
-lip_variation_two = gr.Slider(minimum=0.0, maximum=15.0, value=0, step=0.01, label="grin")
-lip_variation_three = gr.Slider(minimum=-90.0, maximum=120.0, value=0, step=1.0, label="lip close <-> lip open")
-smile = gr.Slider(minimum=-0.3, maximum=1.3, value=0, step=0.01, label="smile")
-wink = gr.Slider(minimum=0, maximum=39, value=0, step=0.01, label="wink")
-eyebrow = gr.Slider(minimum=-30, maximum=30, value=0, step=0.01, label="eyebrow")
-eyeball_direction_x = gr.Slider(minimum=-30.0, maximum=30.0, value=0, step=0.01, label="eye gaze (horizontal)")
-eyeball_direction_y = gr.Slider(minimum=-63.0, maximum=63.0, value=0, step=0.01, label="eye gaze (vertical)")
+lip_variation_one = gr.Slider(minimum=-20.0, maximum=15.0, value=0, step=0.01, label="pursing 😐")
+lip_variation_two = gr.Slider(minimum=0.0, maximum=15.0, value=0, step=0.01, label="grin 😁")
+lip_variation_three = gr.Slider(minimum=-90.0, maximum=120.0, value=0, step=1.0, label="lip close <-> open")
+smile = gr.Slider(minimum=-0.3, maximum=1.3, value=0, step=0.01, label="smile 😄")
+wink = gr.Slider(minimum=0, maximum=39, value=0, step=0.01, label="wink 😉")
+eyebrow = gr.Slider(minimum=-30, maximum=30, value=0, step=0.01, label="eyebrow 🤨")
+eyeball_direction_x = gr.Slider(minimum=-30.0, maximum=30.0, value=0, step=0.01, label="eye gaze (horizontal) 👀")
+eyeball_direction_y = gr.Slider(minimum=-63.0, maximum=63.0, value=0, step=0.01, label="eye gaze (vertical) 🙄")
 retargeting_input_image = gr.Image(type="filepath")
 retargeting_input_video = gr.Video()
 output_image = gr.Image(type="numpy")
@@ -294,6 +298,17 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                     eyeball_direction_x.render()
                     eyeball_direction_y.render()
     with gr.Row(visible=True):
+        reset_button = gr.Button("🔄 Reset")
+        reset_button.click(
+            fn=reset_sliders,
+            inputs=None,
+            outputs=[
+                head_pitch_slider, head_yaw_slider, head_roll_slider, mov_x, mov_y, mov_z,
+                lip_variation_zero, lip_variation_one, lip_variation_two, lip_variation_three, smile, wink, eyebrow, eyeball_direction_x, eyeball_direction_y,
+                retargeting_source_scale, flag_stitching_retargeting_input, flag_do_crop_input_retargeting_image
+            ]
+        )
+    with gr.Row(visible=True):
         with gr.Column():
             with gr.Accordion(open=True, label="Retargeting Image Input"):
                 retargeting_input_image.render()
@@ -306,7 +321,8 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         [osp.join(example_portrait_dir, "s7.jpg")],
                         [osp.join(example_portrait_dir, "s12.jpg")],
                         [osp.join(example_portrait_dir, "s22.jpg")],
-                        [osp.join(example_portrait_dir, "s23.jpg")],
+                        # [osp.join(example_portrait_dir, "s23.jpg")],
+                        [osp.join(example_portrait_dir, "s42.jpg")],
                     ],
                     inputs=[retargeting_input_image],
                     cache_examples=False,
@@ -322,7 +338,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             [
                 retargeting_input_image,
                 retargeting_output_image,
-                retargeting_output_image_paste_back
+                retargeting_output_image_paste_back,
             ],
             value="🧹 Clear"
         )
