@@ -55,6 +55,7 @@ if args.gradio_temp_dir not in (None, ''):
     os.environ["GRADIO_TEMP_DIR"] = args.gradio_temp_dir
     os.makedirs(args.gradio_temp_dir, exist_ok=True)
 
+
 def gpu_wrapped_execute_video(*args, **kwargs):
     return gradio_pipeline.execute_video(*args, **kwargs)
 
@@ -62,8 +63,10 @@ def gpu_wrapped_execute_video(*args, **kwargs):
 def gpu_wrapped_execute_image_retargeting(*args, **kwargs):
     return gradio_pipeline.execute_image_retargeting(*args, **kwargs)
 
+
 def gpu_wrapped_execute_video_retargeting(*args, **kwargs):
     return gradio_pipeline.execute_video_retargeting(*args, **kwargs)
+
 
 def reset_sliders(*args, **kwargs):
     return 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.5, True, True
@@ -427,7 +430,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                 eye_retargeting_slider, lip_retargeting_slider, head_pitch_slider, head_yaw_slider, head_roll_slider, mov_x, mov_y, mov_z,
                 lip_variation_zero, lip_variation_one, lip_variation_two, lip_variation_three, smile, wink, eyebrow, eyeball_direction_x, eyeball_direction_y,
                 retargeting_input_image, retargeting_source_scale, flag_stitching_retargeting_input, flag_do_crop_input_retargeting_image
-                ],
+            ],
             outputs=[retargeting_output_image, retargeting_output_image_paste_back],
         )
 
