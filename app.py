@@ -180,20 +180,40 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                     vy_ratio = gr.Number(value=-0.125, label="source crop y", minimum=-0.5, maximum=0.5, step=0.01)
 
         with gr.Column():
-            with gr.Accordion(open=True, label="Driving Video"):
-                driving_video_input = gr.Video()
-                gr.Examples(
-                    examples=[
-                        [osp.join(example_video_dir, "d0.mp4")],
-                        [osp.join(example_video_dir, "d18.mp4")],
-                        [osp.join(example_video_dir, "d19.mp4")],
-                        [osp.join(example_video_dir, "d14.mp4")],
-                        [osp.join(example_video_dir, "d6.mp4")],
-                        [osp.join(example_video_dir, "d20.mp4")],
-                    ],
-                    inputs=[driving_video_input],
-                    cache_examples=False,
-                )
+            with gr.Tabs():
+                with gr.TabItem("🎞️ Driving Video") as v_tab_video:
+                    with gr.Accordion(open=True, label="Driving Video"):
+                        driving_video_input = gr.Video()
+                        gr.Examples(
+                            examples=[
+                                [osp.join(example_video_dir, "d0.mp4")],
+                                [osp.join(example_video_dir, "d18.mp4")],
+                                [osp.join(example_video_dir, "d19.mp4")],
+                                [osp.join(example_video_dir, "d14.mp4")],
+                                [osp.join(example_video_dir, "d6.mp4")],
+                                [osp.join(example_video_dir, "d20.mp4")],
+                            ],
+                            inputs=[driving_video_input],
+                            cache_examples=False,
+                        )
+                with gr.TabItem("📁 Driving Pickle") as v_tab_pickle:
+                    with gr.Accordion(open=True, label="Driving Pickle"):
+                        driving_video_pickle_input = gr.File(type="filepath", file_types=[".pkl"])
+                        gr.Examples(
+                            examples=[
+                                [osp.join(example_video_dir, "d1.pkl")],
+                                [osp.join(example_video_dir, "d2.pkl")],
+                                [osp.join(example_video_dir, "d5.pkl")],
+                                [osp.join(example_video_dir, "d7.pkl")],
+                                [osp.join(example_video_dir, "d8.pkl")],
+                            ],
+                            inputs=[driving_video_pickle_input],
+                            cache_examples=False,
+                        )
+
+                v_tab_selection = gr.Textbox(visible=False)
+                v_tab_pickle.select(lambda: "Pickle", None, v_tab_selection)
+                v_tab_video.select(lambda: "Video", None, v_tab_selection)
             # with gr.Accordion(open=False, label="Animation Instructions"):
                 # gr.Markdown(load_description("assets/gradio/gradio_description_animation.md"))
             with gr.Accordion(open=True, label="Cropping Options for Driving Video"):
@@ -225,7 +245,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             with gr.Accordion(open=True, label="The animated video"):
                 output_video_concat_i2v.render()
     with gr.Row():
-        process_button_reset = gr.ClearButton([source_image_input, source_video_input, driving_video_input, output_video_i2v, output_video_concat_i2v], value="🧹 Clear")
+        process_button_reset = gr.ClearButton([source_image_input, source_video_input, driving_video_pickle_input, driving_video_input, output_video_i2v, output_video_concat_i2v], value="🧹 Clear")
 
     with gr.Row():
         # Examples
@@ -393,6 +413,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
         inputs=[
             source_image_input,
             source_video_input,
+            driving_video_pickle_input,
             driving_video_input,
             flag_relative_input,
             flag_do_crop_input,
@@ -410,6 +431,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             vy_ratio_crop_driving_video,
             driving_smooth_observation_variance,
             tab_selection,
+            v_tab_selection,
         ],
         outputs=[output_video_i2v, output_video_concat_i2v],
         show_progress=True
