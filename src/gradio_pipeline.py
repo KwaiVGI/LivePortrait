@@ -166,7 +166,7 @@ class GradioPipeline(LivePortraitPipeline):
         tab_selection=None,
         v_tab_selection=None
     ):
-        """ for video-driven potrait animation or video editing
+        """ for video-driven portrait animation or video editing
         """
         if tab_selection == 'Image':
             input_source_path = input_source_image_path
@@ -175,18 +175,22 @@ class GradioPipeline(LivePortraitPipeline):
         else:
             input_source_path = input_source_image_path
 
-        if v_tab_selection == 'Pickle' and input_driving_video_pickle_path is not None:
-            input_driving_video_path = input_driving_video_pickle_path
+        if v_tab_selection == 'Video':
+            input_driving_path = input_driving_video_path
+        elif v_tab_selection == 'Pickle':
+            input_driving_path = input_driving_video_pickle_path
+        else:
+            input_driving_path = input_driving_video_path
 
-        if input_source_path is not None and input_driving_video_path is not None:
-            if v_tab_selection != 'Pickle' and osp.exists(input_driving_video_path) and is_square_video(input_driving_video_path) is False:
+        if input_source_path is not None and input_driving_path is not None:
+            if osp.exists(input_driving_path) and v_tab_selection == 'Video' and is_square_video(input_driving_path) is False:
                 flag_crop_driving_video_input = True
                 log("The driving video is not square, it will be cropped to square automatically.")
                 gr.Info("The driving video is not square, it will be cropped to square automatically.", duration=2)
 
             args_user = {
                 'source': input_source_path,
-                'driving': input_driving_video_path,
+                'driving': input_driving_path,
                 'flag_relative_motion': flag_relative_input,
                 'flag_do_crop': flag_do_crop_input,
                 'flag_pasteback': flag_remap_input,
