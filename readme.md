@@ -68,6 +68,8 @@ cd LivePortrait
 
 # create env using conda
 conda create -n LivePortrait python=3.9
+conda init
+# close current shell and open a new one
 conda activate LivePortrait
 ```
 
