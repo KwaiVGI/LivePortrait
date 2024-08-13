@@ -290,6 +290,7 @@ class LivePortraitPipeline(object):
                 R_d_0 = R_d_i
                 x_d_0_info = x_d_i_info
 
+            delta_new = x_s_info['exp'].clone()
             if inf_cfg.flag_relative_motion:
                 if flag_is_source_video:
                     if inf_cfg.flag_video_editing_head_rotation:
@@ -298,21 +299,18 @@ class LivePortraitPipeline(object):
                         R_new = R_s
                 else:
                     if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
-                        delta_new = x_s_info['exp']
+
                         R_new = (R_d_i @ R_d_0.permute(0, 2, 1)) @ R_s
                     else:
                         R_new = R_s
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "exp":
                     delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
                 elif inf_cfg.animation_region == "lip":
-                    delta_new = x_s_info['exp']
                     for lip_idx in [14, 17, 19, 20]:
-                        delta_new[:, lip_idx, :] += (x_d_i_info['exp'][:, lip_idx, :] - x_d_0_info['exp'][:, lip_idx, :])
+                        delta_new[:, lip_idx, :] =  x_d_exp_lst_smooth[i][lip_idx, :] if flag_is_source_video else (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, lip_idx, :]
                 elif inf_cfg.animation_region == "eyes":
-                    delta_new = x_s_info['exp']
                     for eyes_idx in [11, 13, 15, 16]:
-                        delta_new[:, eyes_idx, :] += (x_d_i_info['exp'][:, eyes_idx, :] - x_d_0_info['exp'][:, eyes_idx, :])
-
+                        delta_new[:, eyes_idx, :] = x_d_exp_lst_smooth[i][eyes_idx, :] if flag_is_source_video else (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, eyes_idx, :]
                 if inf_cfg.animation_region == "all":
                     scale_new = x_s_info['scale'] if flag_is_source_video else x_s_info['scale'] * (x_d_i_info['scale'] / x_d_0_info['scale'])
                 else:
@@ -329,20 +327,24 @@ class LivePortraitPipeline(object):
                         R_new = R_s
                 else:
                     if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
-                        delta_new = x_s_info['exp']
+
                         R_new = R_d_i
                     else:
                         R_new = R_s
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "exp":
-                    delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_d_i_info['exp']
+                    # delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_d_i_info['exp']
+                    for idx in [1,2,6,11,12,13,14,15,16,17,18,19,20]:
+                        delta_new[:, idx, :] = x_d_exp_lst_smooth[i][idx, :] if flag_is_source_video else x_d_i_info['exp'][:, idx, :]
+                    delta_new[:, 3:5, 1] = x_d_exp_lst_smooth[i][3:5, 1] if flag_is_source_video else x_d_i_info['exp'][:, 3:5, 1]
+                    delta_new[:, 5, 2] = x_d_exp_lst_smooth[i][5, 2] if flag_is_source_video else x_d_i_info['exp'][:, 5, 2]
+                    delta_new[:, 8, 2] = x_d_exp_lst_smooth[i][8, 2] if flag_is_source_video else x_d_i_info['exp'][:, 8, 2]
+                    delta_new[:, 9, 1:] = x_d_exp_lst_smooth[i][9, 1:] if flag_is_source_video else x_d_i_info['exp'][:, 9, 1:]
                 elif inf_cfg.animation_region == "lip":
-                    delta_new = x_s_info['exp']
                     for lip_idx in [14, 17, 19, 20]:
-                        delta_new[:, lip_idx, :] = x_d_i_info['exp'][:, lip_idx, :]
+                        delta_new[:, lip_idx, :] = x_d_exp_lst_smooth[i][lip_idx, :] if flag_is_source_video else x_d_i_info['exp'][:, lip_idx, :]
                 elif inf_cfg.animation_region == "eyes":
-                    delta_new = x_s_info['exp']
                     for eyes_idx in [11, 13, 15, 16]:
-                        delta_new[:, eyes_idx, :] = x_d_i_info['exp'][:, eyes_idx, :]
+                        delta_new[:, eyes_idx, :] = x_d_exp_lst_smooth[i][eyes_idx, :] if flag_is_source_video else x_d_i_info['exp'][:, eyes_idx, :]
                 scale_new = x_s_info['scale']
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
                     t_new = x_d_i_info['t']
