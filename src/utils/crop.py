@@ -136,6 +136,29 @@ def parse_pt2_from_pt5(pt5, use_lip=True):
         ], axis=0)
     return pt2
 
+def parse_pt2_from_pt9(pt9, use_lip=True):
+    '''
+    parsing the 2 points according to the 9 points, which cancels the roll
+    ['right eye right', 'right eye left', 'left eye right', 'left eye left', 'nose tip', 'lip right', 'lip left', 'upper lip', 'lower lip']
+    '''
+    if use_lip:
+        pt9 = np.stack([
+            (pt9[2] + pt9[3]) / 2, # left eye
+            (pt9[0] + pt9[1]) / 2, # right eye
+            pt9[4],
+            (pt9[5] + pt9[6] ) / 2 # lip
+        ], axis=0)
+        pt2 = np.stack([
+            (pt9[0] + pt9[1]) / 2, # eye
+            pt9[3] # lip
+        ], axis=0)
+    else:
+        pt2 = np.stack([
+            (pt9[2] + pt9[3]) / 2,
+            (pt9[0] + pt9[1]) / 2,
+        ], axis=0)
+
+    return pt2
 
 def parse_pt2_from_pt_x(pts, use_lip=True):
     if pts.shape[0] == 101:
@@ -151,6 +174,8 @@ def parse_pt2_from_pt_x(pts, use_lip=True):
     elif pts.shape[0] > 101:
         # take the first 101 points
         pt2 = parse_pt2_from_pt101(pts[:101], use_lip=use_lip)
+    elif pts.shape[0] == 9:
+        pt2 = parse_pt2_from_pt9(pts, use_lip=use_lip)
     else:
         raise Exception(f'Unknow shape: {pts.shape}')
 
@@ -281,11 +306,10 @@ def crop_image_by_bbox(img, bbox, lmk=None, dsize=512, angle=None, flag_rot=Fals
             dtype=DTYPE
         )
 
-    if flag_rot and angle is None:
-        print('angle is None, but flag_rotate is True', style="bold yellow")
+    # if flag_rot and angle is None:
+        # print('angle is None, but flag_rotate is True', style="bold yellow")
 
     img_crop = _transform_img(img, M_o2c, dsize=dsize, borderMode=kwargs.get('borderMode', None))
-
     lmk_crop = _transform_pts(lmk, M_o2c) if lmk is not None else None
 
     M_o2c = np.vstack([M_o2c, np.array([0, 0, 1], dtype=DTYPE)])
@@ -362,17 +386,6 @@ def crop_image(img, pts: np.ndarray, **kwargs):
         flag_do_rot=kwargs.get('flag_do_rot', True),
     )
 
-    if img is None:
-        M_INV_H = np.vstack([M_INV, np.array([0, 0, 1], dtype=DTYPE)])
-        M = np.linalg.inv(M_INV_H)
-        ret_dct = {
-            'M': M[:2, ...],  # from the original image to the cropped image
-            'M_o2c': M[:2, ...],  # from the cropped image to the original image
-            'img_crop': None,
-            'pt_crop': None,
-        }
-        return ret_dct
-
     img_crop = _transform_img(img, M_INV, dsize)  # origin to crop
     pt_crop = _transform_pts(pts, M_INV)
 
@@ -397,16 +410,14 @@ def average_bbox_lst(bbox_lst):
 def prepare_paste_back(mask_crop, crop_M_c2o, dsize):
     """prepare mask for later image paste back
     """
-    if mask_crop is None:
-        mask_crop = cv2.imread(make_abs_path('./resources/mask_template.png'), cv2.IMREAD_COLOR)
     mask_ori = _transform_img(mask_crop, crop_M_c2o, dsize)
     mask_ori = mask_ori.astype(np.float32) / 255.
     return mask_ori
 
-def paste_back(image_to_processed, crop_M_c2o, rgb_ori, mask_ori):
+def paste_back(img_crop, M_c2o, img_ori, mask_ori):
     """paste back the image
     """
-    dsize = (rgb_ori.shape[1], rgb_ori.shape[0])
-    result = _transform_img(image_to_processed, crop_M_c2o, dsize=dsize)
-    result = np.clip(mask_ori * result + (1 - mask_ori) * rgb_ori, 0, 255).astype(np.uint8)
+    dsize = (img_ori.shape[1], img_ori.shape[0])
+    result = _transform_img(img_crop, M_c2o, dsize=dsize)
+    result = np.clip(mask_ori * result + (1 - mask_ori) * img_ori, 0, 255).astype(np.uint8)
     return result

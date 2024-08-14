@@ -8,6 +8,10 @@ import os
 import os.path as osp
 import torch
 from collections import OrderedDict
+import numpy as np
+from scipy.spatial import ConvexHull # pylint: disable=E0401,E0611
+from typing import Union
+import cv2
 
 from ..modules.spade_generator import SPADEDecoder
 from ..modules.warping_network import WarpingNetwork
@@ -15,6 +19,27 @@ from ..modules.motion_extractor import MotionExtractor
 from ..modules.appearance_feature_extractor import AppearanceFeatureExtractor
 from ..modules.stitching_retargeting_network import StitchingRetargetingNetwork
 
+
+def tensor_to_numpy(data: Union[np.ndarray, torch.Tensor]) -> np.ndarray:
+    """transform torch.Tensor into numpy.ndarray"""
+    if isinstance(data, torch.Tensor):
+        return data.data.cpu().numpy()
+    return data
+
+def calc_motion_multiplier(
+    kp_source: Union[np.ndarray, torch.Tensor],
+    kp_driving_initial: Union[np.ndarray, torch.Tensor]
+) -> float:
+    """calculate motion_multiplier based on the source image and the first driving frame"""
+    kp_source_np = tensor_to_numpy(kp_source)
+    kp_driving_initial_np = tensor_to_numpy(kp_driving_initial)
+
+    source_area = ConvexHull(kp_source_np.squeeze(0)).volume
+    driving_area = ConvexHull(kp_driving_initial_np.squeeze(0)).volume
+    motion_multiplier = np.sqrt(source_area) / np.sqrt(driving_area)
+    # motion_multiplier = np.cbrt(source_area) / np.cbrt(driving_area)
+
+    return motion_multiplier
 
 def suffix(filename):
     """a.jpg -> jpg"""
@@ -35,6 +60,16 @@ def prefix(filename):
 def basename(filename):
     """a/b/c.jpg -> c"""
     return prefix(osp.basename(filename))
+
+
+def remove_suffix(filepath):
+    """a/b/c.jpg -> a/b/c"""
+    return osp.join(osp.dirname(filepath), basename(filepath))
+
+
+def is_image(file_path):
+    image_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp')
+    return file_path.lower().endswith(image_extensions)
 
 
 def is_video(file_path):
@@ -63,9 +98,9 @@ def squeeze_tensor_to_numpy(tensor):
     return out
 
 
-def dct2cuda(dct: dict, device_id: int):
+def dct2device(dct: dict, device):
     for key in dct:
-        dct[key] = torch.tensor(dct[key]).cuda(device_id)
+        dct[key] = torch.tensor(dct[key]).to(device)
     return dct
 
 
@@ -94,13 +129,13 @@ def load_model(ckpt_path, model_config, device, model_type):
     model_params = model_config['model_params'][f'{model_type}_params']
 
     if model_type == 'appearance_feature_extractor':
-        model = AppearanceFeatureExtractor(**model_params).cuda(device)
+        model = AppearanceFeatureExtractor(**model_params).to(device)
     elif model_type == 'motion_extractor':
-        model = MotionExtractor(**model_params).cuda(device)
+        model = MotionExtractor(**model_params).to(device)
     elif model_type == 'warping_module':
-        model = WarpingNetwork(**model_params).cuda(device)
+        model = WarpingNetwork(**model_params).to(device)
     elif model_type == 'spade_generator':
-        model = SPADEDecoder(**model_params).cuda(device)
+        model = SPADEDecoder(**model_params).to(device)
     elif model_type == 'stitching_retargeting_module':
         # Special handling for stitching and retargeting module
         config = model_config['model_params']['stitching_retargeting_module_params']
@@ -108,17 +143,17 @@ def load_model(ckpt_path, model_config, device, model_type):
 
         stitcher = StitchingRetargetingNetwork(**config.get('stitching'))
         stitcher.load_state_dict(remove_ddp_dumplicate_key(checkpoint['retarget_shoulder']))
-        stitcher = stitcher.cuda(device)
+        stitcher = stitcher.to(device)
         stitcher.eval()
 
         retargetor_lip = StitchingRetargetingNetwork(**config.get('lip'))
         retargetor_lip.load_state_dict(remove_ddp_dumplicate_key(checkpoint['retarget_mouth']))
-        retargetor_lip = retargetor_lip.cuda(device)
+        retargetor_lip = retargetor_lip.to(device)
         retargetor_lip.eval()
 
         retargetor_eye = StitchingRetargetingNetwork(**config.get('eye'))
         retargetor_eye.load_state_dict(remove_ddp_dumplicate_key(checkpoint['retarget_eye']))
-        retargetor_eye = retargetor_eye.cuda(device)
+        retargetor_eye = retargetor_eye.to(device)
         retargetor_eye.eval()
 
         return {
@@ -134,21 +169,28 @@ def load_model(ckpt_path, model_config, device, model_type):
     return model
 
 
-# get coefficients of Eqn. 7
-def calculate_transformation(config, s_kp_info, t_0_kp_info, t_i_kp_info, R_s, R_t_0, R_t_i):
-    if config.relative:
-        new_rotation = (R_t_i @ R_t_0.permute(0, 2, 1)) @ R_s
-        new_expression = s_kp_info['exp'] + (t_i_kp_info['exp'] - t_0_kp_info['exp'])
-    else:
-        new_rotation = R_t_i
-        new_expression = t_i_kp_info['exp']
-    new_translation = s_kp_info['t'] + (t_i_kp_info['t'] - t_0_kp_info['t'])
-    new_translation[..., 2].fill_(0)  # Keep the z-axis unchanged
-    new_scale = s_kp_info['scale'] * (t_i_kp_info['scale'] / t_0_kp_info['scale'])
-    return new_rotation, new_expression, new_translation, new_scale
-
-
 def load_description(fp):
     with open(fp, 'r', encoding='utf-8') as f:
         content = f.read()
     return content
+
+
+def is_square_video(video_path):
+    video = cv2.VideoCapture(video_path)
+
+    width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    video.release()
+    # if width != height:
+        # gr.Info(f"Uploaded video is not square, force do crop (driving) to be True")
+
+    return width == height
+
+def clean_state_dict(state_dict):
+    new_state_dict = OrderedDict()
+    for k, v in state_dict.items():
+        if k[:7] == 'module.':
+            k = k[7:]  # remove `module.`
+        new_state_dict[k] = v
+    return new_state_dict

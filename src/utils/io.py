@@ -1,11 +1,12 @@
 # coding: utf-8
 
-import os
-from glob import glob
 import os.path as osp
 import imageio
 import numpy as np
+import pickle
 import cv2; cv2.setNumThreads(0); cv2.ocl.setUseOpenCL(False)
+
+from .helper import mkdir, suffix
 
 
 def load_image_rgb(image_path: str):
@@ -15,23 +16,17 @@ def load_image_rgb(image_path: str):
     return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 
-def load_driving_info(driving_info):
-    driving_video_ori = []
+def load_video(video_info, n_frames=-1):
+    reader = imageio.get_reader(video_info, "ffmpeg")
 
-    def load_images_from_directory(directory):
-        image_paths = sorted(glob(osp.join(directory, '*.png')) + glob(osp.join(directory, '*.jpg')))
-        return [load_image_rgb(im_path) for im_path in image_paths]
+    ret = []
+    for idx, frame_rgb in enumerate(reader):
+        if n_frames > 0 and idx >= n_frames:
+            break
+        ret.append(frame_rgb)
 
-    def load_images_from_video(file_path):
-        reader = imageio.get_reader(file_path)
-        return [image for idx, image in enumerate(reader)]
-
-    if osp.isdir(driving_info):
-        driving_video_ori = load_images_from_directory(driving_info)
-    elif osp.isfile(driving_info):
-        driving_video_ori = load_images_from_video(driving_info)
-
-    return driving_video_ori
+    reader.close()
+    return ret
 
 
 def contiguous(obj):
@@ -40,7 +35,7 @@ def contiguous(obj):
     return obj
 
 
-def resize_to_limit(img: np.ndarray, max_dim=1920, n=2):
+def resize_to_limit(img: np.ndarray, max_dim=1920, division=2):
     """
     ajust the size of the image so that the maximum dimension does not exceed max_dim, and the width and the height of the image are multiples of n.
     :param img: the image to be processed.
@@ -61,9 +56,9 @@ def resize_to_limit(img: np.ndarray, max_dim=1920, n=2):
         img = cv2.resize(img, (new_w, new_h))
 
     # ensure that the image dimensions are multiples of n
-    n = max(n, 1)
-    new_h = img.shape[0] - (img.shape[0] % n)
-    new_w = img.shape[1] - (img.shape[1] % n)
+    division = max(division, 1)
+    new_h = img.shape[0] - (img.shape[0] % division)
+    new_w = img.shape[1] - (img.shape[1] % division)
 
     if new_h == 0 or new_w == 0:
         # when the width or height is less than n, no need to process
@@ -87,7 +82,7 @@ def load_img_online(obj, mode="bgr", **kwargs):
         img = obj
 
     # Resize image to satisfy constraints
-    img = resize_to_limit(img, max_dim=max_dim, n=n)
+    img = resize_to_limit(img, max_dim=max_dim, division=n)
 
     if mode.lower() == "bgr":
         return contiguous(img)
@@ -95,3 +90,28 @@ def load_img_online(obj, mode="bgr", **kwargs):
         return contiguous(img[..., ::-1])
     else:
         raise Exception(f"Unknown mode {mode}")
+
+
+def load(fp):
+    suffix_ = suffix(fp)
+
+    if suffix_ == "npy":
+        return np.load(fp)
+    elif suffix_ == "pkl":
+        return pickle.load(open(fp, "rb"))
+    else:
+        raise Exception(f"Unknown type: {suffix}")
+
+
+def dump(wfp, obj):
+    wd = osp.split(wfp)[0]
+    if wd != "" and not osp.exists(wd):
+        mkdir(wd)
+
+    _suffix = suffix(wfp)
+    if _suffix == "npy":
+        np.save(wfp, obj)
+    elif _suffix == "pkl":
+        pickle.dump(obj, open(wfp, "wb"))
+    else:
+        raise Exception("Unknown type: {}".format(_suffix))

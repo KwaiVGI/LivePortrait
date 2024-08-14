@@ -19,3 +19,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+The code of InsightFace is released under the MIT License.
+The models of InsightFace are for non-commercial research purposes only.
+
+If you want to use the LivePortrait project for commercial purposes, you 
+should remove and replace InsightFace’s detection models to fully comply with 
+the MIT license.
