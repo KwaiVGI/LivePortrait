@@ -146,16 +146,18 @@ class GradioPipeline(LivePortraitPipeline):
         self,
         input_source_image_path=None,
         input_source_video_path=None,
-        input_driving_video_pickle_path=None,
         input_driving_video_path=None,
+        input_driving_image_path=None,
+        input_driving_video_pickle_path=None,
         flag_relative_input=True,
         flag_do_crop_input=True,
         flag_remap_input=True,
         flag_stitching_input=True,
+        animation_region="all",
         driving_option_input="pose-friendly",
         driving_multiplier=1.0,
         flag_crop_driving_video_input=True,
-        flag_video_editing_head_rotation=False,
+        # flag_video_editing_head_rotation=False,
         scale=2.3,
         vx_ratio=0.0,
         vy_ratio=-0.125,
@@ -177,6 +179,8 @@ class GradioPipeline(LivePortraitPipeline):
 
         if v_tab_selection == 'Video':
             input_driving_path = input_driving_video_path
+        elif v_tab_selection == 'Image':
+            input_driving_path = input_driving_image_path
         elif v_tab_selection == 'Pickle':
             input_driving_path = input_driving_video_pickle_path
         else:
@@ -195,10 +199,10 @@ class GradioPipeline(LivePortraitPipeline):
                 'flag_do_crop': flag_do_crop_input,
                 'flag_pasteback': flag_remap_input,
                 'flag_stitching': flag_stitching_input,
+                'animation_region': animation_region,
                 'driving_option': driving_option_input,
                 'driving_multiplier': driving_multiplier,
                 'flag_crop_driving_video': flag_crop_driving_video_input,
-                'flag_video_editing_head_rotation': flag_video_editing_head_rotation,
                 'scale': scale,
                 'vx_ratio': vx_ratio,
                 'vy_ratio': vy_ratio,
@@ -211,10 +215,13 @@ class GradioPipeline(LivePortraitPipeline):
             self.args = update_args(self.args, args_user)
             self.live_portrait_wrapper.update_config(self.args.__dict__)
             self.cropper.update_config(self.args.__dict__)
-            # video driven animation
-            video_path, video_path_concat = self.execute(self.args)
+
+            output_path, output_path_concat = self.execute(self.args)
             gr.Info("Run successfully!", duration=2)
-            return video_path, video_path_concat
+            if output_path.endswith(".jpg"):
+                return None, None, output_path, output_path_concat
+            else:
+                return output_path, output_path_concat, None, None
         else:
             raise gr.Error("Please upload the source portrait or source video, and driving video 🤗🤗🤗", duration=5)
 

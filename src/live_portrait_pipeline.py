@@ -112,8 +112,12 @@ class LivePortraitPipeline(object):
             c_d_lip_lst = driving_template_dct['c_lip_lst'] if 'c_lip_lst' in driving_template_dct.keys() else driving_template_dct['c_d_lip_lst']
             driving_n_frames = driving_template_dct['n_frames']
             flag_is_driving_video = True if driving_n_frames > 1 else False
-            if flag_is_source_video:
+            # if flag_is_source_video and not flag_is_driving_video:
+            #     raise Exception(f"Animating a source video with a driving image is not supported!")
+            if flag_is_source_video and flag_is_driving_video:
                 n_frames = min(len(source_rgb_lst), driving_n_frames)  # minimum number as the number of the animated frames
+            elif flag_is_source_video and not flag_is_driving_video:
+                n_frames = len(source_rgb_lst)
             else:
                 n_frames = driving_n_frames
 
@@ -134,8 +138,10 @@ class LivePortraitPipeline(object):
                 driving_rgb_lst = load_video(args.driving)
             elif is_image(args.driving):
                 flag_is_driving_video = False
+                # if flag_is_source_video:
+                #     raise Exception(f"Animating a source video with a driving image is not supported!")
                 driving_img_rgb = load_image_rgb(args.driving)
-                output_fps = 1
+                output_fps = 25
                 log(f"Load driving image from {args.driving}")
                 driving_rgb_lst = [driving_img_rgb]
             else:
@@ -143,9 +149,11 @@ class LivePortraitPipeline(object):
             ######## make motion template ########
             log("Start making driving motion template...")
             driving_n_frames = len(driving_rgb_lst)
-            if flag_is_source_video:
+            if flag_is_source_video and flag_is_driving_video:
                 n_frames = min(len(source_rgb_lst), driving_n_frames)  # minimum number as the number of the animated frames
                 driving_rgb_lst = driving_rgb_lst[:n_frames]
+            elif flag_is_source_video and not flag_is_driving_video:
+                n_frames = len(source_rgb_lst)
             else:
                 n_frames = driving_n_frames
             if inf_cfg.flag_crop_driving_video or (not is_square_video(args.driving)):
@@ -207,15 +215,23 @@ class LivePortraitPipeline(object):
             if inf_cfg.flag_relative_motion:
                 x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + driving_template_dct['motion'][i]['exp'] - driving_template_dct['motion'][0]['exp'] for i in range(n_frames)]
                 x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
-                if inf_cfg.flag_video_editing_head_rotation:
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
                     x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
                     x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
             else:
-                x_d_exp_lst = [driving_template_dct['motion'][i]['exp'] for i in range(n_frames)]
-                x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
-                if inf_cfg.flag_video_editing_head_rotation:
-                    x_d_r_lst = [driving_template_dct['motion'][i][key_r] for i in range(n_frames)]
-                    x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                if flag_is_driving_video:
+                    x_d_exp_lst = [driving_template_dct['motion'][i]['exp'] for i in range(n_frames)]
+                    x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                else:
+                    x_d_exp_lst = [driving_template_dct['motion'][0]['exp']]
+                    x_d_exp_lst_smooth = [torch.tensor(x_d_exp[0], dtype=torch.float32, device=device) for x_d_exp in x_d_exp_lst]*n_frames
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    if flag_is_driving_video:
+                        x_d_r_lst = [driving_template_dct['motion'][i][key_r] for i in range(n_frames)]
+                        x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                    else:
+                        x_d_r_lst = [driving_template_dct['motion'][0][key_r]]
+                        x_d_r_lst_smooth = [torch.tensor(x_d_r[0], dtype=torch.float32, device=device) for x_d_r in x_d_r_lst]*n_frames
 
         else:  # if the input is a source image, process it only once
             if inf_cfg.flag_do_crop:
@@ -281,8 +297,10 @@ class LivePortraitPipeline(object):
 
                 if inf_cfg.flag_pasteback and inf_cfg.flag_do_crop and inf_cfg.flag_stitching:  # prepare for paste back
                     mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, source_M_c2o_lst[i], dsize=(source_rgb_lst[i].shape[1], source_rgb_lst[i].shape[0]))
-
-            x_d_i_info = driving_template_dct['motion'][i]
+            if flag_is_source_video and not flag_is_driving_video:
+                x_d_i_info = driving_template_dct['motion'][0]
+            else:
+                x_d_i_info = driving_template_dct['motion'][i]
             x_d_i_info = dct2device(x_d_i_info, device)
             R_d_i = x_d_i_info['R'] if 'R' in x_d_i_info.keys() else x_d_i_info['R_d']  # compatible with previous keys
 
@@ -292,24 +310,17 @@ class LivePortraitPipeline(object):
 
             delta_new = x_s_info['exp'].clone()
             if inf_cfg.flag_relative_motion:
-                if flag_is_source_video:
-                    if inf_cfg.flag_video_editing_head_rotation:
-                        R_new = x_d_r_lst_smooth[i]
-                    else:
-                        R_new = R_s
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    R_new = x_d_r_lst_smooth[i] if flag_is_source_video else (R_d_i @ R_d_0.permute(0, 2, 1)) @ R_s
                 else:
-                    if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
-
-                        R_new = (R_d_i @ R_d_0.permute(0, 2, 1)) @ R_s
-                    else:
-                        R_new = R_s
+                    R_new = R_s
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "exp":
                     delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
                 elif inf_cfg.animation_region == "lip":
-                    for lip_idx in [14, 17, 19, 20]:
+                    for lip_idx in [6, 12, 14, 17, 19, 20]:
                         delta_new[:, lip_idx, :] =  x_d_exp_lst_smooth[i][lip_idx, :] if flag_is_source_video else (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, lip_idx, :]
                 elif inf_cfg.animation_region == "eyes":
-                    for eyes_idx in [11, 13, 15, 16]:
+                    for eyes_idx in [11, 13, 15, 16, 18]:
                         delta_new[:, eyes_idx, :] = x_d_exp_lst_smooth[i][eyes_idx, :] if flag_is_source_video else (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, eyes_idx, :]
                 if inf_cfg.animation_region == "all":
                     scale_new = x_s_info['scale'] if flag_is_source_video else x_s_info['scale'] * (x_d_i_info['scale'] / x_d_0_info['scale'])
@@ -320,19 +331,11 @@ class LivePortraitPipeline(object):
                 else:
                     t_new = x_s_info['t']
             else:
-                if flag_is_source_video:
-                    if inf_cfg.flag_video_editing_head_rotation:
-                        R_new = x_d_r_lst_smooth[i]
-                    else:
-                        R_new = R_s
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    R_new = x_d_r_lst_smooth[i] if flag_is_source_video else R_d_i
                 else:
-                    if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
-
-                        R_new = R_d_i
-                    else:
-                        R_new = R_s
+                    R_new = R_s
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "exp":
-                    # delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_d_i_info['exp']
                     for idx in [1,2,6,11,12,13,14,15,16,17,18,19,20]:
                         delta_new[:, idx, :] = x_d_exp_lst_smooth[i][idx, :] if flag_is_source_video else x_d_i_info['exp'][:, idx, :]
                     delta_new[:, 3:5, 1] = x_d_exp_lst_smooth[i][3:5, 1] if flag_is_source_video else x_d_i_info['exp'][:, 3:5, 1]
@@ -340,10 +343,10 @@ class LivePortraitPipeline(object):
                     delta_new[:, 8, 2] = x_d_exp_lst_smooth[i][8, 2] if flag_is_source_video else x_d_i_info['exp'][:, 8, 2]
                     delta_new[:, 9, 1:] = x_d_exp_lst_smooth[i][9, 1:] if flag_is_source_video else x_d_i_info['exp'][:, 9, 1:]
                 elif inf_cfg.animation_region == "lip":
-                    for lip_idx in [14, 17, 19, 20]:
+                    for lip_idx in [6, 12, 14, 17, 19, 20]:
                         delta_new[:, lip_idx, :] = x_d_exp_lst_smooth[i][lip_idx, :] if flag_is_source_video else x_d_i_info['exp'][:, lip_idx, :]
                 elif inf_cfg.animation_region == "eyes":
-                    for eyes_idx in [11, 13, 15, 16]:
+                    for eyes_idx in [11, 13, 15, 16, 18]:
                         delta_new[:, eyes_idx, :] = x_d_exp_lst_smooth[i][eyes_idx, :] if flag_is_source_video else x_d_i_info['exp'][:, eyes_idx, :]
                 scale_new = x_s_info['scale']
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
@@ -421,12 +424,14 @@ class LivePortraitPipeline(object):
         wfp_concat = None
         ######### build the final concatenation result #########
         # driving frame | source frame | generation
-        if flag_is_source_video:
+        if flag_is_source_video and flag_is_driving_video:
             frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, img_crop_256x256_lst, I_p_lst)
+        elif flag_is_source_video and not flag_is_driving_video:
+            frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst*n_frames, img_crop_256x256_lst, I_p_lst)
         else:
             frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, [img_crop_256x256], I_p_lst)
 
-        if flag_is_driving_video:
+        if flag_is_driving_video or (flag_is_source_video and not flag_is_driving_video):
             flag_source_has_audio = flag_is_source_video and has_audio_stream(args.source)
             flag_driving_has_audio = (not flag_load_from_template) and has_audio_stream(args.driving)
 

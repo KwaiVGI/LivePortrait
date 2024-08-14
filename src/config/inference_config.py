@@ -34,7 +34,6 @@ class InferenceConfig(PrintableConfig):
     device_id: int = 0
     flag_normalize_lip: bool = True
     flag_source_video_eye_retargeting: bool = False
-    flag_video_editing_head_rotation: bool = False
     flag_eye_retargeting: bool = False
     flag_lip_retargeting: bool = False
     flag_stitching: bool = True
