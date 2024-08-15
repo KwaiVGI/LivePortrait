@@ -159,7 +159,7 @@ class LivePortraitPipeline(object):
             if inf_cfg.flag_crop_driving_video or (not is_square_video(args.driving)):
                 ret_d = self.cropper.crop_driving_video(driving_rgb_lst)
                 log(f'Driving video is cropped, {len(ret_d["frame_crop_lst"])} frames are processed.')
-                if len(ret_d["frame_crop_lst"]) is not n_frames:
+                if len(ret_d["frame_crop_lst"]) is not n_frames and flag_is_driving_video:
                     n_frames = min(n_frames, len(ret_d["frame_crop_lst"]))
                 driving_rgb_crop_lst, driving_lmk_crop_lst = ret_d['frame_crop_lst'], ret_d['lmk_crop_lst']
                 driving_rgb_crop_256x256_lst = [cv2.resize(_, (256, 256)) for _ in driving_rgb_crop_lst]
@@ -213,11 +213,19 @@ class LivePortraitPipeline(object):
 
             key_r = 'R' if 'R' in driving_template_dct['motion'][0].keys() else 'R_d'  # compatible with previous keys
             if inf_cfg.flag_relative_motion:
-                x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + driving_template_dct['motion'][i]['exp'] - driving_template_dct['motion'][0]['exp'] for i in range(n_frames)]
-                x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                if flag_is_driving_video:
+                    x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + driving_template_dct['motion'][i]['exp'] - driving_template_dct['motion'][0]['exp'] for i in range(n_frames)]
+                    x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                else:
+                    x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + (driving_template_dct['motion'][0]['exp'] - 0) for i in range(n_frames)] if driving_template_dct['motion'][0]['exp'].mean() > 0 else [source_template_dct['motion'][i]['exp'] + (driving_template_dct['motion'][0]['exp'] - inf_cfg.lip_array) for i in range(n_frames)]
+                    x_d_exp_lst_smooth = [torch.tensor(x_d_exp[0], dtype=torch.float32, device=device) for x_d_exp in x_d_exp_lst]
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
-                    x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
-                    x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                    if flag_is_driving_video:
+                        x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
+                        x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                    else:
+                        x_d_r_lst = [source_template_dct['motion'][i]['R'] for i in range(n_frames)]
+                        x_d_r_lst_smooth = [torch.tensor(x_d_r[0], dtype=torch.float32, device=device) for x_d_r in x_d_r_lst]
             else:
                 if flag_is_driving_video:
                     x_d_exp_lst = [driving_template_dct['motion'][i]['exp'] for i in range(n_frames)]
@@ -261,7 +269,10 @@ class LivePortraitPipeline(object):
                 mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, crop_info['M_c2o'], dsize=(source_rgb_lst[0].shape[1], source_rgb_lst[0].shape[0]))
 
         ######## animate ########
-        log(f"The animated video consists of {n_frames} frames.")
+        if flag_is_driving_video or (flag_is_source_video and not flag_is_driving_video):
+            log(f"The animated video consists of {n_frames} frames.")
+        else:
+            log(f"The output of image-driven portrait animation is an image.")
         for i in track(range(n_frames), description='🚀Animating...', total=n_frames):
             if flag_is_source_video:  # source video
                 x_s_info = source_template_dct['motion'][i]
@@ -306,7 +317,9 @@ class LivePortraitPipeline(object):
 
             if i == 0:  # cache the first frame
                 R_d_0 = R_d_i
-                x_d_0_info = x_d_i_info
+                x_d_0_info = x_d_i_info.copy()
+                # if not flag_is_driving_video:
+                #     x_d_0_info['exp'] = 0
 
             delta_new = x_s_info['exp'].clone()
             if inf_cfg.flag_relative_motion:
@@ -315,7 +328,20 @@ class LivePortraitPipeline(object):
                 else:
                     R_new = R_s
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "exp":
-                    delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
+                    # delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
+                    if flag_is_source_video:
+                        for idx in [1,2,6,11,12,13,14,15,16,17,18,19,20]:
+                            delta_new[:, idx, :] = x_d_exp_lst_smooth[i][idx, :]
+                        delta_new[:, 3:5, 1] = x_d_exp_lst_smooth[i][3:5, 1]
+                        delta_new[:, 5, 2] = x_d_exp_lst_smooth[i][5, 2]
+                        delta_new[:, 8, 2] = x_d_exp_lst_smooth[i][8, 2]
+                        delta_new[:, 9, 1:] = x_d_exp_lst_smooth[i][9, 1:]
+                    else:
+                        if flag_is_driving_video:
+                            delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
+                        else:
+                            delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - 0) if x_d_i_info['exp'].mean() > 0 else x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device))
+
                 elif inf_cfg.animation_region == "lip":
                     for lip_idx in [6, 12, 14, 17, 19, 20]:
                         delta_new[:, lip_idx, :] =  x_d_exp_lst_smooth[i][lip_idx, :] if flag_is_source_video else (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, lip_idx, :]
@@ -355,6 +381,7 @@ class LivePortraitPipeline(object):
                     t_new = x_s_info['t']
 
             t_new[..., 2].fill_(0)  # zero tz
+            # x_d_i_new = x_s_info['scale'] * (x_c_s @ R_s) + x_s_info['t']
             x_d_i_new = scale_new * (x_c_s @ R_new + delta_new) + t_new
 
             if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video and flag_is_driving_video and inf_cfg.animation_region == "all":

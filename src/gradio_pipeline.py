@@ -315,6 +315,7 @@ class GradioPipeline(LivePortraitPipeline):
             if input_lip_ratio != self.source_lip_ratio:
                 combined_lip_ratio_tensor = self.live_portrait_wrapper.calc_combined_lip_ratio([[float(input_lip_ratio)]], source_lmk_user)
                 lip_delta = self.live_portrait_wrapper.retarget_lip(x_s_user, combined_lip_ratio_tensor)
+                print(lip_delta)
             x_d_new = x_d_new + \
                     (eyes_delta if eyes_delta is not None else 0) + \
                     (lip_delta if lip_delta is not None else 0)

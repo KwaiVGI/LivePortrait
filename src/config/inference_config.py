@@ -6,10 +6,14 @@ config dataclass used for inference
 
 import cv2
 from numpy import ndarray
+import pickle as pkl
 from dataclasses import dataclass, field
 from typing import Literal, Tuple
 from .base_config import PrintableConfig, make_abs_path
 
+def load_lip_array():
+    with open(make_abs_path('../utils/resources/lip_array.pkl'), 'rb') as f:
+        return pkl.load(f)
 
 @dataclass(repr=False)  # use repr from PrintableConfig
 class InferenceConfig(PrintableConfig):
@@ -61,4 +65,5 @@ class InferenceConfig(PrintableConfig):
     output_fps: int = 25 # default output fps
 
     mask_crop: ndarray = field(default_factory=lambda: cv2.imread(make_abs_path('../utils/resources/mask_template.png'), cv2.IMREAD_COLOR))
+    lip_array: ndarray = field(default_factory=load_lip_array)
     size_gif: int = 256 # default gif size, TO IMPLEMENT
