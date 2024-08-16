@@ -319,8 +319,6 @@ class LivePortraitPipeline(object):
             if i == 0:  # cache the first frame
                 R_d_0 = R_d_i
                 x_d_0_info = x_d_i_info.copy()
-                # if not flag_is_driving_video:
-                #     x_d_0_info['exp'] = 0
 
             delta_new = x_s_info['exp'].clone()
             if inf_cfg.flag_relative_motion:
@@ -329,7 +327,6 @@ class LivePortraitPipeline(object):
                 else:
                     R_new = R_s
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "exp":
-                    # delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
                     if flag_is_source_video:
                         for idx in [1,2,6,11,12,13,14,15,16,17,18,19,20]:
                             delta_new[:, idx, :] = x_d_exp_lst_smooth[i][idx, :]
@@ -341,7 +338,6 @@ class LivePortraitPipeline(object):
                         if flag_is_driving_video:
                             delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
                         else:
-                            # delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - 0) if x_d_i_info['exp'].mean() > 0 else x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device))
                             delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device))
                 elif inf_cfg.animation_region == "lip":
                     for lip_idx in [6, 12, 14, 17, 19, 20]:
@@ -350,7 +346,6 @@ class LivePortraitPipeline(object):
                         elif flag_is_driving_video:
                             delta_new[:, lip_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, lip_idx, :]
                         else:
-                            # delta_new[:, lip_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - 0))[:, lip_idx, :] if x_d_i_info['exp'].mean() > 0 else (x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device)))[:, lip_idx, :]
                             delta_new[:, lip_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device)))[:, lip_idx, :]
                 elif inf_cfg.animation_region == "eyes":
                     for eyes_idx in [11, 13, 15, 16, 18]:
@@ -393,7 +388,6 @@ class LivePortraitPipeline(object):
                     t_new = x_s_info['t']
 
             t_new[..., 2].fill_(0)  # zero tz
-            # x_d_i_new = x_s_info['scale'] * (x_c_s @ R_s) + x_s_info['t']
             x_d_i_new = scale_new * (x_c_s @ R_new + delta_new) + t_new
 
             if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video and flag_is_driving_video:

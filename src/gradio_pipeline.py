@@ -533,7 +533,6 @@ class GradioPipeline(LivePortraitPipeline):
                 f_s_user_lst.append(f_s_user); x_s_user_lst.append(x_s_user); lip_delta_retargeting_lst.append(lip_delta_retargeting.cpu().numpy().astype(np.float32))
             lip_delta_retargeting_lst_smooth = smooth(lip_delta_retargeting_lst, lip_delta_retargeting_lst[0].shape, device, driving_smooth_observation_variance_retargeting)
 
-
             return f_s_user_lst, x_s_user_lst, source_lmk_crop_lst, source_M_c2o_lst, mask_ori_lst, source_rgb_lst, img_crop_256x256_lst, lip_delta_retargeting_lst_smooth, source_fps, n_frames
         else:
             # when press the clear button, go here
@@ -584,9 +583,7 @@ class GradioPipeline(LivePortraitPipeline):
                 I_s = I_s_lst[i]
                 f_s_user = self.live_portrait_wrapper.extract_feature_3d(I_s)
                 x_d_i_new = x_s_info['scale'] * (x_s_info['kp'] @ x_s_info['R'] + delta_new + torch.from_numpy(inference_cfg.lip_array).to(dtype=torch.float32, device=device)) + x_s_info['t']
-
                 f_s_user_lst.append(f_s_user); x_s_user_lst.append(x_s_user); x_d_i_new_lst.append(x_d_i_new)
-
             return f_s_user_lst, x_s_user_lst, x_d_i_new_lst, source_M_c2o_lst, mask_ori_lst, source_rgb_lst, img_crop_256x256_lst, source_fps, n_frames
         else:
             # when press the clear button, go here
