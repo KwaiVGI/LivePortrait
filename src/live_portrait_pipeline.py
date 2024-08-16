@@ -217,7 +217,8 @@ class LivePortraitPipeline(object):
                     x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + driving_template_dct['motion'][i]['exp'] - driving_template_dct['motion'][0]['exp'] for i in range(n_frames)]
                     x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
                 else:
-                    x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + (driving_template_dct['motion'][0]['exp'] - 0) for i in range(n_frames)] if driving_template_dct['motion'][0]['exp'].mean() > 0 else [source_template_dct['motion'][i]['exp'] + (driving_template_dct['motion'][0]['exp'] - inf_cfg.lip_array) for i in range(n_frames)]
+                    # x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + (driving_template_dct['motion'][0]['exp'] - 0) for i in range(n_frames)] if driving_template_dct['motion'][0]['exp'].mean() > 0 else [source_template_dct['motion'][i]['exp'] + (driving_template_dct['motion'][0]['exp'] - inf_cfg.lip_array) for i in range(n_frames)]
+                    x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + (driving_template_dct['motion'][0]['exp'] - inf_cfg.lip_array) for i in range(n_frames)]
                     x_d_exp_lst_smooth = [torch.tensor(x_d_exp[0], dtype=torch.float32, device=device) for x_d_exp in x_d_exp_lst]
                 if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
                     if flag_is_driving_video:
@@ -340,14 +341,25 @@ class LivePortraitPipeline(object):
                         if flag_is_driving_video:
                             delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
                         else:
-                            delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - 0) if x_d_i_info['exp'].mean() > 0 else x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device))
-
+                            # delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - 0) if x_d_i_info['exp'].mean() > 0 else x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device))
+                            delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device))
                 elif inf_cfg.animation_region == "lip":
                     for lip_idx in [6, 12, 14, 17, 19, 20]:
-                        delta_new[:, lip_idx, :] =  x_d_exp_lst_smooth[i][lip_idx, :] if flag_is_source_video else (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, lip_idx, :]
+                        if flag_is_source_video:
+                            delta_new[:, lip_idx, :] = x_d_exp_lst_smooth[i][lip_idx, :]
+                        elif flag_is_driving_video:
+                            delta_new[:, lip_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, lip_idx, :]
+                        else:
+                            # delta_new[:, lip_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - 0))[:, lip_idx, :] if x_d_i_info['exp'].mean() > 0 else (x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device)))[:, lip_idx, :]
+                            delta_new[:, lip_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device)))[:, lip_idx, :]
                 elif inf_cfg.animation_region == "eyes":
                     for eyes_idx in [11, 13, 15, 16, 18]:
-                        delta_new[:, eyes_idx, :] = x_d_exp_lst_smooth[i][eyes_idx, :] if flag_is_source_video else (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, eyes_idx, :]
+                        if flag_is_source_video:
+                            delta_new[:, eyes_idx, :] = x_d_exp_lst_smooth[i][eyes_idx, :]
+                        elif flag_is_driving_video:
+                            delta_new[:, eyes_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, eyes_idx, :]
+                        else:
+                            delta_new[:, eyes_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - 0))[:, eyes_idx, :]
                 if inf_cfg.animation_region == "all":
                     scale_new = x_s_info['scale'] if flag_is_source_video else x_s_info['scale'] * (x_d_i_info['scale'] / x_d_0_info['scale'])
                 else:
@@ -384,7 +396,7 @@ class LivePortraitPipeline(object):
             # x_d_i_new = x_s_info['scale'] * (x_c_s @ R_s) + x_s_info['t']
             x_d_i_new = scale_new * (x_c_s @ R_new + delta_new) + t_new
 
-            if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video and flag_is_driving_video and inf_cfg.animation_region == "all":
+            if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video and flag_is_driving_video:
                 if i == 0:
                     x_d_0_new = x_d_i_new
                     motion_multiplier = calc_motion_multiplier(x_s, x_d_0_new)
@@ -454,7 +466,10 @@ class LivePortraitPipeline(object):
         if flag_is_source_video and flag_is_driving_video:
             frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, img_crop_256x256_lst, I_p_lst)
         elif flag_is_source_video and not flag_is_driving_video:
-            frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst*n_frames, img_crop_256x256_lst, I_p_lst)
+            if flag_load_from_template:
+                frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, img_crop_256x256_lst, I_p_lst)
+            else:
+                frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst*n_frames, img_crop_256x256_lst, I_p_lst)
         else:
             frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, [img_crop_256x256], I_p_lst)
 
