@@ -431,7 +431,7 @@ class GradioPipeline(LivePortraitPipeline):
         else:
             inference_cfg = self.live_portrait_wrapper.inference_cfg
             f_s_user_lst, x_s_user_lst, x_d_i_new_lst, source_M_c2o_lst, mask_ori_lst, source_rgb_lst, img_crop_256x256_lst, source_fps, n_frames = \
-                self.prepare_video_lip_silence(input_video, device, driving_smooth_observation_variance_retargeting, flag_do_crop=flag_do_crop_input_retargeting_video)
+                self.prepare_video_lip_silence(input_video, device, flag_do_crop=flag_do_crop_input_retargeting_video)
 
             I_p_pstbk_lst = None
             if flag_do_crop_input_retargeting_video:
@@ -540,7 +540,7 @@ class GradioPipeline(LivePortraitPipeline):
             raise gr.Error("Please upload a source video as the retargeting input 🤗🤗🤗", duration=5)
 
     @torch.no_grad()
-    def prepare_video_lip_silence(self, input_video, device, driving_smooth_observation_variance_retargeting, flag_do_crop=True):
+    def prepare_video_lip_silence(self, input_video, device, flag_do_crop=True):
         """ for keeping lips in the source video silent
         """
         if input_video is not None:
