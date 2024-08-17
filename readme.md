@@ -19,8 +19,8 @@
 <div align='center'>
     <small><sup>†</sup> Corresponding author</small>
 </div>
-
 <br>
+
 <div align="center">
   <!-- <a href='LICENSE'><img src='https://img.shields.io/badge/license-MIT-yellow'></a> -->
   <a href='https://arxiv.org/pdf/2407.03168'><img src='https://img.shields.io/badge/arXiv-LivePortrait-red'></a>
