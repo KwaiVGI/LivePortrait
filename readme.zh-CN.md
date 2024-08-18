@@ -42,26 +42,26 @@
 ## 🔥 更新日志
 - **`2024/08/06`**：🎨 我们在Gradio界面支持**精确的人像编辑**, 受到[ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait)启发。详见[**这里**](./assets/docs/changelog/2024-08-06.md)。
 - **`2024/08/05`**：📦Windows用户现在可以下载[一键安装程序](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240806.zip)，支持**人类模式**和**动物模式**！详情见[**这里**](./assets/docs/changelog/2024-08-05.md)。
-- **`2024/08/02`**：😸 我们发布了**动物模型**版本，以及其他一些更新和改进。查看详情[**这里**](./assets/docs/changelog/2024-08-02.md)！ 
+- **`2024/08/02`**：😸 我们发布了**动物模型**版本，以及其他一些更新和改进。查看详情[**这里**](./assets/docs/changelog/2024-08-02.md)！
 - **`2024/07/25`**：📦 Windows用户现在可以从 [HuggingFace](https://huggingface.co/cleardusk/LivePortrait-Windows/tree/main) 或 [百度云](https://pan.baidu.com/s/1FWsWqKe0eNfXrwjEhhCqlw?pwd=86q2) 下载软件包。解压并双击`run_windows.bat`即可享受！
 - **`2024/07/24`**：🎨 我们在Gradio界面支持源人像的姿势编辑。我们还降低了默认检测阈值以增加召回率。[玩得开心](assets/docs/changelog/2024-07-24.md)！
-- **`2024/07/19`**：✨ 我们支持🎞️ **人像视频编辑（aka v2v）**！更多信息见[**这里**](assets/docs/changelog/2024-07-19.md)。 
+- **`2024/07/19`**：✨ 我们支持🎞️ **人像视频编辑（aka v2v）**！更多信息见[**这里**](assets/docs/changelog/2024-07-19.md)。
 - **`2024/07/17`**：🍎 我们支持macOS搭载Apple Silicon，修改来自 [jeethu](https://github.com/jeethu) 的PR [#143](https://github.com/KwaiVGI/LivePortrait/pull/143) 。
 - **`2024/07/10`**：💪我们支持音频和视频拼接、驱动视频自动裁剪以及制作模板以保护隐私。更多信息见[这里](assets/docs/changelog/2024-07-10.md)。
-- **`2024/07/09`**：🤗 我们发布了[HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait)，感谢HF团队和[Gradio](https://github.com/gradio-app/gradio)！ 
-- **`2024/07/04`**：😊 我们发布了初始版本的推理代码和模型。持续更新，敬请关注！ 
+- **`2024/07/09`**：🤗 我们发布了[HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait)，感谢HF团队和[Gradio](https://github.com/gradio-app/gradio)！
+- **`2024/07/04`**：😊 我们发布了初始版本的推理代码和模型。持续更新，敬请关注！
 - **`2024/07/04`**：🔥 我们发布了[主页](https://liveportrait.github.io)和在[arXiv](https://arxiv.org/pdf/2407.03168)上的技术报告。
 
 
 
 ## 介绍 📖
-此仓库名为***\*****LivePortrait*****\***，包含我们论文（[LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control](https://arxiv.org/pdf/2407.03168)）的官方PyTorch实现。 我们正在积极更新和改进此仓库。如果您发现任何错误或有建议，欢迎提出问题或提交合并请求💖。
+此仓库名为**LivePortrait**，包含我们论文（[LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control](https://arxiv.org/pdf/2407.03168)）的官方PyTorch实现。 我们正在积极更新和改进此仓库。如果您发现任何错误或有建议，欢迎提出问题或提交合并请求💖。
 
 ## 上手指南 🏁
 ### 1. 克隆代码和安装运行环境 🛠️
 
 > [!Note]
-> 确保您的系统已安装[`git`](https://git-scm.com/)、[`conda`](https://anaconda.org/anaconda/conda)和[`FFmpeg`](https://ffmpeg.org/download.html)。有关FFmpeg安装的详细信息，见[***\*****如何安装FFmpeg*****\***](assets/docs/how-to-install-ffmpeg.md)。
+> 确保您的系统已安装[`git`](https://git-scm.com/)、[`conda`](https://anaconda.org/anaconda/conda)和[`FFmpeg`](https://ffmpeg.org/download.html)。有关FFmpeg安装的详细信息，见[**如何安装FFmpeg**](assets/docs/how-to-install-ffmpeg.md)。
 
 ```bash
 git clone https://github.com/KwaiVGI/LivePortrait
@@ -170,7 +170,7 @@ python setup.py build install
 cd - # 等同于 cd ../../../../../../../
 ```
 
-然后执行吧
+然后执行
 ```bash
 python inference_animals.py -s assets/examples/source/s39.jpg -d assets/examples/driving/wink.pkl --driving_multiplier 1.75 --no_flag_stitching
 ```
@@ -178,6 +178,7 @@ python inference_animals.py -s assets/examples/source/s39.jpg -d assets/examples
 <p align="center">
   <img src="./assets/docs/inference-animals.gif" alt="image">
 </p>
+
 #### 驱动视频自动裁剪 📢📢📢
 
 > [!IMPORTANT]
@@ -277,3 +278,7 @@ python speed.py
 ## 联系方式 📧
 
 [**Jianzhu Guo (郭建珠)**](https://guojianzhu.com); **guojianzhu1994@gmail.com**；
+
+## 语言
+
+[English](./README.md) | 简体中文
