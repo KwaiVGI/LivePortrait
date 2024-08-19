@@ -28,7 +28,7 @@
   <a href='https://huggingface.co/spaces/KwaiVGI/liveportrait'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
   <a href="https://github.com/KwaiVGI/LivePortrait"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait"></a>
   <br>
-  <a href="../../readme.md"><strong>English</strong></a> | <strong>简体中文</strong>
+  <a href="./readme.md"><strong>English</strong></a> | <strong>简体中文</strong>
 </div>
 
 <br>
@@ -43,6 +43,7 @@
 
 
 ## 🔥 更新日志
+- **`2024/08/19`**: 🖼️ 我们支持了**图像驱动模式**和**区域控制**。详情请见[**这里**](./assets/docs/changelog/2024-08-19.md)。
 - **`2024/08/06`**：🎨 我们在Gradio界面支持**精确的人像编辑**, 受到[ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait)启发。详见[**这里**](./assets/docs/changelog/2024-08-06.md)。
 - **`2024/08/05`**：📦Windows用户现在可以下载[一键安装程序](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240806.zip)，支持**人类模式**和**动物模式**！详情见[**这里**](./assets/docs/changelog/2024-08-05.md)。
 - **`2024/08/02`**：😸 我们发布了**动物模型**版本，以及其他一些更新和改进。查看详情[**这里**](./assets/docs/changelog/2024-08-02.md)！
@@ -119,7 +120,7 @@ pip install -r requirements_macOS.txt
 huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
 ```
 
-若您不能访问嬉皮笑脸平台(Huggingface)，你可以访问其镜像网站[hf-mirror](https://hf-mirror.com/)进行下载操作：
+若您不能访问HuggingFace平台，你可以访问其镜像网站[hf-mirror](https://hf-mirror.com/)进行下载操作：
 
 ```bash
 # !pip install -U "huggingface_hub[cli]"
