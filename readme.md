@@ -30,7 +30,7 @@
 </div>
 <br>
 
-**English** | [**简体中文**](./readme.zh-CN.md) |
+**English** | [**简体中文**](./readme.zh-CN.md)
 
 <p align="center">
   <img src="./assets/docs/showcase2.gif" alt="showcase">
