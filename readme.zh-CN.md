@@ -31,6 +31,8 @@
 
 <br>
 
+[**English**](./README.md) | **简体中文**
+
 <p align="center">
   <img src="./assets/docs/showcase2.gif" alt="showcase">
   <br>
