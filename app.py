@@ -401,9 +401,10 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                     examples=[
                         [osp.join(example_portrait_dir, "s13.mp4")],
                         # [osp.join(example_portrait_dir, "s18.mp4")],
-                        [osp.join(example_portrait_dir, "s20.mp4")],
+                        # [osp.join(example_portrait_dir, "s20.mp4")],
                         [osp.join(example_portrait_dir, "s29.mp4")],
                         [osp.join(example_portrait_dir, "s32.mp4")],
+                        [osp.join(example_video_dir, "d3.mp4")],
                     ],
                     inputs=[retargeting_input_video],
                     cache_examples=False,

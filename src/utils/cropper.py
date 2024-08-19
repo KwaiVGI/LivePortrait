@@ -66,14 +66,14 @@ class Cropper(object):
                     providers=face_analysis_wrapper_provider,
                 )
         self.face_analysis_wrapper.prepare(ctx_id=device_id, det_size=(512, 512), det_thresh=self.crop_cfg.det_thresh)
-        # self.face_analysis_wrapper.warmup()
+        self.face_analysis_wrapper.warmup()
 
         self.human_landmark_runner = HumanLandmark(
             ckpt_path=self.crop_cfg.landmark_ckpt_path,
             onnx_provider=device,
             device_id=device_id,
         )
-        # self.human_landmark_runner.warmup()
+        self.human_landmark_runner.warmup()
 
         if self.image_type == "animal_face":
             from .animal_landmark_runner import XPoseRunner as AnimalLandmarkRunner
@@ -83,7 +83,7 @@ class Cropper(object):
                     embeddings_cache_path=self.crop_cfg.xpose_embedding_cache_path,
                     flag_use_half_precision=kwargs.get("flag_use_half_precision", True),
                 )
-            # self.animal_landmark_runner.warmup()
+            self.animal_landmark_runner.warmup()
 
     def update_config(self, user_args):
         for k, v in user_args.items():
