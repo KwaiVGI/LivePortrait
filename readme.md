@@ -28,7 +28,7 @@
   <a href='https://huggingface.co/spaces/KwaiVGI/liveportrait'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
   <a href="https://github.com/KwaiVGI/LivePortrait"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait"></a>
   <br>
-  <strong>English</strong> | <a href="./readme-zh-cn.md"><strong>简体中文</strong></a>
+  <strong>English</strong> | <a href="./readme_zh_cn.md"><strong>简体中文</strong></a>
 </div>
 <br>
 
