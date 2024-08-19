@@ -6,9 +6,6 @@
     <a href='https://github.com/KwaiVGI' target='_blank'><strong>刘晓强</strong></a><sup> 1</sup>&emsp;
     <a href='https://github.com/zzzweakman' target='_blank'><strong>钟智舟</strong></a><sup> 1,3</sup>&emsp;
     <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'><strong>张渊</strong></a><sup> 1</sup>&emsp;
-</div>
-
-<div align='center'>
     <a href='https://scholar.google.com/citations?user=P6MraaYAAAAJ' target='_blank'><strong>万鹏飞</strong></a><sup> 1</sup>&emsp;
     <a href='https://openreview.net/profile?id=~Di_ZHANG3' target='_blank'><strong>张迪</strong></a><sup> 1</sup>&emsp;
 </div>
