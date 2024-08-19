@@ -72,7 +72,6 @@ class LivePortraitPipeline(object):
             c_lip = c_lip_lst[i].astype(np.float32)
             template_dct['c_lip_lst'].append(c_lip)
 
-
         return template_dct
 
     def execute(self, args: ArgumentConfig):
