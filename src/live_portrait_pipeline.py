@@ -131,7 +131,6 @@ class LivePortraitPipeline(object):
                 # load from video file, AND make motion template
                 output_fps = int(get_fps(args.driving))
                 log(f"Load driving video from: {args.driving}, FPS is {output_fps}")
-
                 driving_rgb_lst = load_video(args.driving)
             elif is_image(args.driving):
                 flag_is_driving_video = False
@@ -173,6 +172,9 @@ class LivePortraitPipeline(object):
             log(f"Dump motion template to {wfp_template}")
         else:
             raise Exception(f"{args.driving} does not exist!")
+        if not flag_is_driving_video:
+            c_d_eyes_lst = c_d_eyes_lst*n_frames
+            c_d_lip_lst = c_d_lip_lst*n_frames
 
         ######## prepare for pasteback ########
         I_p_pstbk_lst = None
