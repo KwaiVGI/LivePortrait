@@ -100,7 +100,10 @@ def squeeze_tensor_to_numpy(tensor):
 
 def dct2device(dct: dict, device):
     for key in dct:
-        dct[key] = torch.tensor(dct[key]).to(device)
+        if isinstance(dct[key], torch.Tensor):
+            dct[key] = dct[key].to(device)
+        else:
+            dct[key] = torch.tensor(dct[key]).to(device)
     return dct
 
 

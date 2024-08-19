@@ -72,7 +72,6 @@ class LivePortraitPipeline(object):
             c_lip = c_lip_lst[i].astype(np.float32)
             template_dct['c_lip_lst'].append(c_lip)
 
-
         return template_dct
 
     def execute(self, args: ArgumentConfig):
@@ -111,8 +110,11 @@ class LivePortraitPipeline(object):
             c_d_eyes_lst = driving_template_dct['c_eyes_lst'] if 'c_eyes_lst' in driving_template_dct.keys() else driving_template_dct['c_d_eyes_lst'] # compatible with previous keys
             c_d_lip_lst = driving_template_dct['c_lip_lst'] if 'c_lip_lst' in driving_template_dct.keys() else driving_template_dct['c_d_lip_lst']
             driving_n_frames = driving_template_dct['n_frames']
-            if flag_is_source_video:
+            flag_is_driving_video = True if driving_n_frames > 1 else False
+            if flag_is_source_video and flag_is_driving_video:
                 n_frames = min(len(source_rgb_lst), driving_n_frames)  # minimum number as the number of the animated frames
+            elif flag_is_source_video and not flag_is_driving_video:
+                n_frames = len(source_rgb_lst)
             else:
                 n_frames = driving_n_frames
 
@@ -123,25 +125,35 @@ class LivePortraitPipeline(object):
             if args.flag_crop_driving_video:
                 log("Warning: flag_crop_driving_video is True, but the driving info is a template, so it is ignored.")
 
-        elif osp.exists(args.driving) and is_video(args.driving):
-            # load from video file, AND make motion template
-            output_fps = int(get_fps(args.driving))
-            log(f"Load driving video from: {args.driving}, FPS is {output_fps}")
-
-            driving_rgb_lst = load_video(args.driving)
-            driving_n_frames = len(driving_rgb_lst)
-
+        elif osp.exists(args.driving):
+            if is_video(args.driving):
+                flag_is_driving_video = True
+                # load from video file, AND make motion template
+                output_fps = int(get_fps(args.driving))
+                log(f"Load driving video from: {args.driving}, FPS is {output_fps}")
+                driving_rgb_lst = load_video(args.driving)
+            elif is_image(args.driving):
+                flag_is_driving_video = False
+                driving_img_rgb = load_image_rgb(args.driving)
+                output_fps = 25
+                log(f"Load driving image from {args.driving}")
+                driving_rgb_lst = [driving_img_rgb]
+            else:
+                raise Exception(f"{args.driving} is not a supported type!")
             ######## make motion template ########
             log("Start making driving motion template...")
-            if flag_is_source_video:
+            driving_n_frames = len(driving_rgb_lst)
+            if flag_is_source_video and flag_is_driving_video:
                 n_frames = min(len(source_rgb_lst), driving_n_frames)  # minimum number as the number of the animated frames
                 driving_rgb_lst = driving_rgb_lst[:n_frames]
+            elif flag_is_source_video and not flag_is_driving_video:
+                n_frames = len(source_rgb_lst)
             else:
                 n_frames = driving_n_frames
             if inf_cfg.flag_crop_driving_video or (not is_square_video(args.driving)):
                 ret_d = self.cropper.crop_driving_video(driving_rgb_lst)
                 log(f'Driving video is cropped, {len(ret_d["frame_crop_lst"])} frames are processed.')
-                if len(ret_d["frame_crop_lst"]) is not n_frames:
+                if len(ret_d["frame_crop_lst"]) is not n_frames and flag_is_driving_video:
                     n_frames = min(n_frames, len(ret_d["frame_crop_lst"]))
                 driving_rgb_crop_lst, driving_lmk_crop_lst = ret_d['frame_crop_lst'], ret_d['lmk_crop_lst']
                 driving_rgb_crop_256x256_lst = [cv2.resize(_, (256, 256)) for _ in driving_rgb_crop_lst]
@@ -158,9 +170,11 @@ class LivePortraitPipeline(object):
             wfp_template = remove_suffix(args.driving) + '.pkl'
             dump(wfp_template, driving_template_dct)
             log(f"Dump motion template to {wfp_template}")
-
         else:
-            raise Exception(f"{args.driving} not exists or unsupported driving info types!")
+            raise Exception(f"{args.driving} does not exist!")
+        if not flag_is_driving_video:
+            c_d_eyes_lst = c_d_eyes_lst*n_frames
+            c_d_lip_lst = c_d_lip_lst*n_frames
 
         ######## prepare for pasteback ########
         I_p_pstbk_lst = None
@@ -196,17 +210,33 @@ class LivePortraitPipeline(object):
 
             key_r = 'R' if 'R' in driving_template_dct['motion'][0].keys() else 'R_d'  # compatible with previous keys
             if inf_cfg.flag_relative_motion:
-                x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + driving_template_dct['motion'][i]['exp'] - driving_template_dct['motion'][0]['exp'] for i in range(n_frames)]
-                x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
-                if inf_cfg.flag_video_editing_head_rotation:
-                    x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
-                    x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                if flag_is_driving_video:
+                    x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + driving_template_dct['motion'][i]['exp'] - driving_template_dct['motion'][0]['exp'] for i in range(n_frames)]
+                    x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                else:
+                    x_d_exp_lst = [source_template_dct['motion'][i]['exp'] + (driving_template_dct['motion'][0]['exp'] - inf_cfg.lip_array) for i in range(n_frames)]
+                    x_d_exp_lst_smooth = [torch.tensor(x_d_exp[0], dtype=torch.float32, device=device) for x_d_exp in x_d_exp_lst]
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    if flag_is_driving_video:
+                        x_d_r_lst = [(np.dot(driving_template_dct['motion'][i][key_r], driving_template_dct['motion'][0][key_r].transpose(0, 2, 1))) @ source_template_dct['motion'][i]['R'] for i in range(n_frames)]
+                        x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                    else:
+                        x_d_r_lst = [source_template_dct['motion'][i]['R'] for i in range(n_frames)]
+                        x_d_r_lst_smooth = [torch.tensor(x_d_r[0], dtype=torch.float32, device=device) for x_d_r in x_d_r_lst]
             else:
-                x_d_exp_lst = [driving_template_dct['motion'][i]['exp'] for i in range(n_frames)]
-                x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
-                if inf_cfg.flag_video_editing_head_rotation:
-                    x_d_r_lst = [driving_template_dct['motion'][i][key_r] for i in range(n_frames)]
-                    x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                if flag_is_driving_video:
+                    x_d_exp_lst = [driving_template_dct['motion'][i]['exp'] for i in range(n_frames)]
+                    x_d_exp_lst_smooth = smooth(x_d_exp_lst, source_template_dct['motion'][0]['exp'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                else:
+                    x_d_exp_lst = [driving_template_dct['motion'][0]['exp']]
+                    x_d_exp_lst_smooth = [torch.tensor(x_d_exp[0], dtype=torch.float32, device=device) for x_d_exp in x_d_exp_lst]*n_frames
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    if flag_is_driving_video:
+                        x_d_r_lst = [driving_template_dct['motion'][i][key_r] for i in range(n_frames)]
+                        x_d_r_lst_smooth = smooth(x_d_r_lst, source_template_dct['motion'][0]['R'].shape, device, inf_cfg.driving_smooth_observation_variance)
+                    else:
+                        x_d_r_lst = [driving_template_dct['motion'][0][key_r]]
+                        x_d_r_lst_smooth = [torch.tensor(x_d_r[0], dtype=torch.float32, device=device) for x_d_r in x_d_r_lst]*n_frames
 
         else:  # if the input is a source image, process it only once
             if inf_cfg.flag_do_crop:
@@ -236,7 +266,10 @@ class LivePortraitPipeline(object):
                 mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, crop_info['M_c2o'], dsize=(source_rgb_lst[0].shape[1], source_rgb_lst[0].shape[0]))
 
         ######## animate ########
-        log(f"The animated video consists of {n_frames} frames.")
+        if flag_is_driving_video or (flag_is_source_video and not flag_is_driving_video):
+            log(f"The animated video consists of {n_frames} frames.")
+        else:
+            log(f"The output of image-driven portrait animation is an image.")
         for i in track(range(n_frames), description='🚀Animating...', total=n_frames):
             if flag_is_source_video:  # source video
                 x_s_info = source_template_dct['motion'][i]
@@ -272,43 +305,88 @@ class LivePortraitPipeline(object):
 
                 if inf_cfg.flag_pasteback and inf_cfg.flag_do_crop and inf_cfg.flag_stitching:  # prepare for paste back
                     mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, source_M_c2o_lst[i], dsize=(source_rgb_lst[i].shape[1], source_rgb_lst[i].shape[0]))
-
-            x_d_i_info = driving_template_dct['motion'][i]
+            if flag_is_source_video and not flag_is_driving_video:
+                x_d_i_info = driving_template_dct['motion'][0]
+            else:
+                x_d_i_info = driving_template_dct['motion'][i]
             x_d_i_info = dct2device(x_d_i_info, device)
             R_d_i = x_d_i_info['R'] if 'R' in x_d_i_info.keys() else x_d_i_info['R_d']  # compatible with previous keys
 
             if i == 0:  # cache the first frame
                 R_d_0 = R_d_i
-                x_d_0_info = x_d_i_info
+                x_d_0_info = x_d_i_info.copy()
 
+            delta_new = x_s_info['exp'].clone()
             if inf_cfg.flag_relative_motion:
-                if flag_is_source_video:
-                    if inf_cfg.flag_video_editing_head_rotation:
-                        R_new = x_d_r_lst_smooth[i]
-                    else:
-                        R_new = R_s
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    R_new = x_d_r_lst_smooth[i] if flag_is_source_video else (R_d_i @ R_d_0.permute(0, 2, 1)) @ R_s
                 else:
-                    R_new = (R_d_i @ R_d_0.permute(0, 2, 1)) @ R_s
-
-                delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
-                scale_new = x_s_info['scale'] if flag_is_source_video else x_s_info['scale'] * (x_d_i_info['scale'] / x_d_0_info['scale'])
-                t_new = x_s_info['t'] if flag_is_source_video else x_s_info['t'] + (x_d_i_info['t'] - x_d_0_info['t'])
+                    R_new = R_s
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "exp":
+                    if flag_is_source_video:
+                        for idx in [1,2,6,11,12,13,14,15,16,17,18,19,20]:
+                            delta_new[:, idx, :] = x_d_exp_lst_smooth[i][idx, :]
+                        delta_new[:, 3:5, 1] = x_d_exp_lst_smooth[i][3:5, 1]
+                        delta_new[:, 5, 2] = x_d_exp_lst_smooth[i][5, 2]
+                        delta_new[:, 8, 2] = x_d_exp_lst_smooth[i][8, 2]
+                        delta_new[:, 9, 1:] = x_d_exp_lst_smooth[i][9, 1:]
+                    else:
+                        if flag_is_driving_video:
+                            delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp'])
+                        else:
+                            delta_new = x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device))
+                elif inf_cfg.animation_region == "lip":
+                    for lip_idx in [6, 12, 14, 17, 19, 20]:
+                        if flag_is_source_video:
+                            delta_new[:, lip_idx, :] = x_d_exp_lst_smooth[i][lip_idx, :]
+                        elif flag_is_driving_video:
+                            delta_new[:, lip_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, lip_idx, :]
+                        else:
+                            delta_new[:, lip_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - torch.from_numpy(inf_cfg.lip_array).to(dtype=torch.float32, device=device)))[:, lip_idx, :]
+                elif inf_cfg.animation_region == "eyes":
+                    for eyes_idx in [11, 13, 15, 16, 18]:
+                        if flag_is_source_video:
+                            delta_new[:, eyes_idx, :] = x_d_exp_lst_smooth[i][eyes_idx, :]
+                        elif flag_is_driving_video:
+                            delta_new[:, eyes_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - x_d_0_info['exp']))[:, eyes_idx, :]
+                        else:
+                            delta_new[:, eyes_idx, :] = (x_s_info['exp'] + (x_d_i_info['exp'] - 0))[:, eyes_idx, :]
+                if inf_cfg.animation_region == "all":
+                    scale_new = x_s_info['scale'] if flag_is_source_video else x_s_info['scale'] * (x_d_i_info['scale'] / x_d_0_info['scale'])
+                else:
+                    scale_new = x_s_info['scale']
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    t_new = x_s_info['t'] if flag_is_source_video else x_s_info['t'] + (x_d_i_info['t'] - x_d_0_info['t'])
+                else:
+                    t_new = x_s_info['t']
             else:
-                if flag_is_source_video:
-                    if inf_cfg.flag_video_editing_head_rotation:
-                        R_new = x_d_r_lst_smooth[i]
-                    else:
-                        R_new = R_s
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    R_new = x_d_r_lst_smooth[i] if flag_is_source_video else R_d_i
                 else:
-                    R_new = R_d_i
-                delta_new = x_d_exp_lst_smooth[i] if flag_is_source_video else x_d_i_info['exp']
+                    R_new = R_s
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "exp":
+                    for idx in [1,2,6,11,12,13,14,15,16,17,18,19,20]:
+                        delta_new[:, idx, :] = x_d_exp_lst_smooth[i][idx, :] if flag_is_source_video else x_d_i_info['exp'][:, idx, :]
+                    delta_new[:, 3:5, 1] = x_d_exp_lst_smooth[i][3:5, 1] if flag_is_source_video else x_d_i_info['exp'][:, 3:5, 1]
+                    delta_new[:, 5, 2] = x_d_exp_lst_smooth[i][5, 2] if flag_is_source_video else x_d_i_info['exp'][:, 5, 2]
+                    delta_new[:, 8, 2] = x_d_exp_lst_smooth[i][8, 2] if flag_is_source_video else x_d_i_info['exp'][:, 8, 2]
+                    delta_new[:, 9, 1:] = x_d_exp_lst_smooth[i][9, 1:] if flag_is_source_video else x_d_i_info['exp'][:, 9, 1:]
+                elif inf_cfg.animation_region == "lip":
+                    for lip_idx in [6, 12, 14, 17, 19, 20]:
+                        delta_new[:, lip_idx, :] = x_d_exp_lst_smooth[i][lip_idx, :] if flag_is_source_video else x_d_i_info['exp'][:, lip_idx, :]
+                elif inf_cfg.animation_region == "eyes":
+                    for eyes_idx in [11, 13, 15, 16, 18]:
+                        delta_new[:, eyes_idx, :] = x_d_exp_lst_smooth[i][eyes_idx, :] if flag_is_source_video else x_d_i_info['exp'][:, eyes_idx, :]
                 scale_new = x_s_info['scale']
-                t_new = x_d_i_info['t']
+                if inf_cfg.animation_region == "all" or inf_cfg.animation_region == "pose":
+                    t_new = x_d_i_info['t']
+                else:
+                    t_new = x_s_info['t']
 
             t_new[..., 2].fill_(0)  # zero tz
             x_d_i_new = scale_new * (x_c_s @ R_new + delta_new) + t_new
 
-            if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video:
+            if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video and flag_is_driving_video:
                 if i == 0:
                     x_d_0_new = x_d_i_new
                     motion_multiplier = calc_motion_multiplier(x_s, x_d_0_new)
@@ -373,50 +451,68 @@ class LivePortraitPipeline(object):
 
         mkdir(args.output_dir)
         wfp_concat = None
-        flag_source_has_audio = flag_is_source_video and has_audio_stream(args.source)
-        flag_driving_has_audio = (not flag_load_from_template) and has_audio_stream(args.driving)
-
         ######### build the final concatenation result #########
-        # driving frame | source frame | generation, or source frame | generation
-        if flag_is_source_video:
+        # driving frame | source frame | generation
+        if flag_is_source_video and flag_is_driving_video:
             frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, img_crop_256x256_lst, I_p_lst)
+        elif flag_is_source_video and not flag_is_driving_video:
+            if flag_load_from_template:
+                frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, img_crop_256x256_lst, I_p_lst)
+            else:
+                frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst*n_frames, img_crop_256x256_lst, I_p_lst)
         else:
             frames_concatenated = concat_frames(driving_rgb_crop_256x256_lst, [img_crop_256x256], I_p_lst)
-        wfp_concat = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_concat.mp4')
 
-        # NOTE: update output fps
-        output_fps = source_fps if flag_is_source_video else output_fps
-        images2video(frames_concatenated, wfp=wfp_concat, fps=output_fps)
+        if flag_is_driving_video or (flag_is_source_video and not flag_is_driving_video):
+            flag_source_has_audio = flag_is_source_video and has_audio_stream(args.source)
+            flag_driving_has_audio = (not flag_load_from_template) and has_audio_stream(args.driving)
 
-        if flag_source_has_audio or flag_driving_has_audio:
-            # final result with concatenation
-            wfp_concat_with_audio = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_concat_with_audio.mp4')
-            audio_from_which_video = args.driving if ((flag_driving_has_audio and args.audio_priority == 'driving') or (not flag_source_has_audio)) else args.source
-            log(f"Audio is selected from {audio_from_which_video}, concat mode")
-            add_audio_to_video(wfp_concat, audio_from_which_video, wfp_concat_with_audio)
-            os.replace(wfp_concat_with_audio, wfp_concat)
-            log(f"Replace {wfp_concat_with_audio} with {wfp_concat}")
+            wfp_concat = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_concat.mp4')
 
-        # save the animated result
-        wfp = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}.mp4')
-        if I_p_pstbk_lst is not None and len(I_p_pstbk_lst) > 0:
-            images2video(I_p_pstbk_lst, wfp=wfp, fps=output_fps)
+            # NOTE: update output fps
+            output_fps = source_fps if flag_is_source_video else output_fps
+            images2video(frames_concatenated, wfp=wfp_concat, fps=output_fps)
+
+            if flag_source_has_audio or flag_driving_has_audio:
+                # final result with concatenation
+                wfp_concat_with_audio = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_concat_with_audio.mp4')
+                audio_from_which_video = args.driving if ((flag_driving_has_audio and args.audio_priority == 'driving') or (not flag_source_has_audio)) else args.source
+                log(f"Audio is selected from {audio_from_which_video}, concat mode")
+                add_audio_to_video(wfp_concat, audio_from_which_video, wfp_concat_with_audio)
+                os.replace(wfp_concat_with_audio, wfp_concat)
+                log(f"Replace {wfp_concat_with_audio} with {wfp_concat}")
+
+            # save the animated result
+            wfp = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}.mp4')
+            if I_p_pstbk_lst is not None and len(I_p_pstbk_lst) > 0:
+                images2video(I_p_pstbk_lst, wfp=wfp, fps=output_fps)
+            else:
+                images2video(I_p_lst, wfp=wfp, fps=output_fps)
+
+            ######### build the final result #########
+            if flag_source_has_audio or flag_driving_has_audio:
+                wfp_with_audio = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_with_audio.mp4')
+                audio_from_which_video = args.driving if ((flag_driving_has_audio and args.audio_priority == 'driving') or (not flag_source_has_audio)) else args.source
+                log(f"Audio is selected from {audio_from_which_video}")
+                add_audio_to_video(wfp, audio_from_which_video, wfp_with_audio)
+                os.replace(wfp_with_audio, wfp)
+                log(f"Replace {wfp_with_audio} with {wfp}")
+
+            # final log
+            if wfp_template not in (None, ''):
+                log(f'Animated template: {wfp_template}, you can specify `-d` argument with this template path next time to avoid cropping video, motion making and protecting privacy.', style='bold green')
+            log(f'Animated video: {wfp}')
+            log(f'Animated video with concat: {wfp_concat}')
         else:
-            images2video(I_p_lst, wfp=wfp, fps=output_fps)
-
-        ######### build the final result #########
-        if flag_source_has_audio or flag_driving_has_audio:
-            wfp_with_audio = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_with_audio.mp4')
-            audio_from_which_video = args.driving if ((flag_driving_has_audio and args.audio_priority == 'driving') or (not flag_source_has_audio)) else args.source
-            log(f"Audio is selected from {audio_from_which_video}")
-            add_audio_to_video(wfp, audio_from_which_video, wfp_with_audio)
-            os.replace(wfp_with_audio, wfp)
-            log(f"Replace {wfp_with_audio} with {wfp}")
-
-        # final log
-        if wfp_template not in (None, ''):
-            log(f'Animated template: {wfp_template}, you can specify `-d` argument with this template path next time to avoid cropping video, motion making and protecting privacy.', style='bold green')
-        log(f'Animated video: {wfp}')
-        log(f'Animated video with concat: {wfp_concat}')
+            wfp_concat = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}_concat.jpg')
+            cv2.imwrite(wfp_concat, frames_concatenated[0][..., ::-1])
+            wfp = osp.join(args.output_dir, f'{basename(args.source)}--{basename(args.driving)}.jpg')
+            if I_p_pstbk_lst is not None and len(I_p_pstbk_lst) > 0:
+                cv2.imwrite(wfp, I_p_pstbk_lst[0][..., ::-1])
+            else:
+                cv2.imwrite(wfp, frames_concatenated[0][..., ::-1])
+            # final log
+            log(f'Animated image: {wfp}')
+            log(f'Animated image with concat: {wfp_concat}')
 
         return wfp, wfp_concat
