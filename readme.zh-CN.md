@@ -27,11 +27,12 @@
   <a href='https://liveportrait.github.io'><img src='https://img.shields.io/badge/Project-LivePortrait-green'></a>
   <a href='https://huggingface.co/spaces/KwaiVGI/liveportrait'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
   <a href="https://github.com/KwaiVGI/LivePortrait"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait"></a>
+  <br>
+  <a href="./readme.md"><strong>English</strong></a> | <strong>简体中文</strong>
 </div>
 
 <br>
 
-[**English**](./README.md) | **简体中文**
 
 <p align="center">
   <img src="./assets/docs/showcase2.gif" alt="showcase">
