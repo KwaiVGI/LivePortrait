@@ -30,6 +30,8 @@
 </div>
 <br>
 
+**English** | [**简体中文**](./readme.zh-CN.md) |
+
 <p align="center">
   <img src="./assets/docs/showcase2.gif" alt="showcase">
   <br>
@@ -260,7 +262,3 @@ If you find LivePortrait useful for your research, welcome to 🌟 this repo and
 
 ## Contact 📧
 [**Jianzhu Guo (郭建珠)**](https://guojianzhu.com); **guojianzhu1994@gmail.com**
-
-## language
-
-English | [简体中文](./readme.zh-CN.md)
