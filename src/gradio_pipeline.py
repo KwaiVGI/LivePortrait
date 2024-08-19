@@ -543,7 +543,6 @@ class GradioPipeline(LivePortraitPipeline):
         """ for keeping lips in the source video silent
         """
         if input_video is not None:
-            # gr.Info("Upload successfully!", duration=2)
             inference_cfg = self.live_portrait_wrapper.inference_cfg
             ######## process source video ########
             source_rgb_lst = load_video(input_video)
