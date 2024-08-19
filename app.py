@@ -244,7 +244,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                 flag_relative_input = gr.Checkbox(value=True, label="relative motion")
                 flag_remap_input = gr.Checkbox(value=True, label="paste-back")
                 flag_stitching_input = gr.Checkbox(value=True, label="stitching")
-                animation_region = gr.Radio(["exp", "pose", "lip", "eyes", "all"], value="exp", label="animation region")
+                animation_region = gr.Radio(["exp", "pose", "lip", "eyes", "all"], value="all", label="animation region")
                 driving_option_input = gr.Radio(['expression-friendly', 'pose-friendly'], value="expression-friendly", label="driving option (i2v)")
                 driving_multiplier = gr.Number(value=1.0, label="driving multiplier (i2v)", minimum=0.0, maximum=2.0, step=0.02)
                 driving_smooth_observation_variance = gr.Number(value=3e-7, label="motion smooth strength (v2v)", minimum=1e-11, maximum=1e-2, step=1e-8)

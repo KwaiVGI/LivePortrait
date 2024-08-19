@@ -34,7 +34,7 @@ class ArgumentConfig(PrintableConfig):
     driving_multiplier: float = 1.0 # be used only when driving_option is "expression-friendly"
     driving_smooth_observation_variance: float = 3e-7  # smooth strength scalar for the animated video when the input is a source video, the larger the number, the smoother the animated video; too much smoothness would result in loss of motion accuracy
     audio_priority: Literal['source', 'driving'] = 'driving'  # whether to use the audio from source or driving video
-    animation_region: Literal["exp", "pose", "lip", "eyes", "all"] = "exp" # the region where the animation was performed, "exp" means the expression, "pose" means the head pose
+    animation_region: Literal["exp", "pose", "lip", "eyes", "all"] = "all" # the region where the animation was performed, "exp" means the expression, "pose" means the head pose, "all" means all regions
     ########## source crop arguments ##########
     det_thresh: float = 0.15 # detection threshold
     scale: float = 2.3  # the ratio of face area is smaller if scale is larger
