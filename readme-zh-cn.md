@@ -266,6 +266,9 @@ python speed.py
 
 我们要感谢[FOMM](https://github.com/AliaksandrSiarohin/first-order-model)、[Open Facevid2vid](https://github.com/zhanglonghao1992/One-Shot_Free-View_Neural_Talking_Head_Synthesis)、[SPADE](https://github.com/NVlabs/SPADE)、[InsightFace](https://github.com/deepinsight/insightface)和[X-Pose](https://github.com/IDEA-Research/X-Pose)仓库的的贡献者，感谢他们的开放研究和贡献。
 
+## 道德考量 🛡️
+肖像动画技术伴随着社会风险，特别是在创建深度伪造（deepfakes）时可能被滥用。为了减轻这些风险，遵循道德指南并采取负责任的使用实践至关重要。目前，生成的结果包含一些视觉伪影，这些伪影可能有助于检测深度伪造。请注意，我们不对本项目生成的结果的使用承担任何法律责任。
+
 ## 引用 💖
 
 如果您发现LivePortrait对您的研究有用，欢迎引用我们的工作，使用以下BibTeX：
@@ -282,7 +285,3 @@ python speed.py
 ## 联系方式 📧
 
 [**Jianzhu Guo (郭建珠)**](https://guojianzhu.com); **guojianzhu1994@gmail.com**；
-
-## 语言
-
-[English](./README.md) | 简体中文
