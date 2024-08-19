@@ -1,23 +1,23 @@
-<h1 align="center">LivePortrait：通过拼接和重定向控制实现高效的人像动画</h1>
+<h1 align="center">LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control</h1>
 
 <div align='center'>
-    <a href='https://github.com/cleardusk' target='_blank'><strong>Jianzhu Guo</strong></a><sup> 1†</sup>&emsp;
-    <a href='https://github.com/Mystery099' target='_blank'><strong>Dingyun Zhang</strong></a><sup> 1,2</sup>&emsp;
-    <a href='https://github.com/KwaiVGI' target='_blank'><strong>Xiaoqiang Liu</strong></a><sup> 1</sup>&emsp;
-    <a href='https://github.com/zzzweakman' target='_blank'><strong>Zhizhou Zhong</strong></a><sup> 1,3</sup>&emsp;
-    <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'><strong>Yuan Zhang</strong></a><sup> 1</sup>&emsp;
+    <a href='https://github.com/cleardusk' target='_blank'><strong>郭建珠</strong></a><sup> 1†</sup>&emsp;
+    <a href='https://github.com/Mystery099' target='_blank'><strong>张丁芸</strong></a><sup> 1,2</sup>&emsp;
+    <a href='https://github.com/KwaiVGI' target='_blank'><strong>刘晓强</strong></a><sup> 1</sup>&emsp;
+    <a href='https://github.com/zzzweakman' target='_blank'><strong>钟智舟</strong></a><sup> 1,3</sup>&emsp;
+    <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'><strong>张渊</strong></a><sup> 1</sup>&emsp;
 </div>
 
 <div align='center'>
-    <a href='https://scholar.google.com/citations?user=P6MraaYAAAAJ' target='_blank'><strong>Pengfei Wan</strong></a><sup> 1</sup>&emsp;
-    <a href='https://openreview.net/profile?id=~Di_ZHANG3' target='_blank'><strong>Di Zhang</strong></a><sup> 1</sup>&emsp;
+    <a href='https://scholar.google.com/citations?user=P6MraaYAAAAJ' target='_blank'><strong>万鹏飞</strong></a><sup> 1</sup>&emsp;
+    <a href='https://openreview.net/profile?id=~Di_ZHANG3' target='_blank'><strong>张迪</strong></a><sup> 1</sup>&emsp;
 </div>
 
 <div align='center'>
-    <sup>1 </sup>Kuaishou Technology&emsp; <sup>2 </sup>University of Science and Technology of China&emsp; <sup>3 </sup>Fudan University&emsp;
+    <sup>1 </sup>快手科技&emsp; <sup>2 </sup>中国科学技术大学&emsp; <sup>3 </sup>复旦大学&emsp;
 </div>
 <div align='center'>
-    <small><sup>†</sup> Corresponding author</small>
+    <small><sup>†</sup> 通讯作者（Project Lead）</small>
 </div>
 
 <br>
@@ -43,7 +43,7 @@
 
 
 ## 🔥 更新日志
-- **`2024/08/19`**: 🖼️ 我们支持了**图像驱动模式**和**区域控制**。详情请见[**这里**](./assets/docs/changelog/2024-08-19.md)。
+- **`2024/08/19`**：🖼️ 我们支持了**图像驱动模式**和**区域控制**。详情请见[**这里**](./assets/docs/changelog/2024-08-19.md)。
 - **`2024/08/06`**：🎨 我们在Gradio界面支持**精确的人像编辑**, 受到[ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait)启发。详见[**这里**](./assets/docs/changelog/2024-08-06.md)。
 - **`2024/08/05`**：📦Windows用户现在可以下载[一键安装程序](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240806.zip)，支持**人类模式**和**动物模式**！详情见[**这里**](./assets/docs/changelog/2024-08-05.md)。
 - **`2024/08/02`**：😸 我们发布了**动物模型**版本，以及其他一些更新和改进。查看详情[**这里**](./assets/docs/changelog/2024-08-02.md)！
