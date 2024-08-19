@@ -19,8 +19,8 @@
 <div align='center'>
     <small><sup>†</sup> Corresponding author</small>
 </div>
-
 <br>
+
 <div align="center">
   <!-- <a href='LICENSE'><img src='https://img.shields.io/badge/license-MIT-yellow'></a> -->
   <a href='https://arxiv.org/pdf/2407.03168'><img src='https://img.shields.io/badge/arXiv-LivePortrait-red'></a>
@@ -29,6 +29,10 @@
   <a href="https://github.com/KwaiVGI/LivePortrait"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait"></a>
 </div>
 <br>
+
+<div align="center">
+**English** | [**简体中文**](./readme.zh-CN.md)
+</div>
 
 <p align="center">
   <img src="./assets/docs/showcase2.gif" alt="showcase">
