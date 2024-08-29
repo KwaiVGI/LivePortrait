@@ -94,6 +94,9 @@ pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https
 # ...
 ```
 
+**注意**：在Windows系统上，一些过高版本的CUDA(12.4、12.6等)可能会导致未知的问题，您可以考虑降低您的CUDA版本到11.8，这是我们测试的一个较为稳定的版本。降级方法可以参考 [@dimitribarbot](https://github.com/dimitribarbot)
+提供的[文档](https://github.com/dimitribarbot/sd-webui-live-portrait/blob/main/assets/docs/how-to-install-xpose.md#cuda-toolkit-118).
+
 最后，安装其余依赖项：
 
 ```bash
@@ -256,6 +259,7 @@ python speed.py
 - [LivePortrait hands-on tutorial](https://www.youtube.com/watch?v=uyjSTAOY7yI) by [@AI Search](https://www.youtube.com/@theAIsearch)
 - [ComfyUI tutorial](https://www.youtube.com/watch?v=8-IcDDmiUMM) by [@Sebastian Kamph](https://www.youtube.com/@sebastiankamph)
 - [Replicate Playground](https://replicate.com/fofr/live-portrait) and [cog-comfyui](https://github.com/fofr/cog-comfyui) by [@fofr](https://github.com/fofr)
+- [sd-webui-live-portrait](https://github.com/dimitribarbot/sd-webui-live-portrait.git) by [@dimitribarbot](https://github.com/dimitribarbot)
 
 以及我们社区的许多其他令人惊叹的贡献！
 
