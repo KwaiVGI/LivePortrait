@@ -241,6 +241,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
     with gr.Row():
         with gr.Accordion(open=True, label="Animation Options"):
             with gr.Row():
+                flag_normalize_lip = gr.Checkbox(value=False, label="normalize lip")
                 flag_relative_input = gr.Checkbox(value=True, label="relative motion")
                 flag_remap_input = gr.Checkbox(value=True, label="paste-back")
                 flag_stitching_input = gr.Checkbox(value=True, label="stitching")
@@ -435,6 +436,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
             driving_video_input,
             driving_image_input,
             driving_video_pickle_input,
+            flag_normalize_lip,
             flag_relative_input,
             flag_do_crop_input,
             flag_remap_input,

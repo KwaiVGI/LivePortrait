@@ -386,7 +386,7 @@ class LivePortraitPipeline(object):
             t_new[..., 2].fill_(0)  # zero tz
             x_d_i_new = scale_new * (x_c_s @ R_new + delta_new) + t_new
 
-            if inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video and flag_is_driving_video:
+            if inf_cfg.flag_relative_motion and inf_cfg.driving_option == "expression-friendly" and not flag_is_source_video and flag_is_driving_video:
                 if i == 0:
                     x_d_0_new = x_d_i_new
                     motion_multiplier = calc_motion_multiplier(x_s, x_d_0_new)
