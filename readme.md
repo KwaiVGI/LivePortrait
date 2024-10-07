@@ -251,7 +251,7 @@ Discover the invaluable resources contributed by our community to enhance your L
 | [**sd-webui-live-portrait**](https://github.com/dimitribarbot/sd-webui-live-portrait) | WebUI extension of LivePortrait, adding atab to the original Stable Diffusion WebUI to benefit from LivePortrait features. | [@dimitribarbot](https://github.com/dimitribarbot) |
 | [**ComfyUI-LivePortraitKJ**](https://github.com/kijai/ComfyUI-LivePortraitKJ) | A ComfyUI node to use LivePortrait, with MediaPipe as as an alternative to Insightface. | [@kijai](https://github.com/kijai) |
 | [**ComfyUI-AdvancedLivePortrait**](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) | A faster ComfyUI node with real-time preview that has inspired many other community-developed tools and projects. | [@PowerHouseMan](https://github.com/PowerHouseMan) |
-| [**comfyui-liveportrait**](https://github.com/shadowcz007/comfyui-liveportrait) | A ComfyUI node to use LivePortrait, supporting multi-faces, expression interpolation etc, with an [tutorial](https://www.bilibili.com/video/BV1JW421R7sP). | [@shadowcz007](https://github.com/shadowcz007) |
+| [**comfyui-liveportrait**](https://github.com/shadowcz007/comfyui-liveportrait) | A ComfyUI node to use LivePortrait, supporting multi-faces, expression interpolation etc, with a [tutorial](https://www.bilibili.com/video/BV1JW421R7sP). | [@shadowcz007](https://github.com/shadowcz007) |
 
 ### Playgrounds, 🤗 HuggingFace Spaces and Others
 - [FacePoke Space](https://huggingface.co/spaces/jbilcke-hf/FacePoke)

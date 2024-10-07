@@ -251,18 +251,37 @@ python speed.py
 
 ## 社区资源 🤗
 
-发现社区贡献的宝贵资源，以增强您的LivePortrait体验：
+### 社区项目
 
-- [sd-webui-live-portrait](https://github.com/dimitribarbot/sd-webui-live-portrait.git) by [@dimitribarbot](https://github.com/dimitribarbot)
-- [ComfyUI-LivePortraitKJ](https://github.com/kijai/ComfyUI-LivePortraitKJ) by [@kijai](https://github.com/kijai)
-- [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) by [@PowerHouseMan](https://github.com/PowerHouseMan).
-- [comfyui-liveportrait](https://github.com/shadowcz007/comfyui-liveportrait) by [@shadowcz007](https://github.com/shadowcz007)
-- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [@Benji](https://www.youtube.com/@TheFutureThinker)
-- [LivePortrait hands-on tutorial](https://www.youtube.com/watch?v=uyjSTAOY7yI) by [@AI Search](https://www.youtube.com/@theAIsearch)
-- [ComfyUI tutorial](https://www.youtube.com/watch?v=8-IcDDmiUMM) by [@Sebastian Kamph](https://www.youtube.com/@sebastiankamph)
-- [Replicate Playground](https://replicate.com/fofr/live-portrait) and [cog-comfyui](https://github.com/fofr/cog-comfyui) by [@fofr](https://github.com/fofr)
+| 仓库 (按时间排序) | 描述 | 作者 |
+|------|------|--------|
+| [**FacePoke**](https://github.com/jbilcke-hf/FacePoke) | 一个实时的头部姿态表情控制应用，通过鼠标控制！ | [@jbilcke-hf](https://github.com/jbilcke-hf) |
+| [**FaceFusion**](https://github.com/facefusion/facefusion) | FaceFusion 3.0 集成了 LivePortrait 作为 `expression_restorer` 和 `face_editor` 处理器。 | [@henryruhs](https://github.com/henryruhs) |
+| [**sd-webui-live-portrait**](https://github.com/dimitribarbot/sd-webui-live-portrait) | LivePortrait 的 WebUI 扩展，在原版 Stable Diffusion WebUI 中添加了一个标签以使用 LivePortrait 的功能。 | [@dimitribarbot](https://github.com/dimitribarbot) |
+| [**ComfyUI-LivePortraitKJ**](https://github.com/kijai/ComfyUI-LivePortraitKJ) | 一个用于 LivePortrait 的 ComfyUI 节点，使用 MediaPipe 作为 Insightface 的替代方案。 | [@kijai](https://github.com/kijai) |
+| [**ComfyUI-AdvancedLivePortrait**](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) | 一个更快的 ComfyUI 节点，具有实时预览功能，启发了许多社区开发的工具和项目。 | [@PowerHouseMan](https://github.com/PowerHouseMan) |
+| [**comfyui-liveportrait**](https://github.com/shadowcz007/comfyui-liveportrait) | 一个用于 LivePortrait 的 ComfyUI 节点，支持多面部、表情插值等功能，并有[教程](https://www.bilibili.com/video/BV1JW421R7sP)。 | [@shadowcz007](https://github.com/shadowcz007) |
 
-以及我们社区的许多其他令人惊叹的贡献！
+### Playgrounds, 🤗 HuggingFace Spaces 以及其它
+- [FacePoke Space](https://huggingface.co/spaces/jbilcke-hf/FacePoke)
+- [Expression Editor Space](https://huggingface.co/spaces/fffiloni/expression-editor)
+- [Expression Editor Replicate](https://replicate.com/fofr/expression-editor)
+- [Face Control Realtime Demo](https://fal.ai/demos/face-control) on FAL
+- [Replicate Playground](https://replicate.com/fofr/live-portrait)
+- Nuke 可以通过 CompyUI 节点使用 LivePortrait，详情见[这里](https://x.com/bilawalsidhu/status/1837349806475276338)
+- LivePortrait 在 [Poe](https://poe.com/LivePortrait) 上运行
+
+### 视频教程
+- [LivePortrait 视频转视频的工作流程](https://youtu.be/xfzK_6cTs58?si=aYjgypeJBkhc46VL) 由 [@curiousrefuge](https://www.youtube.com/@curiousrefuge) 制作
+- [Google Colab 教程](https://youtu.be/59Y9ePAXTp0?si=KzEWhklBlporW7D8) 由 [@Planet Ai](https://www.youtube.com/@planetai217) 制作
+- [论文解读](https://youtu.be/fD0P6UWSu8I?si=Vn5wxUa8qSu1jv4l) 由 [@TwoMinutePapers](https://www.youtube.com/@TwoMinutePapers) 制作
+- [ComfyUI 高级 LivePortrait 教程](https://youtu.be/q0Vf-ZZsbzI?si=nbs3npleH-dVCt28) 由 [TutoView](https://www.youtube.com/@TutoView) 制作
+- [LivePortrait 探索](https://www.youtube.com/watch?v=vsvlbTEqgXQ) 和 [LivePortrait 深入探讨](https://youtu.be/cucaEEDYmsw?si=AtPaDWc5G-a4E8dD) 由 [TheoreticallyMedia](https://www.youtube.com/@TheoreticallyMedia) 制作
+- [LivePortrait 实战教程](https://www.youtube.com/watch?v=uyjSTAOY7yI) 由 [@AI Search](https://www.youtube.com/@theAIsearch) 制作
+- [ComfyUI 教程](https://www.youtube.com/watch?v=8-IcDDmiUMM) 由 [@Sebastian Kamph](https://www.youtube.com/@sebastiankamph) 制作
+- B 站上的[教程](https://www.bilibili.com/video/BV1cf421i7Ly)
+
+还有来自社区的无数令人惊叹的贡献，未能一一列举 💖
 
 ## 致谢 💐
 
