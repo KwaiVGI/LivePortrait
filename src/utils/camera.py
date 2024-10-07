@@ -32,6 +32,8 @@ def get_rotation_matrix(pitch_, yaw_, roll_):
     """ the input is in degree
     """
     # transform to radian
+    PI = np.pi
+
     pitch = pitch_ / 180 * PI
     yaw = yaw_ / 180 * PI
     roll = roll_ / 180 * PI
