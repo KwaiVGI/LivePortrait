@@ -6,16 +6,24 @@ __pycache__/
 *$py.class
 
 # Model weights
+**/*.pt
 **/*.pth
 **/*.onnx
 
-pretrained_weights/*.md
-pretrained_weights/docs
+pretrained_weights/*
 
 # Ipython notebook
 *.ipynb
 
+# IDEs
+.python-version
+.idea/*
+.vscode/*
+*.code-workspace
+
 # Temporary files or benchmark resources
 animations/*
+build/*
 tmp/*
+torch_compile_debug/*
 venv/*
