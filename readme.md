@@ -239,18 +239,40 @@ The results are [**here**](./assets/docs/speed.md).
 
 ## Community Resources 🤗
 
-Discover the invaluable resources contributed by our community to enhance your LivePortrait experience:
+Discover the invaluable resources contributed by our community to enhance your LivePortrait experience.
 
-- [sd-webui-live-portrait](https://github.com/dimitribarbot/sd-webui-live-portrait.git) by [@dimitribarbot](https://github.com/dimitribarbot)
-- [ComfyUI-LivePortraitKJ](https://github.com/kijai/ComfyUI-LivePortraitKJ) by [@kijai](https://github.com/kijai)
-- [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) by [@PowerHouseMan](https://github.com/PowerHouseMan).
-- [comfyui-liveportrait](https://github.com/shadowcz007/comfyui-liveportrait) by [@shadowcz007](https://github.com/shadowcz007)
-- [LivePortrait In ComfyUI](https://www.youtube.com/watch?v=aFcS31OWMjE) by [@Benji](https://www.youtube.com/@TheFutureThinker)
+
+### Community-developed Projects
+
+| Repo (sorted by created timestamp) | Description | Author |
+|------|------|--------|
+| [**FacePoke**](https://github.com/jbilcke-hf/FacePoke) | A real-time head transformation app, controlled by your mouse! | [@jbilcke-hf](https://github.com/jbilcke-hf) |
+| [**FaceFusion**](https://github.com/facefusion/facefusion) | FaceFusion 3.0 integregates LivePortrait as `expression_restorer` and `face_editor` processors. | [@henryruhs](https://github.com/henryruhs) |
+| [**sd-webui-live-portrait**](https://github.com/dimitribarbot/sd-webui-live-portrait) | WebUI extension of LivePortrait, adding atab to the original Stable Diffusion WebUI to benefit from LivePortrait features. | [@dimitribarbot](https://github.com/dimitribarbot) |
+| [**ComfyUI-LivePortraitKJ**](https://github.com/kijai/ComfyUI-LivePortraitKJ) | A ComfyUI node to use LivePortrait, with MediaPipe as as an alternative to Insightface. | [@kijai](https://github.com/kijai) |
+| [**ComfyUI-AdvancedLivePortrait**](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) | A faster ComfyUI node with real-time preview that has inspired many other community-developed tools and projects. | [@PowerHouseMan](https://github.com/PowerHouseMan) |
+| [**comfyui-liveportrait**](https://github.com/shadowcz007/comfyui-liveportrait) | A ComfyUI node to use LivePortrait, supporting multi-faces, expression interpolation etc, with an [tutorial](https://www.bilibili.com/video/BV1JW421R7sP). | [@shadowcz007](https://github.com/shadowcz007) |
+
+### Playgrounds, 🤗 HuggingFace Spaces and Others
+- [FacePoke Space](https://huggingface.co/spaces/jbilcke-hf/FacePoke)
+- [Expression Editor Space](https://huggingface.co/spaces/fffiloni/expression-editor)
+- [Expression Editor Replicate](https://replicate.com/fofr/expression-editor)
+- [Face Control Realtime Demo](https://fal.ai/demos/face-control) on FAL
+- [Replicate Playground](https://replicate.com/fofr/live-portrait)
+- Nuke can use LivePortrait through CompyUI node, details [here](https://x.com/bilawalsidhu/status/1837349806475276338)
+- LivePortrait lives on [Poe](https://poe.com/LivePortrait)
+
+### Video Tutorials
+- [Workflow of LivePortrait Video to Video](https://youtu.be/xfzK_6cTs58?si=aYjgypeJBkhc46VL) by [@curiousrefuge](https://www.youtube.com/@curiousrefuge)
+- [Google Colab tutorial](https://youtu.be/59Y9ePAXTp0?si=KzEWhklBlporW7D8) by [@Planet Ai](https://www.youtube.com/@planetai217)
+- [Paper reading](https://youtu.be/fD0P6UWSu8I?si=Vn5wxUa8qSu1jv4l) by [@TwoMinutePapers](https://www.youtube.com/@TwoMinutePapers)
+- [ComfyUI Advanced LivePortrait](https://youtu.be/q0Vf-ZZsbzI?si=nbs3npleH-dVCt28) by [TutoView](https://www.youtube.com/@TutoView)
+- [LivePortarit exploration](https://www.youtube.com/watch?v=vsvlbTEqgXQ) and [A deep dive into LivePortrait](https://youtu.be/cucaEEDYmsw?si=AtPaDWc5G-a4E8dD) by [TheoreticallyMedia](https://www.youtube.com/@TheoreticallyMedia)
 - [LivePortrait hands-on tutorial](https://www.youtube.com/watch?v=uyjSTAOY7yI) by [@AI Search](https://www.youtube.com/@theAIsearch)
 - [ComfyUI tutorial](https://www.youtube.com/watch?v=8-IcDDmiUMM) by [@Sebastian Kamph](https://www.youtube.com/@sebastiankamph)
-- [Replicate Playground](https://replicate.com/fofr/live-portrait) and [cog-comfyui](https://github.com/fofr/cog-comfyui) by [@fofr](https://github.com/fofr)
+- A [tutorial](https://www.bilibili.com/video/BV1cf421i7Ly) on BiliBili
 
-And many more amazing contributions from our community!
+And so MANY amazing contributions from our community, too many to list them all 💖
 
 ## Acknowledgements 💐
 We would like to thank the contributors of [FOMM](https://github.com/AliaksandrSiarohin/first-order-model), [Open Facevid2vid](https://github.com/zhanglonghao1992/One-Shot_Free-View_Neural_Talking_Head_Synthesis), [SPADE](https://github.com/NVlabs/SPADE), [InsightFace](https://github.com/deepinsight/insightface) and [X-Pose](https://github.com/IDEA-Research/X-Pose) repositories, for their open research and contributions.

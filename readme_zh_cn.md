@@ -40,9 +40,10 @@
 
 
 ## 🔥 更新日志
+- **`2024/08/29`**: 📦 我们更新了Windows[一键安装程序](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip)并支持自动更新, 详情建[这里](https://huggingface.co/cleardusk/LivePortrait-Windows#20240829)。
 - **`2024/08/19`**：🖼️ 我们支持了**图像驱动模式**和**区域控制**。详情请见[**这里**](./assets/docs/changelog/2024-08-19.md)。
 - **`2024/08/06`**：🎨 我们在Gradio界面支持**精确的人像编辑**, 受到[ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait)启发。详见[**这里**](./assets/docs/changelog/2024-08-06.md)。
-- **`2024/08/05`**：📦Windows用户现在可以下载[一键安装程序](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240806.zip)，支持**人类模式**和**动物模式**！详情见[**这里**](./assets/docs/changelog/2024-08-05.md)。
+- **`2024/08/05`**：📦 Windows用户现在可以下载[一键安装程序](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240806.zip)，支持**人类模式**和**动物模式**！详情见[**这里**](./assets/docs/changelog/2024-08-05.md)。
 - **`2024/08/02`**：😸 我们发布了**动物模型**版本，以及其他一些更新和改进。查看详情[**这里**](./assets/docs/changelog/2024-08-02.md)！
 - **`2024/07/25`**：📦 Windows用户现在可以从 [HuggingFace](https://huggingface.co/cleardusk/LivePortrait-Windows/tree/main) 或 [百度云](https://pan.baidu.com/s/1FWsWqKe0eNfXrwjEhhCqlw?pwd=86q2) 下载软件包。解压并双击`run_windows.bat`即可享受！
 - **`2024/07/24`**：🎨 我们在Gradio界面支持源人像的姿势编辑。我们还降低了默认检测阈值以增加召回率。[玩得开心](assets/docs/changelog/2024-07-24.md)！
