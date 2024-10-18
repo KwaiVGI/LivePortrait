@@ -41,7 +41,7 @@
 
 
 ## 🔥 Updates
-- **`2024/10/18`**: We have updated the versions of the `transformers` and `gradio` libraries to avoid security vulnerabilities. Details [here](https://github.com/KwaiVGI/LivePortrait/pull/421).
+- **`2024/10/18`**: ❗ We have updated the versions of the `transformers` and `gradio` libraries to avoid security vulnerabilities. Details [here](https://github.com/KwaiVGI/LivePortrait/pull/421/files).
 - **`2024/08/29`**: 📦 We update the Windows [one-click installer](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip) and support auto-updates, see [changelog](https://huggingface.co/cleardusk/LivePortrait-Windows#20240829).
 - **`2024/08/19`**: 🖼️ We support **image driven mode** and **regional control**. For details, see [**here**](./assets/docs/changelog/2024-08-19.md).
 - **`2024/08/06`**: 🎨 We support **precise portrait editing** in the Gradio interface, inspired by [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait). See [**here**](./assets/docs/changelog/2024-08-06.md).
