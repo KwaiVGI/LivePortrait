@@ -13,6 +13,6 @@ albumentations==1.4.10
 matplotlib==3.9.0
 imageio-ffmpeg==0.5.1
 tyro==0.8.5
-gradio==4.37.1
+gradio==5.1.0
 pykalman==0.9.7
 pillow>=10.2.0
