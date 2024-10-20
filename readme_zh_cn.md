@@ -71,7 +71,7 @@ git clone https://github.com/KwaiVGI/LivePortrait
 cd LivePortrait
 
 # 使用conda创建环境
-conda create -n LivePortrait python=3.9
+conda create -n LivePortrait python=3.10
 conda activate LivePortrait
 ```
 
