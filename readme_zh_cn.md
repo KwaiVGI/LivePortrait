@@ -256,6 +256,7 @@ python speed.py
 
 | 仓库 (按时间排序) | 描述 | 作者 |
 |------|------|--------|
+| [**AdvancedLivePortrait-WebUI**](https://github.com/jhj0517/AdvancedLivePortrait-WebUI) | Dedicated gradio based WebUI started from [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) | [@jhj0517](https://github.com/jhj0517) |
 | [**FacePoke**](https://github.com/jbilcke-hf/FacePoke) | 一个实时的头部姿态表情控制应用，通过鼠标控制！ | [@jbilcke-hf](https://github.com/jbilcke-hf) |
 | [**FaceFusion**](https://github.com/facefusion/facefusion) | FaceFusion 3.0 集成了 LivePortrait 作为 `expression_restorer` 和 `face_editor` 处理器。 | [@henryruhs](https://github.com/henryruhs) |
 | [**sd-webui-live-portrait**](https://github.com/dimitribarbot/sd-webui-live-portrait) | LivePortrait 的 WebUI 扩展，在原版 Stable Diffusion WebUI 中添加了一个标签以使用 LivePortrait 的功能。 | [@dimitribarbot](https://github.com/dimitribarbot) |

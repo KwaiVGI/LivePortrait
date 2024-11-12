@@ -247,6 +247,7 @@ Discover the invaluable resources contributed by our community to enhance your L
 
 | Repo (sorted by created timestamp) | Description | Author |
 |------|------|--------|
+| [**AdvancedLivePortrait-WebUI**](https://github.com/jhj0517/AdvancedLivePortrait-WebUI) | Dedicated gradio based WebUI started from [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) | [@jhj0517](https://github.com/jhj0517) | 
 | [**FacePoke**](https://github.com/jbilcke-hf/FacePoke) | A real-time head transformation app, controlled by your mouse! | [@jbilcke-hf](https://github.com/jbilcke-hf) |
 | [**FaceFusion**](https://github.com/facefusion/facefusion) | FaceFusion 3.0 integregates LivePortrait as `expression_restorer` and `face_editor` processors. | [@henryruhs](https://github.com/henryruhs) |
 | [**sd-webui-live-portrait**](https://github.com/dimitribarbot/sd-webui-live-portrait) | WebUI extension of LivePortrait, adding atab to the original Stable Diffusion WebUI to benefit from LivePortrait features. | [@dimitribarbot](https://github.com/dimitribarbot) |
