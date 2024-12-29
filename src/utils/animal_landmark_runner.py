@@ -60,7 +60,7 @@ class XPoseRunner(object):
 
     def get_unipose_output(self, image, instance_text_prompt, keypoint_text_prompt, box_threshold, IoU_threshold):
         instance_list = instance_text_prompt.split(',')
-        
+
         if len(keypoint_text_prompt) == 9:
             # torch.Size([1, 512]) torch.Size([9, 512])
             ins_text_embeddings, kpt_text_embeddings = self.ins_text_embeddings_9, self.kpt_text_embeddings_9
