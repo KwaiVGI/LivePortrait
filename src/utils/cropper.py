@@ -207,12 +207,10 @@ class Cropper(object):
                 vy_ratio=crop_cfg.vy_ratio,
                 flag_do_rot=crop_cfg.flag_do_rot,
             )
-            lmk = self.human_landmark_runner.run(frame_rgb, lmk)
-            ret_dct["lmk_crop"] = lmk
 
             # update a 256x256 version for network input
             ret_dct["img_crop_256x256"] = cv2.resize(ret_dct["img_crop"], (256, 256), interpolation=cv2.INTER_AREA)
-            ret_dct["lmk_crop_256x256"] = ret_dct["lmk_crop"] * 256 / crop_cfg.dsize
+            ret_dct["lmk_crop_256x256"] = ret_dct["pt_crop"] * 256 / crop_cfg.dsize
 
             trajectory.frame_rgb_crop_lst.append(ret_dct["img_crop_256x256"])
             trajectory.lmk_crop_lst.append(ret_dct["lmk_crop_256x256"])
