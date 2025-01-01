@@ -1,6 +1,7 @@
 # coding: utf-8
+
 """
-for human
+The entrance of humans
 """
 
 import os

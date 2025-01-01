@@ -1,6 +1,7 @@
 # coding: utf-8
+
 """
-for animal
+The entrance of animal
 """
 
 import os

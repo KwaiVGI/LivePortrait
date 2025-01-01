@@ -96,6 +96,7 @@ with gr.Blocks(theme=gr.themes.Soft(font=[gr.themes.GoogleFont("Plus Jakarta San
                         [osp.join(example_portrait_dir, "s30.jpg")],
                         [osp.join(example_portrait_dir, "s31.jpg")],
                         [osp.join(example_portrait_dir, "s32.jpg")],
+                        [osp.join(example_portrait_dir, "s33.jpg")],
                         [osp.join(example_portrait_dir, "s39.jpg")],
                         [osp.join(example_portrait_dir, "s40.jpg")],
                         [osp.join(example_portrait_dir, "s41.jpg")],
