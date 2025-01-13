@@ -26,7 +26,7 @@ from .utils.filter import smooth
 from .utils.rprint import rlog as log
 # from .utils.viz import viz_lmk
 from .live_portrait_wrapper import LivePortraitWrapper
-
+from skimage.exposure import match_histograms
 
 def make_abs_path(fn):
     return osp.join(osp.dirname(osp.realpath(__file__)), fn)
@@ -444,8 +444,12 @@ class LivePortraitPipeline(object):
             if inf_cfg.flag_pasteback and inf_cfg.flag_do_crop and inf_cfg.flag_stitching:
                 # TODO: the paste back procedure is slow, considering optimize it using multi-threading or GPU
                 if flag_is_source_video:
+                    I_p_i = match_histograms(I_p_i,img_crop_256x256_lst[i])
+                    I_p_i = np.clip(I_p_i,0,255).astype(np.uint8)
                     I_p_pstbk = paste_back(I_p_i, source_M_c2o_lst[i], source_rgb_lst[i], mask_ori_float)
                 else:
+                    I_p_i = match_histograms(I_p_i,img_crop_256x256)
+                    I_p_i = np.clip(I_p_i,0,255).astype(np.uint8)
                     I_p_pstbk = paste_back(I_p_i, crop_info['M_c2o'], source_rgb_lst[0], mask_ori_float)
                 I_p_pstbk_lst.append(I_p_pstbk)
 
