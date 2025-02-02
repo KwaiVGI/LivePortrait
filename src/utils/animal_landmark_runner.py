@@ -43,7 +43,7 @@ class XPoseRunner(object):
         args = Config.fromfile(model_config_path)
         args.device = device
         model = build_model(args)
-        checkpoint = torch.load(model_checkpoint_path, map_location=lambda storage, loc: storage)
+        checkpoint = torch.load(model_checkpoint_path, map_location=lambda storage, loc: storage, weights_only=False)
         load_res = model.load_state_dict(clean_state_dict(checkpoint["model"]), strict=False)
         model.eval()
         return model
