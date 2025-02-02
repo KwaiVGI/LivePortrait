@@ -40,6 +40,7 @@
 
 
 ## 🔥 更新日志
+- **`2025/01/01`**：🐶 我们更新了一版动物模型（使用了更多动物数据），具体查看[**这里**](./assets/docs/changelog/2025-01-01.md).
 - **`2024/10/18`**：❗ 我们更新了`transformers`，`gradio`库的版本避免安全漏洞，具体查看[这里](https://github.com/KwaiVGI/LivePortrait/pull/421/files).
 - **`2024/08/29`**：📦 我们更新了Windows[一键安装程序](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip)并支持自动更新, 详情建[这里](https://huggingface.co/cleardusk/LivePortrait-Windows#20240829)。
 - **`2024/08/19`**：🖼️ 我们支持了**图像驱动模式**和**区域控制**。详情请见[**这里**](./assets/docs/changelog/2024-08-19.md)。
