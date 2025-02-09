@@ -255,8 +255,9 @@ python speed.py
 
 ### 社区项目
 
-| 仓库 (按时间排序) | 描述 | 作者 |
+| 仓库 | 描述 | 作者 |
 |------|------|--------|
+| [**FasterLivePortrait**](https://github.com/warmshao/FasterLivePortrait) | 基于TensorRT加速更快的实时版本。 | [@warmshao](https://github.com/warmshao) |
 | [**AdvancedLivePortrait-WebUI**](https://github.com/jhj0517/AdvancedLivePortrait-WebUI) | Dedicated gradio based WebUI started from [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) | [@jhj0517](https://github.com/jhj0517) |
 | [**FacePoke**](https://github.com/jbilcke-hf/FacePoke) | 一个实时的头部姿态表情控制应用，通过鼠标控制！ | [@jbilcke-hf](https://github.com/jbilcke-hf) |
 | [**FaceFusion**](https://github.com/facefusion/facefusion) | FaceFusion 3.0 集成了 LivePortrait 作为 `expression_restorer` 和 `face_editor` 处理器。 | [@henryruhs](https://github.com/henryruhs) |
