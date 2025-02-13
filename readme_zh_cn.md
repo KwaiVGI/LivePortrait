@@ -255,8 +255,9 @@ python speed.py
 
 ### 社区项目
 
-| 仓库 | 描述 | 作者 |
+| 仓库 | 描述 | 作者 / 链接 |
 |------|------|--------|
+| [**ditto-talkinghead**](https://github.com/antgroup/ditto-talkinghead) | 实时音频驱动。 | [论文](https://arxiv.org/abs/2411.19509), [主页](https://digital-avatar.github.io/ai/Ditto/) |
 | [**FasterLivePortrait**](https://github.com/warmshao/FasterLivePortrait) | 基于TensorRT加速更快的实时版本。 | [@warmshao](https://github.com/warmshao) |
 | [**AdvancedLivePortrait-WebUI**](https://github.com/jhj0517/AdvancedLivePortrait-WebUI) | Dedicated gradio based WebUI started from [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait) | [@jhj0517](https://github.com/jhj0517) |
 | [**FacePoke**](https://github.com/jbilcke-hf/FacePoke) | 一个实时的头部姿态表情控制应用，通过鼠标控制！ | [@jbilcke-hf](https://github.com/jbilcke-hf) |

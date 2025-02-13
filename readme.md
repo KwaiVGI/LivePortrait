@@ -246,8 +246,9 @@ Discover the invaluable resources contributed by our community to enhance your L
 
 ### Community-developed Projects
 
-| Repo | Description | Author |
+| Repo | Description | Author / Links |
 |------|------|--------|
+| [**ditto-talkinghead**](https://github.com/antgroup/ditto-talkinghead) | Real-time audio-driven talking head. | [ArXiv](https://arxiv.org/abs/2411.19509), [Homepage](https://digital-avatar.github.io/ai/Ditto/)  |
 | [**FasterLivePortrait**](https://github.com/warmshao/FasterLivePortrait) | Faster real-time version using TensorRT. | [@warmshao](https://github.com/warmshao) |
 | [**AdvancedLivePortrait-WebUI**](https://github.com/jhj0517/AdvancedLivePortrait-WebUI) | Dedicated gradio based WebUI started from [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait). | [@jhj0517](https://github.com/jhj0517) |
 | [**FacePoke**](https://github.com/jbilcke-hf/FacePoke) | A real-time head transformation app, controlled by your mouse! | [@jbilcke-hf](https://github.com/jbilcke-hf) |
