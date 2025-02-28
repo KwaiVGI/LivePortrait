@@ -1,8 +1,8 @@
 <h1 align="center">LivePortrait: Efficient Portrait Animation with Stitching and Retargeting Control</h1>
 
 <div align='center'>
-    <a href='https://github.com/cleardusk' target='_blank'><strong>郭建珠</strong></a><sup> 1†</sup>&emsp;
-    <a href='https://github.com/Mystery099' target='_blank'><strong>张丁芸</strong></a><sup> 1,2</sup>&emsp;
+    <a href='https://github.com/cleardusk' target='_blank'><strong>郭建珠</strong></a><sup> 1*†</sup>&emsp;
+    <a href='https://github.com/Mystery099' target='_blank'><strong>张丁芸</strong></a><sup> 1,2*</sup>&emsp;
     <a href='https://github.com/KwaiVGI' target='_blank'><strong>刘晓强</strong></a><sup> 1</sup>&emsp;
     <a href='https://github.com/zzzweakman' target='_blank'><strong>钟智舟</strong></a><sup> 1,3</sup>&emsp;
     <a href='https://scholar.google.com.hk/citations?user=_8k1ubAAAAAJ' target='_blank'><strong>张渊</strong></a><sup> 1</sup>&emsp;
@@ -14,7 +14,8 @@
     <sup>1 </sup>快手科技&emsp; <sup>2 </sup>中国科学技术大学&emsp; <sup>3 </sup>复旦大学&emsp;
 </div>
 <div align='center'>
-    <small><sup>†</sup> 通讯作者（Project Lead）</small>
+  <small><sup>*</sup> Equal contributions</small>
+    <small><sup>†</sup> Project lead</small>
 </div>
 
 <br>
