@@ -27,6 +27,7 @@
   <a href='https://arxiv.org/pdf/2407.03168'><img src='https://img.shields.io/badge/arXiv-LivePortrait-red'></a>
   <a href='https://liveportrait.github.io'><img src='https://img.shields.io/badge/Project-LivePortrait-green'></a>
   <a href='https://huggingface.co/spaces/KwaiVGI/liveportrait'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
+  <a href="https://hellogithub.com/repository/bed652ef02154dd7a434e0720125639e" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=bed652ef02154dd7a434e0720125639e&claim_uid=XyBT2K9QJ7RZhej&theme=small" alt="Featured｜HelloGitHub" /></a>
   <a href="https://github.com/KwaiVGI/LivePortrait"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait"></a>
   <br>
   <strong>English</strong> | <a href="./readme_zh_cn.md"><strong>简体中文</strong></a>
