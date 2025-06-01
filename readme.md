@@ -27,30 +27,34 @@
 
   <!-- 🚀 Quick Start buttons -->
   <p>
-    <a href="https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip" target="_blank">
-      <img src="https://img.shields.io/badge/🖥 Windows Installer-v20240829-00BFFF?style=for-the-badge&logo=windows&logoColor=white" alt="Windows one-click installer"/>
-    </a>
-    &nbsp;
-    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank">
-      <img src="https://img.shields.io/badge/🌐 Try Online Demo-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace online demo"/>
+    <a href="https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip"
+       target="_blank" style="text-decoration:none;display:inline-block;">
+      <img src="https://img.shields.io/badge/🖥 Windows Installer-v20240829-00BFFF?style=for-the-badge&logo=windows&logoColor=white"
+           alt="Windows one-click installer"/>
+    </a>&nbsp;
+    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait"
+       target="_blank" style="text-decoration:none;display:inline-block;">
+      <img src="https://img.shields.io/badge/🌐 Try Online Demo-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white"
+           alt="HuggingFace online demo"/>
     </a>
   </p>
 
   <!-- 📄 Paper / project / GitHub stats -->
   <p>
-    <a href="https://arxiv.org/pdf/2407.03168" target="_blank">
-      <img src="https://img.shields.io/badge/arXiv-LivePortrait-red?style=flat-square" alt="arXiv link"/>
-    </a>
-    <a href="https://liveportrait.github.io" target="_blank">
-      <img src="https://img.shields.io/badge/Project-Homepage-green?style=flat-square" alt="project homepage"/>
-    </a>
-    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank">
-      <img src="https://img.shields.io/badge/🤗 Hugging Face-Spaces-blue?style=flat-square" alt="HF space"/>
-    </a>
-    <a href="https://hellogithub.com/repository/bed652ef02154dd7a434e0720125639e" target="_blank">
-      <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=bed652ef02154dd7a434e0720125639e&claim_uid=XyBT2K9QJ7RZhej&theme=small" alt="Featured by HelloGitHub"/>
-    </a>
-    <a href="https://github.com/KwaiVGI/LivePortrait" target="_blank">
+    <a href="https://arxiv.org/pdf/2407.03168" target="_blank" style="text-decoration:none;display:inline-block;">
+      <img src="https://img.shields.io/badge/arXiv-LivePortrait-red" alt="arXiv link"/>
+    </a>&nbsp;
+    <a href="https://liveportrait.github.io" target="_blank" style="text-decoration:none;display:inline-block;">
+      <img src="https://img.shields.io/badge/Project-Homepage-green" alt="project homepage"/>
+    </a>&nbsp;
+    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank" style="text-decoration:none;display:inline-block;">
+      <img src="https://img.shields.io/badge/🤗 Hugging Face-Spaces-blue" alt="HF space"/>
+    </a>&nbsp;
+    <a href="https://hellogithub.com/repository/bed652ef02154dd7a434e0720125639e" target="_blank" style="text-decoration:none;display:inline-block;">
+      <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=bed652ef02154dd7a434e0720125639e&claim_uid=XyBT2K9QJ7RZhej&theme=small"
+           alt="Featured by HelloGitHub"/>
+    </a>&nbsp;
+    <a href="https://github.com/KwaiVGI/LivePortrait" target="_blank" style="text-decoration:none;display:inline-block;">
       <img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait?style=social" alt="GitHub stars"/>
     </a>
   </p>
@@ -66,6 +70,7 @@
 
 </div>
 <!-- ===== /LivePortrait ===== -->
+
 
 
 
