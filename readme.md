@@ -44,15 +44,11 @@
   <p><strong>English</strong> | <a href="./readme_zh_cn.md"><strong>简体中文</strong></a></p>
 
   <!-- 🎬 Showcase GIF -->
-  <p><img src="./assets/docs/showcase2.gif" alt="LivePortrait showcase GIF"></p>
+  <p style="margin:4px 0;"><img src="./assets/docs/showcase2.gif" alt="LivePortrait showcase GIF"></p>
   <p>🔥 For more results, visit our <a href="https://liveportrait.github.io/" target="_blank"><strong>homepage</strong></a> 🔥</p>
 
 </div>
 <!-- ===== /LivePortrait ===== -->
-
-
-
-
 
 
 ## 🔥 Updates

@@ -43,13 +43,11 @@
   <p><a href="./readme.md"><strong>English</strong></a> | <strong>简体中文</strong></p>
 
   <!-- 🎬 Showcase GIF -->
-  <p><img src="./assets/docs/showcase2.gif" alt="LivePortrait 效果展示 GIF"></p>
+  <p style="margin:4px 0;"><img src="./assets/docs/showcase2.gif" alt="LivePortrait 效果展示 GIF"></p>
   <p>🔥 更多效果，请访问我们的 <a href="https://liveportrait.github.io/" target="_blank"><strong>主页</strong></a> 🔥</p>
 
 </div>
 <!-- ===== /LivePortrait ===== -->
-
-
 
 
 ## 🔥 更新日志
