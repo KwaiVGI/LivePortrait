@@ -26,45 +26,29 @@
 
   <!-- 🚀 快速体验按钮 -->
   <p>
-    <a href="https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip" target="_blank">
-      <img src="https://img.shields.io/badge/🖥 Windows 一键安装-v20240829-00BFFF?style=for-the-badge&logo=windows&logoColor=white" alt="Windows 一键安装包"/>
-    </a>
-    &nbsp;
-    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank">
-      <img src="https://img.shields.io/badge/🌐 在线体验-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace 在线体验"/>
-    </a>
+    <a href="https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip" target="_blank"><img src="https://img.shields.io/badge/🖥 Windows 一键安装-v20240829-00BFFF?style=for-the-badge&logo=windows&logoColor=white" alt="Windows 一键安装包"></a>&nbsp;
+    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank"><img src="https://img.shields.io/badge/🌐 在线体验-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace 在线体验"></a>
   </p>
 
   <!-- 📄 论文 / 项目 / Star 等徽章 -->
   <p>
-    <a href="https://arxiv.org/pdf/2407.03168" target="_blank">
-      <img src="https://img.shields.io/badge/arXiv-LivePortrait-red?style=flat-square" alt="arXiv 论文"/>
-    </a>
-    <a href="https://liveportrait.github.io" target="_blank">
-      <img src="https://img.shields.io/badge/Project-主页-green?style=flat-square" alt="项目主页"/>
-    </a>
-    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank">
-      <img src="https://img.shields.io/badge/🤗 Hugging&nbsp;Face-Spaces-blue?style=flat-square" alt="HF Space"/>
-    </a>
-    <a href="https://hellogithub.com/repository/bed652ef02154dd7a434e0720125639e" target="_blank">
-      <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=bed652ef02154dd7a434e0720125639e&claim_uid=XyBT2K9QJ7RZhej&theme=small" alt="HelloGitHub 推荐"/>
-    </a>
-    <a href="https://github.com/KwaiVGI/LivePortrait" target="_blank">
-      <img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait?style=social" alt="GitHub Stars"/>
-    </a>
+    <a href="https://arxiv.org/pdf/2407.03168" target="_blank"><img src="https://img.shields.io/badge/arXiv-LivePortrait-red?style=flat-square" alt="arXiv link"></a>&nbsp;
+    <a href="https://liveportrait.github.io" target="_blank"><img src="https://img.shields.io/badge/Project-Homepage-green?style=flat-square" alt="project homepage"></a>&nbsp;
+    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank"><img src="https://img.shields.io/badge/🤗 Hugging Face-Spaces-blue?style=flat-square" alt="HF space"></a>&nbsp;
+    <a href="https://hellogithub.com/repository/bed652ef02154dd7a434e0720125639e" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=bed652ef02154dd7a434e0720125639e&claim_uid=XyBT2K9QJ7RZhej&theme=small" alt="Featured by HelloGitHub"></a>&nbsp;
+    <a href="https://github.com/KwaiVGI/LivePortrait" target="_blank"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait?style=social" alt="GitHub stars"></a>
   </p>
 
   <!-- 🌏 语言切换 -->
   <p><a href="./readme.md"><strong>English</strong></a> | <strong>简体中文</strong></p>
 
   <!-- 🎬 Showcase GIF -->
-  <p>
-    <img src="./assets/docs/showcase2.gif" alt="LivePortrait 效果展示 GIF"/>
-  </p>
+  <p><img src="./assets/docs/showcase2.gif" alt="LivePortrait 效果展示 GIF"></p>
   <p>🔥 更多效果，请访问我们的 <a href="https://liveportrait.github.io/" target="_blank"><strong>主页</strong></a> 🔥</p>
 
 </div>
 <!-- ===== /LivePortrait ===== -->
+
 
 
 
