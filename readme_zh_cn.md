@@ -32,9 +32,9 @@
 
   <!-- 📄 论文 / 项目 / Star 等徽章 -->
   <p>
-    <a href="https://arxiv.org/pdf/2407.03168" target="_blank"><img src="https://img.shields.io/badge/arXiv-LivePortrait-red?style=flat-square" alt="arXiv link"></a>&nbsp;
-    <a href="https://liveportrait.github.io" target="_blank"><img src="https://img.shields.io/badge/Project-Homepage-green?style=flat-square" alt="project homepage"></a>&nbsp;
-    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank"><img src="https://img.shields.io/badge/🤗 Hugging Face-Spaces-blue?style=flat-square" alt="HF space"></a>&nbsp;
+    <a href="https://arxiv.org/pdf/2407.03168" target="_blank"><img src="https://img.shields.io/badge/arXiv-LivePortrait-red" alt="arXiv link"></a>&nbsp;
+    <a href="https://liveportrait.github.io" target="_blank"><img src="https://img.shields.io/badge/Project-Homepage-green" alt="project homepage"></a>&nbsp;
+    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank"><img src="https://img.shields.io/badge/🤗 Hugging Face-Spaces-blue" alt="HF space"></a>&nbsp;
     <a href="https://hellogithub.com/repository/bed652ef02154dd7a434e0720125639e" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=bed652ef02154dd7a434e0720125639e&claim_uid=XyBT2K9QJ7RZhej&theme=small" alt="Featured by HelloGitHub"></a>&nbsp;
     <a href="https://github.com/KwaiVGI/LivePortrait" target="_blank"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait?style=social" alt="GitHub stars"></a>
   </p>
