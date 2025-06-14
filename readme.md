@@ -91,25 +91,30 @@ conda activate LivePortrait
 ```
 
 #### For Linux or Windows Users
-[X-Pose](https://github.com/IDEA-Research/X-Pose) requires your `torch` version to be compatible with the CUDA version.
+[X-Pose](https://github.com/IDEA-Research/X-Pose), required by Animals mode, is a dependency that needs to be installed. The step of `Check your CUDA versions` is **optional** if you only want to run Humans mode.
 
-Firstly, check your current CUDA version by:
-```bash
-nvcc -V # example versions: 11.1, 11.8, 12.1, etc.
-```
+<details>
+  <summary>Check your CUDA versions</summary>
 
-Then, install the corresponding torch version. Here are examples for different CUDA versions. Visit the [PyTorch Official Website](https://pytorch.org/get-started/previous-versions) for installation commands if your CUDA version is not listed:
-```bash
-# for CUDA 11.1
-pip install torch==1.10.1+cu111 torchvision==0.11.2 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
-# for CUDA 11.8
-pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu118
-# for CUDA 12.1
-pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121
-# ...
-```
+  Firstly, check your current CUDA version by:
+  ```bash
+  nvcc -V # example versions: 11.1, 11.8, 12.1, etc.
+  ```
 
-**Note**: On Windows systems, some higher versions of CUDA (such as 12.4, 12.6, etc.) may lead to unknown issues. You may consider downgrading CUDA to version 11.8 for stability. See the [downgrade guide](https://github.com/dimitribarbot/sd-webui-live-portrait/blob/main/assets/docs/how-to-install-xpose.md#cuda-toolkit-118) by [@dimitribarbot](https://github.com/dimitribarbot).
+  Then, install the corresponding torch version. Here are examples for different CUDA versions. Visit the [PyTorch Official Website](https://pytorch.org/get-started/previous-versions) for installation commands if your CUDA version is not listed:
+  ```bash
+  # for CUDA 11.1
+  pip install torch==1.10.1+cu111 torchvision==0.11.2 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+  # for CUDA 11.8
+  pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu118
+  # for CUDA 12.1
+  pip install torch==2.3.0 torchvision==0.18.0 torchaudio==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+  # ...
+  ```
+
+  **Note**: On Windows systems, some higher versions of CUDA (such as 12.4, 12.6, etc.) may lead to unknown issues. You may consider downgrading CUDA to version 11.8 for stability. See the [downgrade guide](https://github.com/dimitribarbot/sd-webui-live-portrait/blob/main/assets/docs/how-to-install-xpose.md#cuda-toolkit-118) by [@dimitribarbot](https://github.com/dimitribarbot).
+</details>
+
 
 Finally, install the remaining dependencies:
 ```bash
@@ -175,7 +180,7 @@ python inference.py -h
 #### Fast hands-on (animals) 🐱🐶
 Animals mode is ONLY tested on Linux and Windows with NVIDIA GPU.
 
-You need to build an OP named `MultiScaleDeformableAttention` first, which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
+You need to build an OP named `MultiScaleDeformableAttention` first (make sure you have checked your CUDA versions), which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
 ```bash
 cd src/utils/dependencies/XPose/models/UniPose/ops
 python setup.py build install
