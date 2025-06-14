@@ -90,7 +90,7 @@ conda create -n LivePortrait python=3.10
 conda activate LivePortrait
 ```
 
-#### For Linux 🐧 or Windows 🪟 Users {#for-linux-or-windows-users}
+#### For Linux 🐧 or Windows 🪟 Users
 [X-Pose](https://github.com/IDEA-Research/X-Pose), required by Animals mode, is a dependency that needs to be installed. The step of `Check your CUDA versions` is **optional** if you only want to run Humans mode.
 
 <details>
