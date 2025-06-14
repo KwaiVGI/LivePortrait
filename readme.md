@@ -90,7 +90,7 @@ conda create -n LivePortrait python=3.10
 conda activate LivePortrait
 ```
 
-#### For Linux 🐧 or Windows 🪟 Users
+#### For Linux 🐧 or Windows 🪟 Users {#for-linux-or-windows-users}
 [X-Pose](https://github.com/IDEA-Research/X-Pose), required by Animals mode, is a dependency that needs to be installed. The step of `Check your CUDA versions` is **optional** if you only want to run Humans mode.
 
 <details>
@@ -180,7 +180,8 @@ python inference.py -h
 #### Fast hands-on (animals) 🐱🐶
 Animals mode is ONLY tested on Linux and Windows with NVIDIA GPU.
 
-You need to build an OP named `MultiScaleDeformableAttention` first (make sure you have checked your CUDA versions), which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
+You need to build an OP named `MultiScaleDeformableAttention` first (refer to the <a href="#for-linux-or-windows-users">Check your CUDA versions</a> if needed), which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
+
 ```bash
 cd src/utils/dependencies/XPose/models/UniPose/ops
 python setup.py build install
