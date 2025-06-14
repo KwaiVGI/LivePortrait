@@ -180,7 +180,7 @@ python inference.py -h
 #### Fast hands-on (animals) 🐱🐶
 Animals mode is ONLY tested on Linux and Windows with NVIDIA GPU.
 
-You need to build an OP named `MultiScaleDeformableAttention` first (refer to the <a href="#for-linux-or-windows-users">Check your CUDA versions</a> if needed), which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
+You need to build an OP named `MultiScaleDeformableAttention` first (refer to the <a href="#for-linux--or-windows--users">Check your CUDA versions</a> if needed), which is used by [X-Pose](https://github.com/IDEA-Research/X-Pose), a general keypoint detection framework.
 
 ```bash
 cd src/utils/dependencies/XPose/models/UniPose/ops
