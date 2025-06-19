@@ -93,7 +93,7 @@ class LivePortraitPipeline(object):
             flag_is_source_video = True
             source_rgb_lst = load_video(args.source)
             source_rgb_lst = [resize_to_limit(img, inf_cfg.source_max_dim, inf_cfg.source_division) for img in source_rgb_lst]
-            source_fps = int(get_fps(args.source))
+            source_fps = get_fps(args.source)
             log(f"Load source video from {args.source}, FPS is {source_fps}")
         else:  # source input is an unknown format
             raise Exception(f"Unknown source format: {args.source}")
@@ -129,7 +129,7 @@ class LivePortraitPipeline(object):
             if is_video(args.driving):
                 flag_is_driving_video = True
                 # load from video file, AND make motion template
-                output_fps = int(get_fps(args.driving))
+                output_fps = get_fps(args.driving)
                 log(f"Load driving video from: {args.driving}, FPS is {output_fps}")
                 driving_rgb_lst = load_video(args.driving)
             elif is_image(args.driving):
