@@ -256,22 +256,12 @@ class LivePortraitPipeline(object):
             x_s = self.live_portrait_wrapper.transform_keypoint(x_s_info)
 
             # let lip-open scalar to be 0 at first
-            # if flag_normalize_lip and inf_cfg.flag_relative_motion and source_lmk is not None:
-            #     c_d_lip_before_animation = [0.]
-            #     combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
-            #     if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
-            #         lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
             if flag_normalize_lip and inf_cfg.flag_relative_motion and source_lmk is not None:
-                # c_d_lip_before_animation = [0.]
-                # combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
-                c_d_lip_before_animation = driving_template_dct['c_lip_lst'][0]  
-                combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(
-                    c_d_lip_before_animation, 
-                    source_lmk
-                )
-                lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
+                c_d_lip_before_animation = [0.]
+                combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
+                if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
+                    lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
 
-            
             if inf_cfg.flag_pasteback and inf_cfg.flag_do_crop and inf_cfg.flag_stitching:
                 mask_ori_float = prepare_paste_back(inf_cfg.mask_crop, crop_info['M_c2o'], dsize=(source_rgb_lst[0].shape[1], source_rgb_lst[0].shape[0]))
 
@@ -295,22 +285,13 @@ class LivePortraitPipeline(object):
                 x_s =x_s_info['x_s']
 
                 # let lip-open scalar to be 0 at first if the input is a video
-                # if flag_normalize_lip and inf_cfg.flag_relative_motion and source_lmk is not None:
-                #     c_d_lip_before_animation = [0.]
-                #     combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
-                #     if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
-                #         lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
-                #     else:
-                #         lip_delta_before_animation = None
                 if flag_normalize_lip and inf_cfg.flag_relative_motion and source_lmk is not None:
-                    # c_d_lip_before_animation = [0.]
-                    c_d_lip_before_animation = driving_template_dct['c_lip_lst'][0]  
-                    combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(
-                        c_d_lip_before_animation,
-                        source_lmk
-                    )
-                    lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
-
+                    c_d_lip_before_animation = [0.]
+                    combined_lip_ratio_tensor_before_animation = self.live_portrait_wrapper.calc_combined_lip_ratio(c_d_lip_before_animation, source_lmk)
+                    if combined_lip_ratio_tensor_before_animation[0][0] >= inf_cfg.lip_normalize_threshold:
+                        lip_delta_before_animation = self.live_portrait_wrapper.retarget_lip(x_s, combined_lip_ratio_tensor_before_animation)
+                    else:
+                        lip_delta_before_animation = None
 
                 # let eye-open scalar to be the same as the first frame if the latter is eye-open state
                 if flag_source_video_eye_retargeting and source_lmk is not None:
