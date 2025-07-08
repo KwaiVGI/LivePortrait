@@ -222,8 +222,7 @@ class Cropper(object):
             "M_c2o_lst": trajectory.M_c2o_lst,
         }
 
-    # Fast fix untrack bug
-    def crop_driving_video(self, driving_rgb_lst, crop_cfg: CropConfig, **kwargs):
+    def crop_driving_video(self, driving_rgb_lst, **kwargs):
         """Tracking based landmarks/alignment and cropping"""
         trajectory = Trajectory()
         direction = kwargs.get("direction", "large-small")
@@ -232,8 +231,7 @@ class Cropper(object):
                 src_face = self.face_analysis_wrapper.get(
                     contiguous(frame_rgb[..., ::-1]),
                     flag_do_landmark_2d_106=True,
-                    direction=crop_cfg.direction,
-                    max_face_num=crop_cfg.max_face_num,
+                    direction=direction,
                 )
                 if len(src_face) == 0:
                     log(f"No face detected in the frame #{idx}")
@@ -249,25 +247,34 @@ class Cropper(object):
                 trajectory.end = idx
 
             trajectory.lmk_lst.append(lmk)
+            ret_bbox = parse_bbox_from_landmark(
+                lmk,
+                scale=self.crop_cfg.scale_crop_driving_video,
+                vx_ratio_crop_driving_video=self.crop_cfg.vx_ratio_crop_driving_video,
+                vy_ratio=self.crop_cfg.vy_ratio_crop_driving_video,
+            )["bbox"]
+            bbox = [
+                ret_bbox[0, 0],
+                ret_bbox[0, 1],
+                ret_bbox[2, 0],
+                ret_bbox[2, 1],
+            ]  # 4,
+            trajectory.bbox_lst.append(bbox)  # bbox
+            trajectory.frame_rgb_lst.append(frame_rgb)
 
-            # crop the face
-            ret_dct = crop_image(
-                frame_rgb,  # ndarray
-                lmk,  # 106x2 or Nx2
-                dsize=crop_cfg.dsize,
-                scale=crop_cfg.scale_crop_driving_video,
-                vx_ratio=crop_cfg.vx_ratio_crop_driving_video,
-                vy_ratio=crop_cfg.vy_ratio_crop_driving_video,
-                flag_do_rot=crop_cfg.flag_do_rot,
+        global_bbox = average_bbox_lst(trajectory.bbox_lst)
+
+        for idx, (frame_rgb, lmk) in enumerate(zip(trajectory.frame_rgb_lst, trajectory.lmk_lst)):
+            ret_dct = crop_image_by_bbox(
+                frame_rgb,
+                global_bbox,
+                lmk=lmk,
+                dsize=kwargs.get("dsize", 512),
+                flag_rot=False,
+                borderValue=(0, 0, 0),
             )
-
-            # update a 256x256 version for network input
-            ret_dct["img_crop_256x256"] = cv2.resize(ret_dct["img_crop"], (256, 256), interpolation=cv2.INTER_AREA)
-            ret_dct["lmk_crop_256x256"] = ret_dct["pt_crop"] * 256 / crop_cfg.dsize
-
-            trajectory.frame_rgb_crop_lst.append(ret_dct["img_crop_256x256"])
-            trajectory.lmk_crop_lst.append(ret_dct["lmk_crop_256x256"])
-            # trajectory.M_c2o_lst.append(ret_dct['M_c2o'])
+            trajectory.frame_rgb_crop_lst.append(ret_dct["img_crop"])
+            trajectory.lmk_crop_lst.append(ret_dct["lmk_crop"])
 
         return {
             "frame_crop_lst": trajectory.frame_rgb_crop_lst,
