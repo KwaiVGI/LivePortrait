@@ -9,11 +9,11 @@
       &nbsp;
       <a href="https://liveportrait.github.io"><img src="https://img.shields.io/badge/Project_Page-LivePortrait-green" alt="Project Page"></a>
       &nbsp;
-      <a href='https://huggingface.co/spaces/KwaiVGI/liveportrait'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
+      <a href='https://huggingface.co/spaces/KlingTeam/LivePortrait'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
       &nbsp;
-      <a href="https://github.com/KwaiVGI/LivePortrait"><img src="https://img.shields.io/badge/Github-Code-blue"></a>
+      <a href="https://github.com/KlingTeam/LivePortrait"><img src="https://img.shields.io/badge/Github-Code-blue"></a>
       &nbsp;
-      <a href="https://github.com/KwaiVGI/LivePortrait"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait
+      <a href="https://github.com/KlingTeam/LivePortrait"><img src="https://img.shields.io/github/stars/KlingTeam/LivePortrait
       "></a>
     </div>
   </div>
