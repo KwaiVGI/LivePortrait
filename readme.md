@@ -28,16 +28,16 @@
   <!-- 🚀 Quick Start buttons -->
   <p>
     <a href="https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip" target="_blank"><img src="https://img.shields.io/badge/🖥 Windows Installer-v20240829-00BFFF?style=for-the-badge&logo=windows&logoColor=white" alt="Windows one-click installer"></a>&nbsp;
-    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank"><img src="https://img.shields.io/badge/🌐 Try Online Demo-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace online demo"></a>
+    <a href="https://huggingface.co/spaces/KlingTeam/LivePortrait" target="_blank"><img src="https://img.shields.io/badge/🌐 Try Online Demo-FF6F00?style=for-the-badge&logo=huggingface&logoColor=white" alt="HuggingFace online demo"></a>
   </p>
 
   <!-- 📄 Paper / project / GitHub stats -->
   <p>
     <a href="https://arxiv.org/pdf/2407.03168" target="_blank"><img src="https://img.shields.io/badge/arXiv-LivePortrait-red" alt="arXiv link"></a>&nbsp;
     <a href="https://liveportrait.github.io" target="_blank"><img src="https://img.shields.io/badge/Project-Homepage-green" alt="project homepage"></a>&nbsp;
-    <a href="https://huggingface.co/spaces/KwaiVGI/liveportrait" target="_blank"><img src="https://img.shields.io/badge/🤗 Hugging Face-Spaces-blue" alt="HF space"></a>&nbsp;
+    <a href="https://huggingface.co/spaces/KlingTeam/LivePortrait" target="_blank"><img src="https://img.shields.io/badge/🤗 Hugging Face-Spaces-blue" alt="HF space"></a>&nbsp;
     <a href="https://hellogithub.com/repository/bed652ef02154dd7a434e0720125639e" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=bed652ef02154dd7a434e0720125639e&claim_uid=XyBT2K9QJ7RZhej&theme=small" alt="Featured by HelloGitHub"></a>&nbsp;
-    <a href="https://github.com/KwaiVGI/LivePortrait" target="_blank"><img src="https://img.shields.io/github/stars/KwaiVGI/LivePortrait?style=social" alt="GitHub stars"></a>
+    <a href="https://github.com/KlingTeam/LivePortrait" target="_blank"><img src="https://img.shields.io/github/stars/KlingTeam/LivePortrait?style=social" alt="GitHub stars"></a>
   </p>
 
   <!-- 🌏 Language switch -->
@@ -54,7 +54,7 @@
 ## 🔥 Updates
 - **`2025/06/01`**: 🌍 Over the past year, **LivePortrait** has 🚀 become an efficient portrait-animation (humans, cats and dogs) solution adopted by major video platforms—Kuaishou, Douyin, Jianying, WeChat Channels—as well as numerous startups and creators. 🎉
 - **`2025/01/01`**: 🐶 We updated a new version of the Animals model with more data, see [**here**](./assets/docs/changelog/2025-01-01.md).
-- **`2024/10/18`**: ❗ We have updated the versions of the `transformers` and `gradio` libraries to avoid security vulnerabilities. Details [here](https://github.com/KwaiVGI/LivePortrait/pull/421/files).
+- **`2024/10/18`**: ❗ We have updated the versions of the `transformers` and `gradio` libraries to avoid security vulnerabilities. Details [here](https://github.com/KlingTeam/LivePortrait/pull/421/files).
 - **`2024/08/29`**: 📦 We update the Windows [one-click installer](https://huggingface.co/cleardusk/LivePortrait-Windows/blob/main/LivePortrait-Windows-v20240829.zip) and support auto-updates, see [changelog](https://huggingface.co/cleardusk/LivePortrait-Windows#20240829).
 - **`2024/08/19`**: 🖼️ We support **image driven mode** and **regional control**. For details, see [**here**](./assets/docs/changelog/2024-08-19.md).
 - **`2024/08/06`**: 🎨 We support **precise portrait editing** in the Gradio interface, inspired by [ComfyUI-AdvancedLivePortrait](https://github.com/PowerHouseMan/ComfyUI-AdvancedLivePortrait). See [**here**](./assets/docs/changelog/2024-08-06.md).
@@ -63,9 +63,9 @@
 - **`2024/07/25`**: 📦 Windows users can now download the package from [HuggingFace](https://huggingface.co/cleardusk/LivePortrait-Windows/tree/main). Simply unzip and double-click `run_windows.bat` to enjoy!
 - **`2024/07/24`**: 🎨 We support pose editing for source portraits in the Gradio interface. We’ve also lowered the default detection threshold to increase recall. [Have fun](assets/docs/changelog/2024-07-24.md)!
 - **`2024/07/19`**: ✨ We support 🎞️ **portrait video editing (aka v2v)**! More to see [here](assets/docs/changelog/2024-07-19.md).
-- **`2024/07/17`**: 🍎 We support macOS with Apple Silicon, modified from [jeethu](https://github.com/jeethu)'s PR [#143](https://github.com/KwaiVGI/LivePortrait/pull/143).
+- **`2024/07/17`**: 🍎 We support macOS with Apple Silicon, modified from [jeethu](https://github.com/jeethu)'s PR [#143](https://github.com/KlingTeam/LivePortrait/pull/143).
 - **`2024/07/10`**: 💪 We support audio and video concatenating, driving video auto-cropping, and template making to protect privacy. More to see [here](assets/docs/changelog/2024-07-10.md).
-- **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KwaiVGI/liveportrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
+- **`2024/07/09`**: 🤗 We released the [HuggingFace Space](https://huggingface.co/spaces/KlingTeam/LivePortrait), thanks to the HF team and [Gradio](https://github.com/gradio-app/gradio)!
 - **`2024/07/04`**: 😊 We released the initial version of the inference code and models. Continuous updates, stay tuned!
 - **`2024/07/04`**: 🔥 We released the [homepage](https://liveportrait.github.io) and technical report on [arXiv](https://arxiv.org/pdf/2407.03168).
 
@@ -82,7 +82,7 @@ We are actively updating and improving this repository. If you find any bugs or 
 > Make sure your system has [`git`](https://git-scm.com/), [`conda`](https://anaconda.org/anaconda/conda), and [`FFmpeg`](https://ffmpeg.org/download.html) installed. For details on FFmpeg installation, see [**how to install FFmpeg**](assets/docs/how-to-install-ffmpeg.md).
 
 ```bash
-git clone https://github.com/KwaiVGI/LivePortrait
+git clone https://github.com/KlingTeam/LivePortrait
 cd LivePortrait
 
 # create env using conda
@@ -133,14 +133,14 @@ pip install -r requirements_macOS.txt
 The easiest way to download the pretrained weights is from HuggingFace:
 ```bash
 # !pip install -U "huggingface_hub[cli]"
-huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
+huggingface-cli download KlingTeam/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
 ```
 
 If you cannot access to Huggingface, you can use [hf-mirror](https://hf-mirror.com/) to download:
 ```bash
 # !pip install -U "huggingface_hub[cli]"
 export HF_ENDPOINT=https://hf-mirror.com
-huggingface-cli download KwaiVGI/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
+huggingface-cli download KlingTeam/LivePortrait --local-dir pretrained_weights --exclude "*.git*" "README.md" "docs"
 ```
 
 Alternatively, you can download all pretrained weights from [Google Drive](https://drive.google.com/drive/folders/1UtKgzKjFAOmZkhNK-OYT0caJ_w2XAnib) or [Baidu Yun](https://pan.baidu.com/s/1MGctWmNla_vZxDbEp2Dtzw?pwd=z5cn). Unzip and place them in `./pretrained_weights`.
@@ -245,7 +245,7 @@ python app.py --flag_do_torch_compile
 ```
 **Note**: This method is not supported on Windows and macOS.
 
-**Or, try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KwaiVGI/LivePortrait) 🤗**
+**Or, try it out effortlessly on [HuggingFace](https://huggingface.co/spaces/KlingTeam/LivePortrait) 🤗**
 
 ### 5. Inference speed evaluation 🚀🚀🚀
 We have also provided a script to evaluate the inference speed of each module:
@@ -323,11 +323,11 @@ If you find LivePortrait useful for your project or research, welcome to 🌟 th
 <details>
   <summary>Click to view Star chart</summary>
   <p align="center">
-    <a href="https://www.star-history.com/#KwaiVGI/LivePortrait&Timeline" target="_blank">
+    <a href="https://www.star-history.com/#KlingTeam/LivePortrait&Timeline" target="_blank">
       <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=KwaiVGI/LivePortrait&type=Timeline&theme=dark" />
-        <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=KwaiVGI/LivePortrait&type=Timeline" />
-        <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=KwaiVGI/LivePortrait&type=Timeline" width="90%" />
+        <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=KlingTeam/LivePortrait&type=Timeline&theme=dark" />
+        <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=KlingTeam/LivePortrait&type=Timeline" />
+        <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=KlingTeam/LivePortrait&type=Timeline" width="90%" />
       </picture>
     </a>
   </p>
