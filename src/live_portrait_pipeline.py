@@ -153,7 +153,7 @@ class LivePortraitPipeline(object):
             if inf_cfg.flag_crop_driving_video or (not is_square_video(args.driving)):
                 ret_d = self.cropper.crop_driving_video(driving_rgb_lst)
                 log(f'Driving video is cropped, {len(ret_d["frame_crop_lst"])} frames are processed.')
-                if len(ret_d["frame_crop_lst"]) is not n_frames and flag_is_driving_video:
+                if len(ret_d["frame_crop_lst"]) != n_frames and flag_is_driving_video:
                     n_frames = min(n_frames, len(ret_d["frame_crop_lst"]))
                 driving_rgb_crop_lst, driving_lmk_crop_lst = ret_d['frame_crop_lst'], ret_d['lmk_crop_lst']
                 driving_rgb_crop_256x256_lst = [cv2.resize(_, (256, 256)) for _ in driving_rgb_crop_lst]
@@ -196,7 +196,7 @@ class LivePortraitPipeline(object):
             if inf_cfg.flag_do_crop:
                 ret_s = self.cropper.crop_source_video(source_rgb_lst, crop_cfg)
                 log(f'Source video is cropped, {len(ret_s["frame_crop_lst"])} frames are processed.')
-                if len(ret_s["frame_crop_lst"]) is not n_frames:
+                if len(ret_s["frame_crop_lst"]) != n_frames:
                     n_frames = min(n_frames, len(ret_s["frame_crop_lst"]))
                 img_crop_256x256_lst, source_lmk_crop_lst, source_M_c2o_lst = ret_s['frame_crop_lst'], ret_s['lmk_crop_lst'], ret_s['M_c2o_lst']
             else:
