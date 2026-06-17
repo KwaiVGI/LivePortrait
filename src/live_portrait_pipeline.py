@@ -151,7 +151,7 @@ class LivePortraitPipeline(object):
             else:
                 n_frames = driving_n_frames
             if inf_cfg.flag_crop_driving_video or (not is_square_video(args.driving)):
-                ret_d = self.cropper.crop_driving_video(driving_rgb_lst)
+                ret_d = self.cropper.crop_driving_video(driving_rgb_lst, crop_cfg)
                 log(f'Driving video is cropped, {len(ret_d["frame_crop_lst"])} frames are processed.')
                 if len(ret_d["frame_crop_lst"]) is not n_frames and flag_is_driving_video:
                     n_frames = min(n_frames, len(ret_d["frame_crop_lst"]))
